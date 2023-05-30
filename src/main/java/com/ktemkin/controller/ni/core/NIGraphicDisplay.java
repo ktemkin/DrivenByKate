@@ -5,7 +5,7 @@
 
 package com.ktemkin.controller.ni.core;
 
-import de.mossgrabers.framework.controller.display.AbstractGraphicDisplay;
+import com.ktemkin.framework.controller.display.AbstractGraphicDisplay;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.graphics.DefaultGraphicsDimensions;
 import de.mossgrabers.framework.graphics.IBitmap;
@@ -153,7 +153,6 @@ public class NIGraphicDisplay extends AbstractGraphicDisplay {
      */
     private static final int DISPLAY_DATA_SZ = 480 * 272 * 2;
     private static final int DISPLAY_PACKET_SIZE = DISPLAY_HEADER_LEFT.length + DISPLAY_DATA_SZ + DISPLAY_FOOTER.length;
-    private static final int TIMEOUT = 1000;
 
     //
     // Display constants.
@@ -195,8 +194,8 @@ public class NIGraphicDisplay extends AbstractGraphicDisplay {
      * @param host              The host
      * @param maxParameterValue The maximum parameter value (upper bound)
      * @param configuration     The controller's configuration
-     * @param int               deviceId The device type; used to create a new NIHIA interop.
-     * @param int               deviceId The device's serial; used to create a new NIHIA interop.
+     * @param deviceId          The device type; used to create a new NIHIA interop.
+     * @param deviceSerial      The device's serial; used to create a new NIHIA interop.
      */
     public NIGraphicDisplay(final IHost host, final int maxParameterValue, final IGraphicsConfiguration configuration, int deviceId, String deviceSerial) throws IOException {
         super(host, configuration, new DefaultGraphicsDimensions(480 * 2, 272, maxParameterValue), "NI Device Display", true, 0.7);
@@ -283,9 +282,7 @@ public class NIGraphicDisplay extends AbstractGraphicDisplay {
         this.isShutdown = true;
 
         final ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> {
-            super.shutdown();
-        });
+        executor.execute(super::shutdown);
         executor.shutdown();
         try {
             executor.awaitTermination(10, TimeUnit.SECONDS);
