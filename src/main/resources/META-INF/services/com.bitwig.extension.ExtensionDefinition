@@ -1,0 +1,6 @@
+com.ktemkin.bitwig.controller.ableton.push.Push2ControllerExtensionDefinition
+com.ktemkin.bitwig.controller.ni.kontrol.mkii.KontrolProtocolV1ExtensionDefinition
+com.ktemkin.bitwig.controller.ni.kontrol.mkii.KontrolProtocolV2ExtensionDefinition
+com.ktemkin.bitwig.controller.ni.maschine.mk3.MaschineMk3ExtensionDefinition
+com.ktemkin.bitwig.controller.ni.maschine.mk3.MaschinePlusExtensionDefinition
+com.ktemkin.bitwig.controller.ni.maschine.mk3.MaschineStudioExtensionDefinition

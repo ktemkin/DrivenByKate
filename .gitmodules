@@ -1,0 +1,6 @@
+[submodule "maven-local-repository/de/mossgrabers/DrivenByMoss"]
+	path = maven-local-repository/de/mossgrabers/DrivenByMoss
+	url = https://github.com/git-moss/DrivenByMoss
+[submodule "maven-local-repository/de/mossgrabers/drivenbymoss"]
+	path = maven-local-repository/de/mossgrabers/drivenbymoss
+	url = https://github.com/git-moss/drivenbymoss
