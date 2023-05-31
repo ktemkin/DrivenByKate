@@ -22,14 +22,17 @@ import java.util.Optional;
  *
  * @author Jürgen Moßgraber
  */
-public class TrackCommand extends AbstractTriggerCommand<PushControlSurface, PushConfiguration> {
+public class TrackCommand extends AbstractTriggerCommand<PushControlSurface, PushConfiguration>
+{
+
     /**
      * Constructor.
      *
      * @param model   The model
      * @param surface The surface
      */
-    public TrackCommand(final IModel model, final PushControlSurface surface) {
+    public TrackCommand(final IModel model, final PushControlSurface surface)
+    {
         super(model, surface);
     }
 
@@ -38,9 +41,11 @@ public class TrackCommand extends AbstractTriggerCommand<PushControlSurface, Pus
      * {@inheritDoc}
      */
     @Override
-    public void execute(final ButtonEvent event, final int velocity) {
-        if (event != ButtonEvent.DOWN)
+    public void execute(final ButtonEvent event, final int velocity)
+    {
+        if (event != ButtonEvent.DOWN) {
             return;
+        }
 
         final PushConfiguration config = this.surface.getConfiguration();
 
@@ -50,37 +55,31 @@ public class TrackCommand extends AbstractTriggerCommand<PushControlSurface, Pus
         }
 
         final ModeManager modeManager = this.surface.getModeManager();
-        final Modes currentMode = modeManager.getActiveID();
+        final Modes       currentMode = modeManager.getActiveID();
 
         if (currentMode != null) {
-            if (config.isPush2()) {
-                if (Modes.TRACK.equals(currentMode) || Modes.VOLUME.equals(currentMode) || Modes.CROSSFADER.equals(currentMode) || Modes.PAN.equals(currentMode)) {
-                    this.model.toggleCurrentTrackBank();
-                } else if (currentMode.ordinal() >= Modes.SEND1.ordinal() && currentMode.ordinal() <= Modes.SEND8.ordinal()) {
-                    modeManager.setActive(Modes.TRACK);
-                    this.model.toggleCurrentTrackBank();
-                } else
-                    modeManager.setActive(config.getCurrentMixMode());
-            } else {
-                // Layer mode selection for Push 1
-                if (this.surface.isSelectPressed() && Modes.isLayerMode(currentMode)) {
-                    modeManager.setActive(Modes.DEVICE_LAYER);
-                    return;
-                }
-
-                if (Modes.TRACK.equals(currentMode))
-                    this.model.toggleCurrentTrackBank();
-                else
-                    modeManager.setActive(Modes.TRACK);
+            if (Modes.TRACK.equals(currentMode) || Modes.VOLUME.equals(currentMode) || Modes.CROSSFADER.equals(currentMode) || Modes.PAN.equals(currentMode)) {
+                this.model.toggleCurrentTrackBank();
             }
-        } else
+            else if (currentMode.ordinal() >= Modes.SEND1.ordinal() && currentMode.ordinal() <= Modes.SEND8.ordinal()) {
+                modeManager.setActive(Modes.TRACK);
+                this.model.toggleCurrentTrackBank();
+            }
+            else {
+                modeManager.setActive(config.getCurrentMixMode());
+            }
+        }
+        else {
             modeManager.setActive(Modes.TRACK);
+        }
 
         config.setDebugMode(modeManager.getActiveID());
 
-        final ITrackBank tb = this.model.getCurrentTrackBank();
+        final ITrackBank       tb    = this.model.getCurrentTrackBank();
         final Optional<ITrack> track = tb.getSelectedItem();
-        if (track.isEmpty())
+        if (track.isEmpty()) {
             tb.getItem(0).select();
+        }
     }
+
 }

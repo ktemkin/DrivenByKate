@@ -18,7 +18,9 @@ import de.mossgrabers.framework.parameterprovider.device.SelectedLayerOrDrumPadP
  *
  * @author Jürgen Moßgraber
  */
-public class PushSelectedLayerOrDrumPadParameterProvider extends SelectedLayerOrDrumPadParameterProvider implements ISettingObserver {
+public class PushSelectedLayerOrDrumPadParameterProvider extends SelectedLayerOrDrumPadParameterProvider implements ISettingObserver
+{
+
     private final PushConfiguration configuration;
 
 
@@ -28,7 +30,8 @@ public class PushSelectedLayerOrDrumPadParameterProvider extends SelectedLayerOr
      * @param configuration The configuration
      * @param device        Uses the layer bank from the given device to get the parameters
      */
-    public PushSelectedLayerOrDrumPadParameterProvider(final ISpecificDevice device, final PushConfiguration configuration) {
+    public PushSelectedLayerOrDrumPadParameterProvider(final ISpecificDevice device, final PushConfiguration configuration)
+    {
         super(device);
 
         this.configuration = configuration;
@@ -39,9 +42,11 @@ public class PushSelectedLayerOrDrumPadParameterProvider extends SelectedLayerOr
      * {@inheritDoc}
      */
     @Override
-    protected IParameter getInternal(final int index, final IChannel selectedChannel) {
-        if (index < 2 || !this.configuration.isPush2())
+    protected IParameter getInternal(final int index, final IChannel selectedChannel)
+    {
+        if (index < 2) {
             return super.getInternal(index, selectedChannel);
+        }
 
         switch (index) {
             case 2, 3:
@@ -56,8 +61,10 @@ public class PushSelectedLayerOrDrumPadParameterProvider extends SelectedLayerOr
      * {@inheritDoc}
      */
     @Override
-    public void hasChanged() {
+    public void hasChanged()
+    {
         // Sends are toggled...
         this.notifyParametersObservers();
     }
+
 }

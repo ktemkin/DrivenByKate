@@ -19,14 +19,17 @@ import de.mossgrabers.framework.utils.ButtonEvent;
  *
  * @author Jürgen Moßgraber
  */
-public class PanSendCommand extends AbstractTriggerCommand<PushControlSurface, PushConfiguration> {
+public class PanSendCommand extends AbstractTriggerCommand<PushControlSurface, PushConfiguration>
+{
+
     /**
      * Constructor.
      *
      * @param model   The model
      * @param surface The surface
      */
-    public PanSendCommand(final IModel model, final PushControlSurface surface) {
+    public PanSendCommand(final IModel model, final PushControlSurface surface)
+    {
         super(model, surface);
     }
 
@@ -35,47 +38,40 @@ public class PanSendCommand extends AbstractTriggerCommand<PushControlSurface, P
      * {@inheritDoc}
      */
     @Override
-    public void execute(final ButtonEvent event, final int velocity) {
-        if (event != ButtonEvent.DOWN)
-            return;
-
-        final ModeManager modeManager = this.surface.getModeManager();
-        final Modes currentMode = modeManager.getActiveIDIgnoreTemporary();
-
-        // Layer mode selection for Push 1
-        Modes mode;
-        final PushConfiguration config = this.surface.getConfiguration();
-        if (!config.isPush2() && this.surface.isSelectPressed() && Modes.isLayerMode(currentMode)) {
-            if (this.model.isEffectTrackBankActive()) {
-                // No Sends on FX tracks
-                mode = Modes.DEVICE_LAYER_PAN;
-            } else {
-                mode = Modes.get(currentMode, 1);
-                // Wrap
-                if (mode.ordinal() < Modes.DEVICE_LAYER_PAN.ordinal() || mode.ordinal() > Modes.DEVICE_LAYER_SEND8.ordinal())
-                    mode = Modes.DEVICE_LAYER_PAN;
-            }
-            modeManager.setActive(mode);
+    public void execute(final ButtonEvent event, final int velocity)
+    {
+        if (event != ButtonEvent.DOWN) {
             return;
         }
 
+        final ModeManager modeManager = this.surface.getModeManager();
+        final Modes       currentMode = modeManager.getActiveIDIgnoreTemporary();
+
+        // Layer mode selection for Push 1
+        Modes                   mode;
+        final PushConfiguration config = this.surface.getConfiguration();
         if (this.model.isEffectTrackBankActive()) {
             // No Sends on FX tracks
             mode = Modes.PAN;
-        } else {
-            if (currentMode.ordinal() < Modes.SEND1.ordinal() || currentMode.ordinal() > Modes.SEND8.ordinal())
+        }
+        else {
+            if (currentMode.ordinal() < Modes.SEND1.ordinal() || currentMode.ordinal() > Modes.SEND8.ordinal()) {
                 mode = Modes.SEND1;
+            }
             else {
                 mode = Modes.get(currentMode, 1);
-                if (mode.ordinal() > Modes.SEND8.ordinal())
+                if (mode.ordinal() > Modes.SEND8.ordinal()) {
                     mode = Modes.PAN;
+                }
             }
 
             // Check if Send channel exists
             final ITrackBank tb = this.model.getTrackBank();
-            if (mode.ordinal() < Modes.SEND1.ordinal() || mode.ordinal() > Modes.SEND8.ordinal() || !tb.canEditSend(mode.ordinal() - Modes.SEND1.ordinal()))
+            if (mode.ordinal() < Modes.SEND1.ordinal() || mode.ordinal() > Modes.SEND8.ordinal() || !tb.canEditSend(mode.ordinal() - Modes.SEND1.ordinal())) {
                 mode = Modes.PAN;
+            }
         }
         modeManager.setActive(mode);
     }
+
 }

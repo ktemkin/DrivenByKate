@@ -5,8 +5,8 @@
 package com.ktemkin.controller.ableton.push.command.trigger;
 
 import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.PushConfiguration.TrackState;
 import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration.TrackState;
 import de.mossgrabers.framework.command.core.AbstractTriggerCommand;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.ICursorDevice;
@@ -22,14 +22,17 @@ import java.util.Optional;
  *
  * @author Jürgen Moßgraber
  */
-public class SoloCommand extends AbstractTriggerCommand<PushControlSurface, PushConfiguration> {
+public class SoloCommand extends AbstractTriggerCommand<PushControlSurface, PushConfiguration>
+{
+
     /**
      * Constructor.
      *
      * @param model   The model
      * @param surface The surface
      */
-    public SoloCommand(final IModel model, final PushControlSurface surface) {
+    public SoloCommand(final IModel model, final PushControlSurface surface)
+    {
         super(model, surface);
     }
 
@@ -38,27 +41,22 @@ public class SoloCommand extends AbstractTriggerCommand<PushControlSurface, Push
      * {@inheritDoc}
      */
     @Override
-    public void execute(final ButtonEvent event, final int velocity) {
+    public void execute(final ButtonEvent event, final int velocity)
+    {
         // Update for key combinations
         this.surface.getViewManager().getActive().updateNoteMapping();
 
         if (this.surface.isSelectPressed()) {
-            if (event == ButtonEvent.UP)
-                this.model.getProject().clearSolo();
+            if (event == ButtonEvent.UP) {this.model.getProject().clearSolo();}
             return;
         }
 
         final PushConfiguration config = this.surface.getConfiguration();
-        if (!config.isPush2()) {
-            config.setTrackState(TrackState.SOLO);
-            return;
-        }
 
         // Toggle solo lock mode
         if (this.surface.isShiftPressed()) {
             if (event == ButtonEvent.UP) {
-                if (config.isMuteSoloLocked() && config.isSoloState())
-                    config.setMuteSoloLocked(false);
+                if (config.isMuteSoloLocked() && config.isSoloState()) {config.setMuteSoloLocked(false);}
                 else {
                     config.setMuteSoloLocked(true);
                     config.setTrackState(TrackState.SOLO);
@@ -91,13 +89,12 @@ public class SoloCommand extends AbstractTriggerCommand<PushControlSurface, Push
 
         final Modes activeModeId = this.surface.getModeManager().getActiveID();
         if (Modes.isLayerMode(activeModeId)) {
-            final ICursorDevice cd = this.model.getCursorDevice();
-            final Optional<?> layer = cd.getLayerBank().getSelectedItem();
-            if (layer.isPresent())
-                ((ILayer) layer.get()).toggleSolo();
-        } else if (Modes.MASTER.equals(activeModeId))
-            this.model.getMasterTrack().toggleSolo();
-        else
-            this.model.getCursorTrack().toggleSolo();
+            final ICursorDevice cd    = this.model.getCursorDevice();
+            final Optional<?>   layer = cd.getLayerBank().getSelectedItem();
+            if (layer.isPresent()) {((ILayer) layer.get()).toggleSolo();}
+        }
+        else if (Modes.MASTER.equals(activeModeId)) {this.model.getMasterTrack().toggleSolo();}
+        else {this.model.getCursorTrack().toggleSolo();}
     }
+
 }

@@ -5,7 +5,7 @@
 package com.ktemkin.controller.ni.kontrol.mkii;
 
 import com.ktemkin.controller.ni.kontrol.mkii.controller.IKontrolProtocolDeviceDescriptor;
-import de.mossgrabers.framework.controller.DefaultControllerDefinition;
+import com.ktemkin.framework.controller.DefaultControllerDefinition;
 import de.mossgrabers.framework.utils.OperatingSystem;
 import de.mossgrabers.framework.utils.Pair;
 
@@ -17,7 +17,9 @@ import java.util.List;
  *
  * @author Jürgen Moßgraber
  */
-public class KontrolProtocolControllerDefinition extends DefaultControllerDefinition {
+public class KontrolProtocolControllerDefinition extends DefaultControllerDefinition
+{
+
     private static final String[] WINDOWS_STARTS =
             {
                     "",
@@ -34,7 +36,8 @@ public class KontrolProtocolControllerDefinition extends DefaultControllerDefini
      *
      * @param deviceDescriptor The NIHIA protocol version descriptor
      */
-    public KontrolProtocolControllerDefinition(final IKontrolProtocolDeviceDescriptor deviceDescriptor) {
+    public KontrolProtocolControllerDefinition(final IKontrolProtocolDeviceDescriptor deviceDescriptor)
+    {
         super(deviceDescriptor.getID(), deviceDescriptor.getName(), "Native Instruments", 2, 2);
 
         this.deviceDescriptor = deviceDescriptor;
@@ -45,12 +48,14 @@ public class KontrolProtocolControllerDefinition extends DefaultControllerDefini
      * {@inheritDoc}
      */
     @Override
-    public List<Pair<String[], String[]>> getMidiDiscoveryPairs(final OperatingSystem os) {
+    public List<Pair<String[], String[]>> getMidiDiscoveryPairs(final OperatingSystem os)
+    {
         final List<Pair<String[], String[]>> midiDiscoveryPairs = super.getMidiDiscoveryPairs(os);
         switch (os) {
             case MAC:
-                for (final String[] ports : this.deviceDescriptor.getMidiDiscoveryPairs(os))
+                for (final String[] ports : this.deviceDescriptor.getMidiDiscoveryPairs(os)) {
                     midiDiscoveryPairs.add(this.addDeviceDiscoveryPair(ports, ports));
+                }
                 break;
 
             case WINDOWS:
@@ -73,4 +78,5 @@ public class KontrolProtocolControllerDefinition extends DefaultControllerDefini
         }
         return midiDiscoveryPairs;
     }
+
 }

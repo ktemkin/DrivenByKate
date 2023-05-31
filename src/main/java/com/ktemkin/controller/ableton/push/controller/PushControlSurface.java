@@ -5,9 +5,10 @@
 package com.ktemkin.controller.ableton.push.controller;
 
 import com.ktemkin.controller.ableton.push.PushConfiguration;
-import de.mossgrabers.framework.controller.AbstractControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
+
 import de.mossgrabers.framework.controller.color.ColorManager;
-import de.mossgrabers.framework.controller.grid.PadGridImpl;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.midi.DeviceInquiry;
 import de.mossgrabers.framework.daw.midi.IMidiInput;
@@ -22,7 +23,8 @@ import java.util.List;
  *
  * @author Jürgen Moßgraber
  */
-public class PushControlSurface extends AbstractControlSurface<PushConfiguration> {
+public class PushControlSurface extends CommonUIControlSurface<PushConfiguration>
+{
     // @formatter:off
     /** The names for the dynamic curves. */
     public static final List<String>  PUSH_PAD_CURVES_NAME     = List.of (
@@ -468,7 +470,7 @@ public class PushControlSurface extends AbstractControlSurface<PushConfiguration
      */
     public PushControlSurface (final IHost host, final ColorManager colorManager, final PushConfiguration configuration, final IMidiOutput output, final IMidiInput input)
     {
-        super (host, configuration, colorManager, output, input, new PadGridImpl (colorManager, output), 200, 156);
+        super(host, colorManager, (CommonUIConfiguration)configuration, output, input, 200, 156);
 
         for (int i = 0; i < this.colorPalette.length; i++)
             this.colorPalette[i] = new PaletteEntry (PushColorManager.getPaletteColorRGB (i));
@@ -591,26 +593,6 @@ public class PushControlSurface extends AbstractControlSurface<PushConfiguration
         return data[data.length - 1] == 0xF7;
     }
 
-    /**
-     * Get the name of the selected pad threshold.
-     *
-     * @return The name of the selected pad threshold
-     */
-    public String getSelectedPadThreshold ()
-    {
-        return PUSH_PAD_THRESHOLDS_NAME.get (this.configuration.getPadThreshold ());
-    }
-
-    /**
-     * Get the name of the selected velocity curve.
-     *
-     * @return The name of the selected velocity curve
-     */
-    public String getSelectedVelocityCurve ()
-    {
-        return PUSH_PAD_CURVES_NAME.get (this.configuration.getVelocityCurve ());
-    }
-
     /** {@inheritDoc} */
     @Override
     protected void internalShutdown ()
@@ -642,35 +624,21 @@ public class PushControlSurface extends AbstractControlSurface<PushConfiguration
         if (this.ribbonMode == mode)
             return;
         this.ribbonMode = mode;
-        if (this.configuration.isPush2 ())
+
+        // See section 2.10.1 in Push 2 programmer manual for status codes
+        int status = 0;
+        switch (mode)
+        {case PUSH_RIBBON_PITCHBEND->status = 122;
+case PUSH_RIBBON_VOLUME->status = 1;
+case PUSH_RIBBON_PAN->status = 17;
+case PUSH_RIBBON_DISCRETE->status = 9;
+default->{
+}}
+        this.sendPush2SysEx (new int []
         {
-            // See section 2.10.1 in Push 2 programmer manual for status codes
-            int status = 0;
-            switch (mode)
-            {
-                case PUSH_RIBBON_PITCHBEND:
-                    status = 122;
-                    break;
-                case PUSH_RIBBON_VOLUME:
-                    status = 1;
-                    break;
-                case PUSH_RIBBON_PAN:
-                    status = 17;
-                    break;
-                case PUSH_RIBBON_DISCRETE:
-                    status = 9;
-                    break;
-                default:
-                    break;
-            }
-            this.sendPush2SysEx (new int []
-            {
-                23,
-                status
-            });
-        }
-        else
-            this.output.sendSysex ("F0 47 7F 15 63 00 01 0" + mode + " F7");
+            23,
+            status
+        });
     }
 
     /**
@@ -687,24 +655,13 @@ public class PushControlSurface extends AbstractControlSurface<PushConfiguration
     }
 
     /**
-     * Set the pad sensitivity of Push 1.
-     */
-    public void sendPadSensitivity ()
-    {
-        this.output.sendSysex ("F0 47 7F 15 5D 00 20 " + PUSH_PAD_THRESHOLDS_DATA[this.configuration.getPadThreshold ()] + " " + PUSH_PAD_CURVES_DATA[this.configuration.getVelocityCurve ()] + " F7");
-    }
-
-    /**
      * Sets the Push 1/2 pads aftertouch either to poly or channel pressure.
      *
      * @param isPolyPressure Set poly pressure if true otherwise channel pressure
      */
     public void sendPressureMode (final boolean isPolyPressure)
     {
-        if (this.configuration.isPush2 ())
-            this.output.sendSysex ("F0 00 21 1D 01 01 1E 0" + (isPolyPressure ? "1" : "0") + " F7");
-        else
-            this.output.sendSysex ("F0 47 7F 15 5C 00 01 0" + (isPolyPressure ? "0" : "1") + " F7");
+        this.output.sendSysex ("F0 00 21 1D 01 01 1E 0" + (isPolyPressure ? "1" : "0") + " F7");
     }
 
     /**
@@ -806,7 +763,7 @@ public class PushControlSurface extends AbstractControlSurface<PushConfiguration
         }
 
         // Color palette entry message?
-        if (this.configuration.isPush2 () && isPush2Data (byteData) && PaletteEntry.isValid (byteData))
+        if (isPush2Data (byteData) && PaletteEntry.isValid (byteData))
             this.handleColorPaletteMessage (byteData);
     }
 
@@ -817,30 +774,15 @@ public class PushControlSurface extends AbstractControlSurface<PushConfiguration
      */
     private void handleDeviceInquiryResponse (final DeviceInquiry deviceInquiry)
     {
-        if (this.configuration.isPush2 ())
-        {
-            final int [] unspecifiedData = deviceInquiry.getUnspecifiedData ();
-            if (unspecifiedData.length != 10)
-                return;
+        final int [] unspecifiedData = deviceInquiry.getUnspecifiedData ();
+        if (unspecifiedData.length != 10)
+            return;
 
-            this.majorVersion = unspecifiedData[0];
-            this.minorVersion = unspecifiedData[1];
-            this.buildNumber = unspecifiedData[2] + (unspecifiedData[3] << 7);
-            this.serialNumber = unspecifiedData[4] + (unspecifiedData[5] << 7) + (unspecifiedData[6] << 14) + (unspecifiedData[7] << 21) + (unspecifiedData[8] << 28);
-            this.boardRevision = unspecifiedData[9];
-        }
-        else
-        {
-            final int [] data = deviceInquiry.getData ();
-            if (data.length != 35)
-                return;
-
-            this.majorVersion = data[10] + data[9] * 10;
-            this.minorVersion = data[12] + data[11] * 10;
-            this.buildNumber = 0;
-            this.serialNumber = 0;
-            this.boardRevision = 0;
-        }
+        this.majorVersion = unspecifiedData[0];
+        this.minorVersion = unspecifiedData[1];
+        this.buildNumber = unspecifiedData[2] + (unspecifiedData[3] << 7);
+        this.serialNumber = unspecifiedData[4] + (unspecifiedData[5] << 7) + (unspecifiedData[6] << 14) + (unspecifiedData[7] << 21) + (unspecifiedData[8] << 28);
+        this.boardRevision = unspecifiedData[9];
     }
 
 

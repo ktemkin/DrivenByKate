@@ -19,13 +19,16 @@ import de.mossgrabers.framework.controller.IControllerSetup;
 /**
  * Definition class for the Push 2 controller extension.
  *
- * @author Jürgen Moßgraber
+ * @author Kate Temkin
  */
-public class Push2ControllerExtensionDefinition extends AbstractControllerExtensionDefinition<PushControlSurface, PushConfiguration> {
+public class Push2ControllerExtensionDefinition extends AbstractControllerExtensionDefinition<PushControlSurface, PushConfiguration>
+{
+
     /**
      * Constructor.
      */
-    public Push2ControllerExtensionDefinition() {
+    public Push2ControllerExtensionDefinition()
+    {
         super(new PushControllerDefinition(true));
     }
 
@@ -34,8 +37,9 @@ public class Push2ControllerExtensionDefinition extends AbstractControllerExtens
      * {@inheritDoc}
      */
     @Override
-    protected IControllerSetup<PushControlSurface, PushConfiguration> getControllerSetup(final ControllerHost host) {
-        return new PushControllerSetup(new HostImpl(host), new BitwigSetupFactory(host), new SettingsUIImpl(host, host.getPreferences()), new SettingsUIImpl(host, host.getDocumentState()), true);
+    protected IControllerSetup<PushControlSurface, PushConfiguration> getControllerSetup(final ControllerHost host)
+    {
+        return new PushControllerSetup(new HostImpl(host), new BitwigSetupFactory(host), new SettingsUIImpl(host, host.getPreferences()), new SettingsUIImpl(host, host.getDocumentState()));
     }
 
 
@@ -43,7 +47,9 @@ public class Push2ControllerExtensionDefinition extends AbstractControllerExtens
      * {@inheritDoc}
      */
     @Override
-    public boolean isUsingBetaAPI() {
+    public boolean isUsingBetaAPI()
+    {
         return true;
     }
+
 }

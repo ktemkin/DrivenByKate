@@ -6,7 +6,7 @@ package com.ktemkin.controller.ableton.push.command.trigger;
 
 import com.ktemkin.controller.ableton.push.PushConfiguration;
 import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
-import com.ktemkin.controller.ableton.push.mode.device.DeviceBrowserMode;
+import com.ktemkin.controller.common.modes.device.DeviceBrowserMode;
 import de.mossgrabers.framework.command.TempoCommand;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.featuregroup.ModeManager;

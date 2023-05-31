@@ -19,7 +19,9 @@ import de.mossgrabers.framework.parameterprovider.track.SelectedTrackParameterPr
  *
  * @author Jürgen Moßgraber
  */
-public class PushTrackParameterProvider extends SelectedTrackParameterProvider implements ISettingObserver {
+public class PushTrackParameterProvider extends SelectedTrackParameterProvider implements ISettingObserver
+{
+
     private final PushConfiguration configuration;
 
 
@@ -29,7 +31,8 @@ public class PushTrackParameterProvider extends SelectedTrackParameterProvider i
      * @param model         Uses the current channel bank from this model to get the parameters
      * @param configuration The configuration
      */
-    public PushTrackParameterProvider(final IModel model, final PushConfiguration configuration) {
+    public PushTrackParameterProvider(final IModel model, final PushConfiguration configuration)
+    {
         super(model);
 
         this.configuration = configuration;
@@ -40,9 +43,11 @@ public class PushTrackParameterProvider extends SelectedTrackParameterProvider i
      * {@inheritDoc}
      */
     @Override
-    protected IParameter getInternal(final int index, final IChannel selectedChannel) {
-        if (index < 2 || !this.configuration.isPush2())
+    protected IParameter getInternal(final int index, final IChannel selectedChannel)
+    {
+        if (index < 2) {
             return super.getInternal(index, selectedChannel);
+        }
 
         switch (index) {
             case 2:
@@ -59,8 +64,10 @@ public class PushTrackParameterProvider extends SelectedTrackParameterProvider i
      * {@inheritDoc}
      */
     @Override
-    public void hasChanged() {
+    public void hasChanged()
+    {
         // Sends are toggled...
         this.notifyParametersObservers();
     }
+
 }

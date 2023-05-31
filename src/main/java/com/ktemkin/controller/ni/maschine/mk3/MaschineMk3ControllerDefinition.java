@@ -4,7 +4,7 @@
 
 package com.ktemkin.controller.ni.maschine.mk3;
 
-import de.mossgrabers.framework.controller.DefaultControllerDefinition;
+import com.ktemkin.framework.controller.DefaultControllerDefinition;
 import de.mossgrabers.framework.utils.OperatingSystem;
 import de.mossgrabers.framework.utils.Pair;
 
@@ -18,14 +18,17 @@ import java.util.UUID;
  *
  * @author Jürgen Moßgraber
  */
-public class MaschineMk3ControllerDefinition extends DefaultControllerDefinition {
+public class MaschineMk3ControllerDefinition extends DefaultControllerDefinition
+{
+
     private static final UUID EXTENSION_ID = UUID.fromString("9055C36B-0A41-48AD-8675-4D3F133E53AC");
 
 
     /**
      * Constructor.
      */
-    public MaschineMk3ControllerDefinition() {
+    public MaschineMk3ControllerDefinition()
+    {
         super(EXTENSION_ID, "Maschine Mk3", "Native Instruments", 1, 1);
     }
 
@@ -34,7 +37,8 @@ public class MaschineMk3ControllerDefinition extends DefaultControllerDefinition
      * {@inheritDoc}
      */
     @Override
-    public List<Pair<String[], String[]>> getMidiDiscoveryPairs(final OperatingSystem os) {
+    public List<Pair<String[], String[]>> getMidiDiscoveryPairs(final OperatingSystem os)
+    {
         switch (os) {
             case MAC:
                 return Collections.singletonList(this.addDeviceDiscoveryPair("Maschine MK3 Virtual Input", "Maschine MK3 Virtual Output"));
@@ -44,4 +48,5 @@ public class MaschineMk3ControllerDefinition extends DefaultControllerDefinition
                 return this.createDeviceDiscoveryPairs("Maschine MK3 Ctrl MIDI");
         }
     }
+
 }

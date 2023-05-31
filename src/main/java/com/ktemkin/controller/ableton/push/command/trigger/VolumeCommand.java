@@ -19,14 +19,17 @@ import de.mossgrabers.framework.utils.ButtonEvent;
  *
  * @author Jürgen Moßgraber
  */
-public class VolumeCommand extends AbstractTriggerCommand<PushControlSurface, PushConfiguration> {
+public class VolumeCommand extends AbstractTriggerCommand<PushControlSurface, PushConfiguration>
+{
+
     /**
      * Constructor.
      *
      * @param model   The model
      * @param surface The surface
      */
-    public VolumeCommand(final IModel model, final PushControlSurface surface) {
+    public VolumeCommand(final IModel model, final PushControlSurface surface)
+    {
         super(model, surface);
     }
 
@@ -35,24 +38,24 @@ public class VolumeCommand extends AbstractTriggerCommand<PushControlSurface, Pu
      * {@inheritDoc}
      */
     @Override
-    public void execute(final ButtonEvent event, final int velocity) {
-        if (event != ButtonEvent.DOWN)
-            return;
-
-        final ModeManager modeManager = this.surface.getModeManager();
-        final Modes currentMode = modeManager.getActiveID();
-
-        // Layer mode selection for Push 1
-        final PushConfiguration config = this.surface.getConfiguration();
-        if (!config.isPush2() && this.surface.isSelectPressed() && Modes.isLayerMode(currentMode)) {
-            modeManager.setActive(Modes.DEVICE_LAYER_VOLUME);
+    public void execute(final ButtonEvent event, final int velocity)
+    {
+        if (event != ButtonEvent.DOWN) {
             return;
         }
 
+        final ModeManager modeManager = this.surface.getModeManager();
+        final Modes       currentMode = modeManager.getActiveID();
+
+        // Layer mode selection for Push 1
         if (Modes.VOLUME.equals(currentMode)) {
-            if (this.model.getHost().supports(Capability.HAS_CROSSFADER))
+            if (this.model.getHost().supports(Capability.HAS_CROSSFADER)) {
                 modeManager.setActive(Modes.CROSSFADER);
-        } else
+            }
+        }
+        else {
             modeManager.setActive(Modes.VOLUME);
+        }
     }
+
 }

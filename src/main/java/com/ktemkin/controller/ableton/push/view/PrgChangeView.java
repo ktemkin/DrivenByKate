@@ -20,11 +20,17 @@ import de.mossgrabers.framework.utils.ButtonEvent;
  *
  * @author Jürgen Moßgraber
  */
-public class PrgChangeView extends AbstractView<PushControlSurface, PushConfiguration> {
+public class PrgChangeView extends AbstractView<PushControlSurface, PushConfiguration>
+{
+
     private final int[] greens;
+
     private final int[] yellows;
+
     private int bankNumber = 0;
+
     private int programNumber = -1;
+
     private boolean isToggled = false;
 
 
@@ -34,15 +40,14 @@ public class PrgChangeView extends AbstractView<PushControlSurface, PushConfigur
      * @param surface The surface
      * @param model   The model
      */
-    public PrgChangeView(final PushControlSurface surface, final IModel model) {
+    public PrgChangeView(final PushControlSurface surface, final IModel model)
+    {
         super("PrgChnge", surface, model);
 
-        final boolean isPush2 = surface.getConfiguration().isPush2();
-
-        final int greenHi = isPush2 ? PushColorManager.PUSH2_COLOR2_GREEN_HI : PushColorManager.PUSH1_COLOR2_GREEN_HI;
-        final int green = isPush2 ? PushColorManager.PUSH2_COLOR2_GREEN : PushColorManager.PUSH1_COLOR2_GREEN;
-        final int greenLo = isPush2 ? PushColorManager.PUSH2_COLOR2_GREEN_LO : PushColorManager.PUSH1_COLOR2_GREEN_LO;
-        final int greenSpring = isPush2 ? PushColorManager.PUSH2_COLOR2_GREEN_SPRING : PushColorManager.PUSH1_COLOR2_GREEN_SPRING;
+        final int greenHi     = PushColorManager.PUSH2_COLOR2_GREEN_HI;
+        final int green       = PushColorManager.PUSH2_COLOR2_GREEN;
+        final int greenLo     = PushColorManager.PUSH2_COLOR2_GREEN_LO;
+        final int greenSpring = PushColorManager.PUSH2_COLOR2_GREEN_SPRING;
         this.greens = new int[]
                 {
                         greenHi,
@@ -55,10 +60,10 @@ public class PrgChangeView extends AbstractView<PushControlSurface, PushConfigur
                         greenSpring
                 };
 
-        final int yellowHi = isPush2 ? PushColorManager.PUSH2_COLOR2_YELLOW_HI : PushColorManager.PUSH1_COLOR2_YELLOW_HI;
-        final int yellow = isPush2 ? PushColorManager.PUSH2_COLOR2_YELLOW : PushColorManager.PUSH1_COLOR2_YELLOW;
-        final int yellowLo = isPush2 ? PushColorManager.PUSH2_COLOR2_YELLOW_LO : PushColorManager.PUSH1_COLOR2_YELLOW_LO;
-        final int yellowLime = isPush2 ? PushColorManager.PUSH2_COLOR2_YELLOW_LIME : PushColorManager.PUSH1_COLOR2_YELLOW_LIME;
+        final int yellowHi   = PushColorManager.PUSH2_COLOR2_YELLOW_HI;
+        final int yellow     = PushColorManager.PUSH2_COLOR2_YELLOW;
+        final int yellowLo   = PushColorManager.PUSH2_COLOR2_YELLOW_LO;
+        final int yellowLime = PushColorManager.PUSH2_COLOR2_YELLOW_LIME;
         this.yellows = new int[]
                 {
                         yellowHi,
@@ -77,20 +82,20 @@ public class PrgChangeView extends AbstractView<PushControlSurface, PushConfigur
      * {@inheritDoc}
      */
     @Override
-    public void onButton(final ButtonID buttonID, final ButtonEvent event, final int velocity) {
-        if (!ButtonID.isSceneButton(buttonID) || event != ButtonEvent.DOWN)
-            return;
+    public void onButton(final ButtonID buttonID, final ButtonEvent event, final int velocity)
+    {
+        if (!ButtonID.isSceneButton(buttonID) || event != ButtonEvent.DOWN) {return;}
 
         final int newBank = buttonID.ordinal() - ButtonID.SCENE1.ordinal();
-        if (newBank == this.bankNumber)
-            this.isToggled = !this.isToggled;
+        if (newBank == this.bankNumber) {this.isToggled = !this.isToggled;}
         else {
             this.bankNumber = newBank;
-            this.isToggled = false;
+            this.isToggled  = false;
             this.surface.sendMidiEvent(MidiConstants.CMD_CC, 32, this.bankNumber);
             // Forces the bank change
-            if (this.programNumber != -1)
+            if (this.programNumber != -1) {
                 this.surface.sendMidiEvent(MidiConstants.CMD_PROGRAM_CHANGE, this.programNumber, 0);
+            }
         }
     }
 
@@ -99,17 +104,17 @@ public class PrgChangeView extends AbstractView<PushControlSurface, PushConfigur
      * {@inheritDoc}
      */
     @Override
-    public int getButtonColor(final ButtonID buttonID) {
-        final boolean isPush2 = this.surface.getConfiguration().isPush2();
-        final int black = isPush2 ? PushColorManager.PUSH2_COLOR_BLACK : PushColorManager.PUSH1_COLOR_BLACK;
+    public int getButtonColor(final ButtonID buttonID)
+    {
+        final int black = PushColorManager.PUSH2_COLOR_BLACK;
 
         final int scene = buttonID.ordinal() - ButtonID.SCENE1.ordinal();
-        if (scene < 0 || scene >= 8 || this.bankNumber != scene)
-            return black;
+        if (scene < 0 || scene >= 8 || this.bankNumber != scene) {return black;}
 
-        if (this.isToggled)
-            return isPush2 ? PushColorManager.PUSH2_COLOR_SCENE_YELLOW : PushColorManager.PUSH1_COLOR_SCENE_YELLOW;
-        return isPush2 ? PushColorManager.PUSH2_COLOR_SCENE_GREEN : PushColorManager.PUSH1_COLOR_SCENE_GREEN;
+        if (this.isToggled) {
+            return PushColorManager.PUSH2_COLOR_SCENE_YELLOW;
+        }
+        return PushColorManager.PUSH2_COLOR_SCENE_GREEN;
     }
 
 
@@ -117,16 +122,14 @@ public class PrgChangeView extends AbstractView<PushControlSurface, PushConfigur
      * {@inheritDoc}
      */
     @Override
-    public void drawGrid() {
+    public void drawGrid()
+    {
         final int[] colors = this.isToggled ? this.yellows : this.greens;
-        final int selPad;
-        if (this.isToggled)
-            selPad = this.programNumber >= 64 ? this.programNumber - 64 : -1;
-        else
-            selPad = this.programNumber < 64 ? this.programNumber : -1;
+        final int   selPad;
+        if (this.isToggled) {selPad = this.programNumber >= 64 ? this.programNumber - 64 : -1;}
+        else {selPad = this.programNumber < 64 ? this.programNumber : -1;}
         final IPadGrid gridPad = this.surface.getPadGrid();
-        final boolean isPush2 = this.surface.getConfiguration().isPush2();
-        final int red = isPush2 ? PushColorManager.PUSH2_COLOR2_RED : PushColorManager.PUSH1_COLOR2_RED;
+        final int      red     = PushColorManager.PUSH2_COLOR2_RED;
         for (int i = 36; i < 100; i++) {
             final int pad = i - 36;
             final int row = pad / 8;
@@ -139,10 +142,11 @@ public class PrgChangeView extends AbstractView<PushControlSurface, PushConfigur
      * {@inheritDoc}
      */
     @Override
-    public void onGridNote(final int note, final int velocity) {
-        if (velocity == 0)
-            return;
+    public void onGridNote(final int note, final int velocity)
+    {
+        if (velocity == 0) {return;}
         this.programNumber = note - 36 + (this.isToggled ? 64 : 0);
         this.surface.sendMidiEvent(MidiConstants.CMD_PROGRAM_CHANGE, this.programNumber, 0);
     }
+
 }

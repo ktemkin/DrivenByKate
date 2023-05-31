@@ -4,7 +4,7 @@
 
 package com.ktemkin.controller.ni.maschine.mk3;
 
-import de.mossgrabers.framework.controller.DefaultControllerDefinition;
+import com.ktemkin.framework.controller.DefaultControllerDefinition;
 import de.mossgrabers.framework.utils.OperatingSystem;
 import de.mossgrabers.framework.utils.Pair;
 
@@ -18,14 +18,17 @@ import java.util.UUID;
  *
  * @author Jürgen Moßgraber
  */
-public class MaschineStudioControllerDefinition extends DefaultControllerDefinition {
+public class MaschineStudioControllerDefinition extends DefaultControllerDefinition
+{
+
     private static final UUID EXTENSION_ID = UUID.fromString("9E2D8B7C-D032-11EB-B8BC-0242AC130003");
 
 
     /**
      * Constructor.
      */
-    public MaschineStudioControllerDefinition() {
+    public MaschineStudioControllerDefinition()
+    {
         super(EXTENSION_ID, "Maschine Studio", "Native Instruments", 1, 1);
     }
 
@@ -34,7 +37,8 @@ public class MaschineStudioControllerDefinition extends DefaultControllerDefinit
      * {@inheritDoc}
      */
     @Override
-    public List<Pair<String[], String[]>> getMidiDiscoveryPairs(final OperatingSystem os) {
+    public List<Pair<String[], String[]>> getMidiDiscoveryPairs(final OperatingSystem os)
+    {
         switch (os) {
             case MAC:
                 return Collections.singletonList(this.addDeviceDiscoveryPair("Maschine Studio Virtual Input", "Maschine Studio Virtual Output"));
@@ -44,4 +48,5 @@ public class MaschineStudioControllerDefinition extends DefaultControllerDefinit
                 return this.createWindowsDeviceDiscoveryPairs("Maschine Studio In", "Maschine Studio Out 1");
         }
     }
+
 }
