@@ -9,7 +9,7 @@ import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.controller.display.Format;
-import de.mossgrabers.framework.controller.display.IGraphicDisplay;
+import com.ktemkin.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.controller.display.ITextDisplay;
 import de.mossgrabers.framework.controller.valuechanger.IValueChanger;
 import de.mossgrabers.framework.daw.IHost;

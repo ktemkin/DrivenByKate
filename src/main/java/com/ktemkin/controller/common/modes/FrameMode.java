@@ -6,8 +6,7 @@ package com.ktemkin.controller.common.modes;
 
 import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
 import de.mossgrabers.framework.controller.ButtonID;
-import de.mossgrabers.framework.controller.display.IGraphicDisplay;
-import de.mossgrabers.framework.controller.display.ITextDisplay;
+import com.ktemkin.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.daw.IApplication;
 import de.mossgrabers.framework.daw.IArranger;
 import de.mossgrabers.framework.daw.IMixer;

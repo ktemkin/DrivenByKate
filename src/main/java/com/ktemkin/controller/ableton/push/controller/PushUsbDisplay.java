@@ -22,7 +22,9 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Jürgen Moßgraber
  */
-public class PushUsbDisplay {
+public class PushUsbDisplay
+{
+
     /**
      * The size of the display content.
      */
@@ -49,14 +51,23 @@ public class PushUsbDisplay {
                     0,
                     0
             };
+
     private final IHost host;
+
     private final IMemoryBlock headerBlock;
+
     private final IMemoryBlock imageBlock;
+
     private final byte[] byteStore = new byte[DATA_SZ];
+
     private final Object sendLock = new Object();
+
     private final Object bufferUpdateLock = new Object();
+
     private final ScheduledExecutorService sendExecutor = Executors.newSingleThreadScheduledExecutor();
+
     private IUsbDevice usbDevice;
+
     private IUsbEndpoint usbEndpoint;
 
 
@@ -65,14 +76,15 @@ public class PushUsbDisplay {
      *
      * @param host The controller host
      */
-    public PushUsbDisplay(final IHost host) {
+    public PushUsbDisplay(final IHost host)
+    {
         this.host = host;
 
         try {
-            this.usbDevice = host.getUsbDevice(0);
+            this.usbDevice   = host.getUsbDevice(0);
             this.usbEndpoint = this.usbDevice.getEndpoint(0, 0);
         } catch (final UsbException ex) {
-            this.usbDevice = null;
+            this.usbDevice   = null;
             this.usbEndpoint = null;
             host.error("Could not open USB output.");
         }
@@ -82,7 +94,9 @@ public class PushUsbDisplay {
         this.imageBlock = host.createMemoryBlock(DATA_SZ);
     }
 
-    private static int sPixelFromRGB(final int red, final int green, final int blue) {
+
+    private static int sPixelFromRGB(final int red, final int green, final int blue)
+    {
         int pixel = (blue & 0xF8) >> 3;
         pixel <<= 6;
         pixel += (green & 0xFC) >> 2;
@@ -91,29 +105,31 @@ public class PushUsbDisplay {
         return pixel;
     }
 
+
     /**
      * Send the buffered image to the screen.
      *
      * @param image An image of size 960 x 160 pixel
      */
-    public void send(final IBitmap image) {
+    public void send(final IBitmap image)
+    {
         // Copy to the buffer
         synchronized (this.bufferUpdateLock) {
             image.encode((imageBuffer, width, height) -> {
 
-                int counter = 0;
+                int       counter = 0;
                 final int padding = (DATA_SZ - height * width * 2) / height;
 
                 for (int y = 0; y < height; y++) {
                     for (int x = 0; x < width; x++) {
-                        final int blue = imageBuffer.get();
+                        final int blue  = imageBuffer.get();
                         final int green = imageBuffer.get();
-                        final int red = imageBuffer.get();
+                        final int red   = imageBuffer.get();
                         imageBuffer.get(); // Drop unused Alpha
 
                         final int pixel = sPixelFromRGB(red, green, blue);
 
-                        this.byteStore[counter] = (byte) (pixel & 0x00FF);
+                        this.byteStore[counter]     = (byte) (pixel & 0x00FF);
                         this.byteStore[counter + 1] = (byte) ((pixel & 0xFF00) >> 8);
 
                         counter += 2;
@@ -130,42 +146,50 @@ public class PushUsbDisplay {
         }
 
         synchronized (this.sendLock) {
-            if (!this.sendExecutor.isShutdown())
+            if (!this.sendExecutor.isShutdown()) {
                 this.sendExecutor.submit(this::sendData);
+            }
         }
     }
 
-    private void sendData() {
+
+    private void sendData()
+    {
         // Copy the data from the buffer to the USB block
         synchronized (this.bufferUpdateLock) {
             final ByteBuffer buffer = this.imageBlock.createByteBuffer();
             buffer.clear();
-            for (int i = 0; i < DATA_SZ; i++)
+            for (int i = 0; i < DATA_SZ; i++) {
                 buffer.put(this.byteStore[i]);
+            }
         }
 
         // Send the data
         synchronized (this.sendLock) {
-            if (this.usbDevice == null || this.usbEndpoint == null)
+            if (this.usbDevice == null || this.usbEndpoint == null) {
                 return;
+            }
 
             this.usbEndpoint.send(this.headerBlock, TIMEOUT);
             this.usbEndpoint.send(this.imageBlock, TIMEOUT);
         }
     }
 
+
     /**
      * Stops all transfers to the device. Nulls the device.
      */
-    public void shutdown() {
+    public void shutdown()
+    {
         synchronized (this.sendLock) {
-            this.usbDevice = null;
+            this.usbDevice   = null;
             this.usbEndpoint = null;
 
             this.sendExecutor.shutdown();
             try {
-                if (!this.sendExecutor.awaitTermination(5, TimeUnit.SECONDS))
+                if (!this.sendExecutor.awaitTermination(5, TimeUnit.SECONDS)) {
                     this.host.error("USB Send executor did not end in 5 seconds.");
+                }
             } catch (final InterruptedException ex) {
                 this.host.error("USB Send executor interrupted.", ex);
                 Thread.currentThread().interrupt();
@@ -173,12 +197,15 @@ public class PushUsbDisplay {
         }
     }
 
+
     /**
      * Check if the send executor is shutdown.
      *
      * @return True if shutdown
      */
-    public boolean isShutdown() {
+    public boolean isShutdown()
+    {
         return this.sendExecutor.isShutdown();
     }
+
 }

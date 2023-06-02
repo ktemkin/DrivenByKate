@@ -10,7 +10,7 @@ import de.mossgrabers.framework.command.trigger.clip.TemporaryNewCommand;
 import de.mossgrabers.framework.configuration.AbstractConfiguration;
 import de.mossgrabers.framework.configuration.Configuration;
 import de.mossgrabers.framework.controller.ButtonID;
-import de.mossgrabers.framework.controller.display.IGraphicDisplay;
+import com.ktemkin.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.controller.display.ITextDisplay;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.IItem;

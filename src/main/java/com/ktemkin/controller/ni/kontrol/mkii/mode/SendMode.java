@@ -6,7 +6,7 @@ package com.ktemkin.controller.ni.kontrol.mkii.mode;
 
 import com.ktemkin.controller.ni.kontrol.mkii.KontrolProtocolConfiguration;
 import com.ktemkin.controller.ni.kontrol.mkii.controller.KontrolProtocolControlSurface;
-import de.mossgrabers.framework.controller.display.IGraphicDisplay;
+import com.ktemkin.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.controller.display.ITextDisplay;
 import de.mossgrabers.framework.controller.valuechanger.IValueChanger;
 import de.mossgrabers.framework.daw.IModel;

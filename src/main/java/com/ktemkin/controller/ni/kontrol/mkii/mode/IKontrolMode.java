@@ -5,7 +5,7 @@
 package com.ktemkin.controller.ni.kontrol.mkii.mode;
 
 import com.ktemkin.controller.ni.kontrol.mkii.controller.KontrolProtocolControlSurface;
-import de.mossgrabers.framework.controller.display.IGraphicDisplay;
+import com.ktemkin.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.controller.display.ITextDisplay;
 import de.mossgrabers.framework.daw.IModel;
 
@@ -31,7 +31,7 @@ public interface IKontrolMode {
      */
     default void delegatePerDisplayType() {
         if (this.getSurface().getGraphicsDisplay() != null) {
-            IGraphicDisplay display = this.getSurface().getGraphicsDisplay();
+            IGraphicDisplay display = (IGraphicDisplay) this.getSurface().getGraphicsDisplay();
             this.updateGraphicsDisplay(display);
             display.send();
         } else {

@@ -77,8 +77,7 @@ import java.util.Optional;
  *
  * @author Jürgen Moßgraber
  */
-public class PushControllerSetup extends AbstractControllerSetup<PushControlSurface, PushConfiguration>
-{
+public class PushControllerSetup extends AbstractControllerSetup<PushControlSurface, PushConfiguration> {
 
     /**
      * Constructor.
@@ -88,12 +87,11 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
      * @param globalSettings   The global settings
      * @param documentSettings The document (project) specific settings
      */
-    public PushControllerSetup(final IHost host, final ISetupFactory factory, final ISettingsUI globalSettings, final ISettingsUI documentSettings)
-    {
+    public PushControllerSetup(final IHost host, final ISetupFactory factory, final ISettingsUI globalSettings, final ISettingsUI documentSettings) {
         super(factory, host, globalSettings, documentSettings);
 
-        this.colorManager  = new PushColorManager();
-        this.valueChanger  = new TwosComplementValueChanger(1024, 10);
+        this.colorManager = new PushColorManager();
+        this.valueChanger = new TwosComplementValueChanger(1024, 10);
         this.configuration = new PushConfiguration(host, this.valueChanger, factory.getArpeggiatorModes());
     }
 
@@ -102,14 +100,15 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
      * {@inheritDoc}
      */
     @Override
-    public void flush()
-    {
+    public void flush() {
         super.flush();
 
         final PushControlSurface surface = this.getSurface();
 
         final PitchbendCommand pitchbendCommand = surface.getContinuous(ContinuousID.TOUCHSTRIP).getPitchbendCommand();
-        if (pitchbendCommand != null) {pitchbendCommand.updateValue();}
+        if (pitchbendCommand != null) {
+            pitchbendCommand.updateValue();
+        }
     }
 
 
@@ -117,12 +116,11 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
      * {@inheritDoc}
      */
     @Override
-    protected void createModel()
-    {
+    protected void createModel() {
         final ModelSetup ms = new ModelSetup();
         ms.enableDrum64Device();
-        ms.setNumFilterColumnEntries(48);
-        ms.setNumResults(48);
+        ms.setNumFilterColumnEntries(100000); // These are set to a ridiculously large number so we can get all devices at aonce.
+        ms.setNumResults(100000);
         ms.setNumSends(4);
         ms.setNumMarkers(8);
         ms.setHasFlatTrackList(false);
@@ -137,10 +135,13 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
             effectTrackBank.addSelectionObserver((index, isSelected) -> this.handleTrackChange(isSelected));
         }
         this.model.getMasterTrack().addSelectionObserver((index, isSelected) -> {
-            final PushControlSurface surface     = this.getSurface();
-            final ModeManager        modeManager = surface.getModeManager();
-            if (isSelected) {modeManager.setActive(Modes.MASTER);}
-            else if (modeManager.isActive(Modes.MASTER)) {modeManager.restore();}
+            final PushControlSurface surface = this.getSurface();
+            final ModeManager modeManager = surface.getModeManager();
+            if (isSelected) {
+                modeManager.setActive(Modes.MASTER);
+            } else if (modeManager.isActive(Modes.MASTER)) {
+                modeManager.restore();
+            }
         });
     }
 
@@ -149,10 +150,9 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
      * {@inheritDoc}
      */
     @Override
-    protected void createSurface()
-    {
+    protected void createSurface() {
         final IMidiAccess midiAccess = this.factory.createMidiAccess();
-        final IMidiOutput output     = midiAccess.createOutput();
+        final IMidiOutput output = midiAccess.createOutput();
         final IMidiInput input = midiAccess.createInput("Pads", "80????" /* Note off */,
                 "90????" /* Note on */, "B040??" /* Sustain pedal */);
         final PushControlSurface surface = new PushControlSurface(this.host, this.colorManager, this.configuration, output, input);
@@ -167,10 +167,9 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
      * {@inheritDoc}
      */
     @Override
-    protected void createModes()
-    {
-        final PushControlSurface surface     = this.getSurface();
-        final ModeManager        modeManager = surface.getModeManager();
+    protected void createModes() {
+        final PushControlSurface surface = this.getSurface();
+        final ModeManager modeManager = surface.getModeManager();
 
         modeManager.register(Modes.TRACK, new TrackMode(surface, this.model));
         modeManager.register(Modes.TRACK_DETAILS, new TrackDetailsMode(surface, this.model));
@@ -232,8 +231,7 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
      * {@inheritDoc}
      */
     @Override
-    protected void createObservers()
-    {
+    protected void createObservers() {
         ////////////////////////////////////////////////////////////////////
         // Configuration observers
 
@@ -261,9 +259,12 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
         this.configuration.addSettingObserver(AbstractConfiguration.NOTEREPEAT_ACTIVE, this::updateRibbonMode);
         this.configuration.addSettingObserver(PushConfiguration.DEBUG_MODE, () -> {
             final ModeManager modeManager = surface.getModeManager();
-            final Modes       debugMode   = this.configuration.getDebugMode();
-            if (modeManager.get(debugMode) != null) {modeManager.setActive(debugMode);}
-            else {this.host.error("Mode " + debugMode + " not registered.");}
+            final Modes debugMode = this.configuration.getDebugMode();
+            if (modeManager.get(debugMode) != null) {
+                modeManager.setActive(debugMode);
+            } else {
+                this.host.error("Mode " + debugMode + " not registered.");
+            }
         });
 
         this.configuration.addSettingObserver(PushConfiguration.DEBUG_WINDOW, this.getSurface().getGraphicsDisplay()::showDebugWindow);
@@ -271,16 +272,24 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
         this.configuration.addSettingObserver(PushConfiguration.DISPLAY_SCENES_CLIPS, () -> {
             if (Views.isSessionView(this.getSurface().getViewManager().getActiveID())) {
                 final ModeManager modeManager = this.getSurface().getModeManager();
-                if (modeManager.isActive(Modes.SESSION)) {modeManager.restore();}
-                else {modeManager.setActive(Modes.SESSION);}
+                if (modeManager.isActive(Modes.SESSION)) {
+                    modeManager.restore();
+                } else {
+                    modeManager.setActive(Modes.SESSION);
+                }
             }
         });
 
         this.configuration.addSettingObserver(PushConfiguration.SESSION_VIEW, () -> {
             final ViewManager viewManager = this.getSurface().getViewManager();
-            if (!Views.isSessionView(viewManager.getActiveID())) {return;}
-            if (this.configuration.isScenesClipViewSelected()) {viewManager.setActive(Views.SCENE_PLAY);}
-            else {viewManager.setActive(Views.SESSION);}
+            if (!Views.isSessionView(viewManager.getActiveID())) {
+                return;
+            }
+            if (this.configuration.isScenesClipViewSelected()) {
+                viewManager.setActive(Views.SCENE_PLAY);
+            } else {
+                viewManager.setActive(Views.SESSION);
+            }
         });
 
         this.configuration.registerDeactivatedItemsHandler(this.model);
@@ -312,10 +321,11 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
     /**
      * Redraw the Push 2 display.
      */
-    public void redraw()
-    {
+    public void redraw() {
         final IMode mode = this.getSurface().getModeManager().getActive();
-        if (mode != null) {mode.updateDisplay();}
+        if (mode != null) {
+            mode.updateDisplay();
+        }
     }
 
 
@@ -323,10 +333,9 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
      * {@inheritDoc}
      */
     @Override
-    protected void createViews()
-    {
-        final PushControlSurface surface     = this.getSurface();
-        final ViewManager        viewManager = surface.getViewManager();
+    protected void createViews() {
+        final PushControlSurface surface = this.getSurface();
+        final ViewManager viewManager = surface.getViewManager();
         viewManager.register(Views.PLAY, new PlayView(surface, this.model));
         viewManager.register(Views.CHORDS, new ChordsView(surface, this.model));
         viewManager.register(Views.PIANO, new PianoView(surface, this.model));
@@ -351,11 +360,10 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
      * {@inheritDoc}
      */
     @Override
-    protected void registerTriggerCommands()
-    {
-        final PushControlSurface surface     = this.getSurface();
-        final ViewManager        viewManager = surface.getViewManager();
-        final ModeManager        modeManager = surface.getModeManager();
+    protected void registerTriggerCommands() {
+        final PushControlSurface surface = this.getSurface();
+        final ViewManager viewManager = surface.getViewManager();
+        final ModeManager modeManager = surface.getModeManager();
 
         final ITransport t = this.model.getTransport();
 
@@ -363,7 +371,9 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
 
         this.addButton(ButtonID.RECORD, "Record", new RecordCommand<>(this.model, surface), PushControlSurface.PUSH_BUTTON_RECORD, () -> {
 
-            if (this.isRecordShifted(surface)) {return t.isLauncherOverdub() ? 3 : 2;}
+            if (this.isRecordShifted(surface)) {
+                return t.isLauncherOverdub() ? 3 : 2;
+            }
             return t.isRecording() ? 1 : 0;
 
         }, PushColorManager.PUSH_BUTTON_STATE_REC_ON, PushColorManager.PUSH_BUTTON_STATE_REC_HI, PushColorManager.PUSH_BUTTON_STATE_OVR_ON, PushColorManager.PUSH_BUTTON_STATE_OVR_HI);
@@ -377,10 +387,13 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
         this.addButton(ButtonID.UNDO, "Undo", new UndoCommand<>(this.model, surface), PushControlSurface.PUSH_BUTTON_UNDO, () -> {
 
             if (surface.isShiftPressed()) {
-                if (!this.model.getApplication().canRedo()) {return 0;}
-            }
-            else {
-                if (!this.model.getApplication().canUndo()) {return 0;}
+                if (!this.model.getApplication().canRedo()) {
+                    return 0;
+                }
+            } else {
+                if (!this.model.getApplication().canUndo()) {
+                    return 0;
+                }
             }
             return surface.getButton(ButtonID.UNDO).isPressed() ? 2 : 1;
 
@@ -388,7 +401,9 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
 
         this.addButton(ButtonID.AUTOMATION, "Automate", new PushAutomationCommand(this.model, surface), PushControlSurface.PUSH_BUTTON_AUTOMATION, () -> {
 
-            if (this.isRecordShifted(surface)) {return t.isWritingClipLauncherAutomation() ? 3 : 2;}
+            if (this.isRecordShifted(surface)) {
+                return t.isWritingClipLauncherAutomation() ? 3 : 2;
+            }
             return t.isWritingArrangerAutomation() ? 1 : 0;
 
         }, PushColorManager.PUSH_BUTTON_STATE_REC_ON, PushColorManager.PUSH_BUTTON_STATE_REC_HI, PushColorManager.PUSH_BUTTON_STATE_OVR_ON, PushColorManager.PUSH_BUTTON_STATE_OVR_HI);
@@ -407,24 +422,28 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
             this.addButton(sceneButtonID, "Scene " + (i + 1), new ViewButtonCommand<>(sceneButtonID, surface), PushControlSurface.PUSH_BUTTON_SCENE1 + 7 - i, () -> this.getButtonColorFromActiveView(sceneButtonID));
         }
 
-        this.addButton(ButtonID.SHIFT, "Shift", new ShiftCommand(this.model, surface), PushControlSurface.PUSH_BUTTON_SHIFT);
+        this.addButton(ButtonID.SHIFT, "Shift", new ShiftCommand(this.model, surface), PushControlSurface.PUSH_BUTTON_SHIFT, () -> this.getModeColor(ButtonID.SELECT));
         this.addButton(ButtonID.SELECT, "Select", new SelectCommand(this.model, surface), PushControlSurface.PUSH_BUTTON_SELECT);
         this.addButton(ButtonID.TAP_TEMPO, "Tap Tempo", new TapTempoCommand<>(this.model, surface), PushControlSurface.PUSH_BUTTON_TAP);
         this.addButton(ButtonID.METRONOME, "Metronome", new PushMetronomeCommand(this.model, surface), PushControlSurface.PUSH_BUTTON_METRONOME, t::isMetronomeOn);
         this.addButton(ButtonID.MASTERTRACK, "Master track", new MastertrackCommand(this.model, surface), PushControlSurface.PUSH_BUTTON_MASTER, () -> Modes.isMasterMode(modeManager.getActiveID()));
         this.addButton(ButtonID.PAGE_LEFT, "Page Left", new PageLeftCommand(this.model, surface), PushControlSurface.PUSH_BUTTON_DEVICE_LEFT, () -> {
 
-            if (viewManager.isActive(Views.SESSION)) {return this.model.getCurrentTrackBank().canScrollPageBackwards();}
-            final IView     activeView = viewManager.getActive();
-            final INoteClip clip       = activeView instanceof final AbstractSequencerView<?, ?> sequencerView && !(activeView instanceof ClipLengthView) ? sequencerView.getClip() : null;
+            if (viewManager.isActive(Views.SESSION)) {
+                return this.model.getCurrentTrackBank().canScrollPageBackwards();
+            }
+            final IView activeView = viewManager.getActive();
+            final INoteClip clip = activeView instanceof final AbstractSequencerView<?, ?> sequencerView && !(activeView instanceof ClipLengthView) ? sequencerView.getClip() : null;
             return clip != null && clip.doesExist() && clip.canScrollStepsBackwards();
 
         }, ColorManager.BUTTON_STATE_OFF, ColorManager.BUTTON_STATE_ON);
         this.addButton(ButtonID.PAGE_RIGHT, "Page Right", new PageRightCommand(this.model, surface), PushControlSurface.PUSH_BUTTON_DEVICE_RIGHT, () -> {
 
-            if (viewManager.isActive(Views.SESSION)) {return this.model.getCurrentTrackBank().canScrollPageForwards();}
-            final IView     activeView = viewManager.getActive();
-            final INoteClip clip       = activeView instanceof final AbstractSequencerView<?, ?> sequencerView && !(activeView instanceof ClipLengthView) ? sequencerView.getClip() : null;
+            if (viewManager.isActive(Views.SESSION)) {
+                return this.model.getCurrentTrackBank().canScrollPageForwards();
+            }
+            final IView activeView = viewManager.getActive();
+            final INoteClip clip = activeView instanceof final AbstractSequencerView<?, ?> sequencerView && !(activeView instanceof ClipLengthView) ? sequencerView.getClip() : null;
             return clip != null && clip.doesExist() && clip.canScrollStepsForwards();
 
         }, ColorManager.BUTTON_STATE_OFF, ColorManager.BUTTON_STATE_ON);
@@ -458,7 +477,9 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
         this.addButton(ButtonID.LAYOUT, "Layout", new LayoutCommand(this.model, surface), PushControlSurface.PUSH_BUTTON_LAYOUT);
         this.addButton(ButtonID.SETUP, "Setup", new SetupCommand(true, this.model, surface), PushControlSurface.PUSH_BUTTON_SETUP, () -> modeManager.isActive(Modes.SETUP));
         this.addButton(ButtonID.CONVERT, "Convert", new ConvertCommand<>(this.model, surface), PushControlSurface.PUSH_BUTTON_CONVERT, () -> {
-            if (!this.model.canConvertClip()) {return 0;}
+            if (!this.model.canConvertClip()) {
+                return 0;
+            }
             return surface.getButton(ButtonID.CONVERT).isPressed() ? 2 : 1;
         }, ColorManager.BUTTON_STATE_OFF, ColorManager.BUTTON_STATE_ON, ColorManager.BUTTON_STATE_HI);
         this.addButton(ButtonID.USER, "User", new ModeSelectCommand<>(this.model, surface, Modes.USER), PushControlSurface.PUSH_BUTTON_USER_MODE, () -> modeManager.isActive(Modes.USER));
@@ -474,10 +495,9 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
      * {@inheritDoc}
      */
     @Override
-    protected void registerContinuousCommands()
-    {
+    protected void registerContinuousCommands() {
         final PushControlSurface surface = this.getSurface();
-        final IMidiInput         input   = surface.getMidiInput();
+        final IMidiInput input = surface.getMidiInput();
 
         for (int i = 0; i < 8; i++) {
             final IHwRelativeKnob knob = this.addRelativeKnob(ContinuousID.get(ContinuousID.KNOB1, i), "Knob " + i, new KnobRowModeCommand<>(i, this.model, surface), PushControlSurface.PUSH_KNOB1 + i);
@@ -490,11 +510,11 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
         new MasterVolumeMode<>(surface, this.model, ContinuousID.MASTER_KNOB).onActivate();
 
         final RasteredKnobCommand tempoCommand = new RasteredKnobCommand(this.model, surface);
-        final IHwRelativeKnob     knobTempo    = this.addRelativeKnob(ContinuousID.TEMPO, "Tempo", tempoCommand, PushControlSurface.PUSH_SMALL_KNOB1);
+        final IHwRelativeKnob knobTempo = this.addRelativeKnob(ContinuousID.TEMPO, "Tempo", tempoCommand, PushControlSurface.PUSH_SMALL_KNOB1);
         knobTempo.bindTouch(tempoCommand, input, BindType.NOTE, 0, PushControlSurface.PUSH_SMALL_KNOB1_TOUCH);
 
         final PlayPositionKnobCommand playPositionCommand = new PlayPositionKnobCommand(this.model, surface);
-        final IHwRelativeKnob         knobPlayPosition    = this.addRelativeKnob(ContinuousID.PLAY_POSITION, "Play Position", playPositionCommand, PushControlSurface.PUSH_SMALL_KNOB2);
+        final IHwRelativeKnob knobPlayPosition = this.addRelativeKnob(ContinuousID.PLAY_POSITION, "Play Position", playPositionCommand, PushControlSurface.PUSH_SMALL_KNOB2);
         knobPlayPosition.bindTouch(playPositionCommand, input, BindType.NOTE, 0, PushControlSurface.PUSH_SMALL_KNOB2_TOUCH);
 
         final ViewManager viewManager = surface.getViewManager();
@@ -520,8 +540,7 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
      * {@inheritDoc}
      */
     @Override
-    protected void layoutControls()
-    {
+    protected void layoutControls() {
         final PushControlSurface surface = this.getSurface();
 
         surface.getButton(ButtonID.PAD1).setBounds(33.25, 141.75, 12.75, 10.0);
@@ -680,16 +699,20 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
      * {@inheritDoc}
      */
     @Override
-    public void startup()
-    {
+    public void startup() {
         final PushControlSurface surface = this.getSurface();
 
         final ViewManager viewManager = surface.getViewManager();
-        if (this.configuration.shouldStartWithSessionView()) {viewManager.setActive(Views.SESSION);}
-        else {this.recallLastView();}
+        if (this.configuration.shouldStartWithSessionView()) {
+            viewManager.setActive(Views.SESSION);
+        } else {
+            this.recallLastView();
+        }
         // This can happen if there is no track in the project
         // It is required to have a view otherwise the mode is not drawn
-        if (viewManager.getActive() == null) {viewManager.setActive(Views.PLAY);}
+        if (viewManager.getActive() == null) {
+            viewManager.setActive(Views.PLAY);
+        }
 
         surface.sendPressureMode(true);
         surface.getMidiOutput().sendSysex(DeviceInquiry.createQuery());
@@ -701,22 +724,21 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
     /**
      * Called when a new view is selected.
      */
-    private void onViewChange()
-    {
+    private void onViewChange() {
         final PushControlSurface surface = this.getSurface();
 
         // Update ribbon mode
         if (surface.getViewManager().isActive(Views.SESSION)) {
             surface.setRibbonMode(PushControlSurface.PUSH_RIBBON_PAN);
+        } else {
+            this.updateRibbonMode();
         }
-        else {this.updateRibbonMode();}
 
         this.getSurface().getDisplay().cancelNotification();
     }
 
 
-    private void updateRibbonMode()
-    {
+    private void updateRibbonMode() {
         final PushControlSurface surface = this.getSurface();
         surface.setRibbonValue(0);
 
@@ -729,17 +751,17 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
         final int ribbonMode = this.configuration.getRibbonMode();
         if (ribbonMode == PushConfiguration.RIBBON_MODE_CC || ribbonMode == PushConfiguration.RIBBON_MODE_FADER || ribbonMode == PushConfiguration.RIBBON_MODE_LAST_TOUCHED) {
             surface.setRibbonMode(PushControlSurface.PUSH_RIBBON_VOLUME);
+        } else {
+            surface.setRibbonMode(PushControlSurface.PUSH_RIBBON_PITCHBEND);
         }
-        else {surface.setRibbonMode(PushControlSurface.PUSH_RIBBON_PITCHBEND);}
     }
 
 
-    private boolean getMuteState()
-    {
-        final PushControlSurface surface     = this.getSurface();
-        final ModeManager        modeManager = surface.getModeManager();
+    private boolean getMuteState() {
+        final PushControlSurface surface = this.getSurface();
+        final ModeManager modeManager = surface.getModeManager();
         if (modeManager.isActive(Modes.DEVICE_LAYER)) {
-            final ICursorDevice    cd    = this.model.getCursorDevice();
+            final ICursorDevice cd = this.model.getCursorDevice();
             final Optional<ILayer> layer = cd.getLayerBank().getSelectedItem();
             return layer.isPresent() && layer.get().isMute();
         }
@@ -748,12 +770,11 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
     }
 
 
-    private boolean getSoloState()
-    {
-        final PushControlSurface surface     = this.getSurface();
-        final ModeManager        modeManager = surface.getModeManager();
+    private boolean getSoloState() {
+        final PushControlSurface surface = this.getSurface();
+        final ModeManager modeManager = surface.getModeManager();
         if (modeManager.isActive(Modes.DEVICE_LAYER)) {
-            final ICursorDevice    cd    = this.model.getCursorDevice();
+            final ICursorDevice cd = this.model.getCursorDevice();
             final Optional<ILayer> layer = cd.getLayerBank().getSelectedItem();
             return layer.isPresent() && layer.get().isSolo();
         }

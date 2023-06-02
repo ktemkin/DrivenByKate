@@ -5,7 +5,7 @@
 package com.ktemkin.controller.ableton.push.controller;
 
 import com.ktemkin.controller.ableton.push.PushConfiguration;
-import de.mossgrabers.framework.controller.display.AbstractGraphicDisplay;
+import com.ktemkin.framework.controller.display.AbstractGraphicDisplay;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.graphics.DefaultGraphicsDimensions;
 import de.mossgrabers.framework.graphics.IBitmap;

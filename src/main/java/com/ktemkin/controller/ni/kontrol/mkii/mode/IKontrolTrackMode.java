@@ -6,7 +6,7 @@ package com.ktemkin.controller.ni.kontrol.mkii.mode;
 
 import com.ktemkin.controller.ni.kontrol.mkii.KontrolProtocolConfiguration;
 import de.mossgrabers.framework.controller.ButtonID;
-import de.mossgrabers.framework.controller.display.IGraphicDisplay;
+import com.ktemkin.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.controller.valuechanger.IValueChanger;
 import de.mossgrabers.framework.daw.constants.Capability;
 import de.mossgrabers.framework.daw.data.ICursorTrack;

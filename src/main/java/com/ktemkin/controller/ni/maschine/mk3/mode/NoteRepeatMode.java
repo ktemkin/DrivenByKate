@@ -7,7 +7,7 @@ package com.ktemkin.controller.ni.maschine.mk3.mode;
 import com.ktemkin.controller.ni.maschine.mk3.MaschineConfiguration;
 import com.ktemkin.controller.ni.maschine.mk3.controller.MaschineControlSurface;
 import de.mossgrabers.framework.controller.ButtonID;
-import de.mossgrabers.framework.controller.display.IGraphicDisplay;
+import com.ktemkin.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.controller.display.ITextDisplay;
 import de.mossgrabers.framework.controller.valuechanger.IValueChanger;
 import de.mossgrabers.framework.daw.IHost;

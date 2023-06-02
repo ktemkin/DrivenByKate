@@ -5,13 +5,13 @@
 package com.ktemkin.bitwig.controller.ableton.push;
 
 import com.bitwig.extension.controller.api.ControllerHost;
+import com.ktemkin.bitwig.framework.daw.HostImpl;
 import com.ktemkin.controller.ableton.push.PushConfiguration;
 import com.ktemkin.controller.ableton.push.PushControllerDefinition;
 import com.ktemkin.controller.ableton.push.PushControllerSetup;
 import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
 import de.mossgrabers.bitwig.framework.BitwigSetupFactory;
 import de.mossgrabers.bitwig.framework.configuration.SettingsUIImpl;
-import de.mossgrabers.bitwig.framework.daw.HostImpl;
 import de.mossgrabers.bitwig.framework.extension.AbstractControllerExtensionDefinition;
 import de.mossgrabers.framework.controller.IControllerSetup;
 
@@ -21,14 +21,12 @@ import de.mossgrabers.framework.controller.IControllerSetup;
  *
  * @author Kate Temkin
  */
-public class Push2ControllerExtensionDefinition extends AbstractControllerExtensionDefinition<PushControlSurface, PushConfiguration>
-{
+public class Push2ControllerExtensionDefinition extends AbstractControllerExtensionDefinition<PushControlSurface, PushConfiguration> {
 
     /**
      * Constructor.
      */
-    public Push2ControllerExtensionDefinition()
-    {
+    public Push2ControllerExtensionDefinition() {
         super(new PushControllerDefinition(true));
     }
 
@@ -37,8 +35,7 @@ public class Push2ControllerExtensionDefinition extends AbstractControllerExtens
      * {@inheritDoc}
      */
     @Override
-    protected IControllerSetup<PushControlSurface, PushConfiguration> getControllerSetup(final ControllerHost host)
-    {
+    protected IControllerSetup<PushControlSurface, PushConfiguration> getControllerSetup(final ControllerHost host) {
         return new PushControllerSetup(new HostImpl(host), new BitwigSetupFactory(host), new SettingsUIImpl(host, host.getPreferences()), new SettingsUIImpl(host, host.getDocumentState()));
     }
 
@@ -47,8 +44,7 @@ public class Push2ControllerExtensionDefinition extends AbstractControllerExtens
      * {@inheritDoc}
      */
     @Override
-    public boolean isUsingBetaAPI()
-    {
+    public boolean isUsingBetaAPI() {
         return true;
     }
 

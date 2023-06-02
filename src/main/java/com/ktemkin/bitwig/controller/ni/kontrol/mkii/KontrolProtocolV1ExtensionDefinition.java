@@ -13,7 +13,7 @@ import com.ktemkin.controller.ni.kontrol.mkii.controller.KontrolProtocolControlS
 import com.ktemkin.controller.ni.kontrol.mkii.controller.KontrolProtocolDeviceDescriptorV1;
 import de.mossgrabers.bitwig.framework.BitwigSetupFactory;
 import de.mossgrabers.bitwig.framework.configuration.SettingsUIImpl;
-import de.mossgrabers.bitwig.framework.daw.HostImpl;
+import com.ktemkin.bitwig.framework.daw.HostImpl;
 import de.mossgrabers.bitwig.framework.extension.AbstractControllerExtensionDefinition;
 import de.mossgrabers.framework.controller.IControllerSetup;
 

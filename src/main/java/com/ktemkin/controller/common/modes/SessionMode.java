@@ -8,7 +8,7 @@ import com.ktemkin.controller.ableton.push.controller.PushColorManager;
 import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
 import com.ktemkin.controller.common.modes.track.AbstractTrackMode;
 import de.mossgrabers.framework.controller.ButtonID;
-import de.mossgrabers.framework.controller.display.IGraphicDisplay;
+import com.ktemkin.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.IScene;
 import de.mossgrabers.framework.daw.data.ISlot;

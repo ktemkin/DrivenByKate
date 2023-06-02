@@ -6,7 +6,7 @@ package com.ktemkin.controller.common.modes.track;
 
 import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
 import de.mossgrabers.framework.controller.display.AbstractGraphicDisplay;
-import de.mossgrabers.framework.controller.display.IGraphicDisplay;
+import com.ktemkin.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.mode.Modes;
 import de.mossgrabers.framework.parameterprovider.track.CrossfadeParameterProvider;

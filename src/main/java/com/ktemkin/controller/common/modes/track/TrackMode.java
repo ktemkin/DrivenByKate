@@ -8,7 +8,7 @@ import com.ktemkin.controller.ableton.push.PushConfiguration;
 import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
 import com.ktemkin.controller.ableton.push.parameterprovider.PushTrackParameterProvider;
 import de.mossgrabers.framework.controller.color.ColorEx;
-import de.mossgrabers.framework.controller.display.IGraphicDisplay;
+import com.ktemkin.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.controller.valuechanger.IValueChanger;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.ICursorTrack;

@@ -8,7 +8,7 @@ import com.ktemkin.controller.ableton.push.controller.Push1Display;
 import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.controller.display.Format;
-import de.mossgrabers.framework.controller.display.IGraphicDisplay;
+import com.ktemkin.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.controller.display.ITextDisplay;
 import de.mossgrabers.framework.daw.GrooveParameterID;
 import de.mossgrabers.framework.daw.IGroove;

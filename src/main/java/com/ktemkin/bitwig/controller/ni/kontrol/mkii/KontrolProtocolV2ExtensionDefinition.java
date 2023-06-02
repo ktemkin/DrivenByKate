@@ -5,6 +5,7 @@
 package com.ktemkin.bitwig.controller.ni.kontrol.mkii;
 
 import com.bitwig.extension.controller.api.ControllerHost;
+import com.ktemkin.bitwig.framework.daw.HostImpl;
 import com.ktemkin.controller.ni.kontrol.mkii.KontrolProtocolConfiguration;
 import com.ktemkin.controller.ni.kontrol.mkii.KontrolProtocolControllerDefinition;
 import com.ktemkin.controller.ni.kontrol.mkii.KontrolProtocolControllerSetup;
@@ -13,7 +14,6 @@ import com.ktemkin.controller.ni.kontrol.mkii.controller.KontrolProtocolControlS
 import com.ktemkin.controller.ni.kontrol.mkii.controller.KontrolProtocolDeviceDescriptorV2;
 import de.mossgrabers.bitwig.framework.BitwigSetupFactory;
 import de.mossgrabers.bitwig.framework.configuration.SettingsUIImpl;
-import de.mossgrabers.bitwig.framework.daw.HostImpl;
 import de.mossgrabers.bitwig.framework.extension.AbstractControllerExtensionDefinition;
 import de.mossgrabers.framework.controller.IControllerSetup;
 

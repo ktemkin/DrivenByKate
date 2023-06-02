@@ -7,7 +7,7 @@ package com.ktemkin.controller.ni.maschine.mk3.mode;
 import com.ktemkin.controller.ni.maschine.mk3.MaschineConfiguration;
 import com.ktemkin.controller.ni.maschine.mk3.controller.MaschineControlSurface;
 import de.mossgrabers.framework.controller.display.AbstractGraphicDisplay;
-import de.mossgrabers.framework.controller.display.IGraphicDisplay;
+import com.ktemkin.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.controller.display.ITextDisplay;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.ITrack;

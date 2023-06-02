@@ -7,7 +7,7 @@ package com.ktemkin.controller.common.modes;
 
 import com.ktemkin.controller.ableton.push.PushConfiguration;
 import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
-import de.mossgrabers.framework.controller.display.IGraphicDisplay;
+import com.ktemkin.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.ITransport;
 import de.mossgrabers.framework.daw.data.IItem;
@@ -25,8 +25,7 @@ import de.mossgrabers.framework.utils.ButtonEvent;
  * @author Kate Temkin
  * @author Jürgen Moßgraber
  */
-public abstract class BaseMode<B extends IItem> extends AbstractParameterMode<PushControlSurface, PushConfiguration, B>
-{
+public abstract class BaseMode<B extends IItem> extends AbstractParameterMode<PushControlSurface, PushConfiguration, B> {
 
     protected static final int SCROLL_RATE = 8;
 
@@ -40,8 +39,7 @@ public abstract class BaseMode<B extends IItem> extends AbstractParameterMode<Pu
      * @param surface The control surface
      * @param model   The model
      */
-    protected BaseMode(final String name, final PushControlSurface surface, final IModel model)
-    {
+    protected BaseMode(final String name, final PushControlSurface surface, final IModel model) {
         this(name, surface, model, null);
     }
 
@@ -54,8 +52,7 @@ public abstract class BaseMode<B extends IItem> extends AbstractParameterMode<Pu
      * @param model   The model
      * @param bank    The parameter bank to control with this mode, might be null
      */
-    protected BaseMode(final String name, final PushControlSurface surface, final IModel model, final IBank<B> bank)
-    {
+    protected BaseMode(final String name, final PushControlSurface surface, final IModel model, final IBank<B> bank) {
         super(name, surface, model, true, bank, DEFAULT_KNOB_IDS);
     }
 
@@ -64,9 +61,8 @@ public abstract class BaseMode<B extends IItem> extends AbstractParameterMode<Pu
      * {@inheritDoc}
      */
     @Override
-    public void updateDisplay()
-    {
-        final IGraphicDisplay display = this.surface.getGraphicsDisplay();
+    public void updateDisplay() {
+        final IGraphicDisplay display = (IGraphicDisplay) this.surface.getGraphicsDisplay();
         this.updateGraphicsDisplay(display);
         display.send();
     }
@@ -84,10 +80,12 @@ public abstract class BaseMode<B extends IItem> extends AbstractParameterMode<Pu
      * {@inheritDoc}
      */
     @Override
-    public void onButton(final int row, final int index, final ButtonEvent event)
-    {
-        if (row == 0) {this.onFirstRow(index, event);}
-        else {this.onSecondRow(index, event);}
+    public void onButton(final int row, final int index, final ButtonEvent event) {
+        if (row == 0) {
+            this.onFirstRow(index, event);
+        } else {
+            this.onSecondRow(index, event);
+        }
     }
 
 
@@ -97,9 +95,10 @@ public abstract class BaseMode<B extends IItem> extends AbstractParameterMode<Pu
      * @param index The index of the button
      * @param event The button event
      */
-    public void onFirstRow(final int index, final ButtonEvent event)
-    {
-        if (event == ButtonEvent.UP) {this.model.getCurrentTrackBank().getItem(index).select();}
+    public void onFirstRow(final int index, final ButtonEvent event) {
+        if (event == ButtonEvent.UP) {
+            this.model.getCurrentTrackBank().getItem(index).select();
+        }
     }
 
 
@@ -109,8 +108,7 @@ public abstract class BaseMode<B extends IItem> extends AbstractParameterMode<Pu
      * @param index The index of the button
      * @param event The button event
      */
-    public void onSecondRow(final int index, final ButtonEvent event)
-    {
+    public void onSecondRow(final int index, final ButtonEvent event) {
         // Intentionally empty
     }
 
@@ -120,12 +118,17 @@ public abstract class BaseMode<B extends IItem> extends AbstractParameterMode<Pu
      *
      * @param isTouched The touch state
      */
-    protected void checkStopAutomationOnKnobRelease(final boolean isTouched)
-    {
-        if (!this.surface.getConfiguration().isStopAutomationOnKnobRelease() || isTouched) {return;}
+    protected void checkStopAutomationOnKnobRelease(final boolean isTouched) {
+        if (!this.surface.getConfiguration().isStopAutomationOnKnobRelease() || isTouched) {
+            return;
+        }
         final ITransport transport = this.model.getTransport();
-        if (transport.isWritingArrangerAutomation()) {transport.toggleWriteArrangerAutomation();}
-        if (transport.isWritingClipLauncherAutomation()) {transport.toggleWriteClipLauncherAutomation();}
+        if (transport.isWritingArrangerAutomation()) {
+            transport.toggleWriteArrangerAutomation();
+        }
+        if (transport.isWritingClipLauncherAutomation()) {
+            transport.toggleWriteClipLauncherAutomation();
+        }
     }
 
 
@@ -134,10 +137,11 @@ public abstract class BaseMode<B extends IItem> extends AbstractParameterMode<Pu
      *
      * @return True if the knob movement should be executed otherwise false
      */
-    protected boolean increaseKnobMovement()
-    {
+    protected boolean increaseKnobMovement() {
         this.movementCounter++;
-        if (this.movementCounter < SCROLL_RATE) {return false;}
+        if (this.movementCounter < SCROLL_RATE) {
+            return false;
+        }
         this.movementCounter = 0;
         return true;
     }
