@@ -146,7 +146,7 @@ public class DrumView extends AbstractDrumView<MaschineControlSurface, MaschineC
         for (int i = 36; i < 50; i++)
             padGrid.light(i, MaschineColorManager.COLOR_BLACK);
         for (int i = 50; i < 52; i++)
-            padGrid.light(i, isKeyboardEnabled ? MaschineColorManager.COLOR_SKIN : MaschineColorManager.COLOR_BLACK);
+            padGrid.light(i, isKeyboardEnabled ? MaschineColorManager.COLOR_PEACH : MaschineColorManager.COLOR_BLACK);
     }
 
 

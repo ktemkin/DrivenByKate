@@ -5,6 +5,7 @@
 
 package com.ktemkin.controller.ni.maschine.mk3;
 
+import com.ktemkin.controller.ni.core.AbstractNIHostInterop;
 import com.ktemkin.controller.ni.core.NIGraphicDisplay;
 import com.ktemkin.controller.ni.maschine.Maschine;
 import com.ktemkin.controller.ni.maschine.core.MaschineColorManager;
@@ -125,6 +126,13 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
         this.colorManager = new MaschineColorManager();
         this.valueChanger = new TwosComplementValueChanger(128, 1);
         this.configuration = new MaschineConfiguration(host, this.valueChanger, factory.getArpeggiatorModes(), maschine);
+
+        // Create a global NI host interop in the background.
+        // We don't need to hold on to this -- just having it created once is enough to allow serial autodetection to work later.
+        try {
+            AbstractNIHostInterop.createInterop(maschine.getDeviceId(), "", null, host, false);
+        } catch (IOException ignored) {
+        }
     }
 
 
@@ -193,12 +201,31 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
                     // Hopefully that's ripped out before the final version.
                     //
                     final int deviceId = this.maschine.getDeviceId();
-                    final String serial = this.configuration.getSerialForDisplay();
+                    String serial = this.configuration.getSerialForDisplay();
 
-                    // FIXME(ktemkin): Use our serial auto-detection mechanism!
+                    // If we have a single device of this type, just use it.
+                    if ((serial == null) || serial.isEmpty()) {
+                        serial = AbstractNIHostInterop.getSingleDeviceSerial(deviceId);
+                        if (serial != null) {
+                            this.host.println("Auto-detected serial " + serial + ".");
+                        }
+                    }
 
                     if ((serial != null) && !serial.isEmpty()) {
-                        final NIGraphicDisplay display = new NIGraphicDisplay(this.host, this.valueChanger.getUpperBound(), this.configuration, deviceId, serial);
+                        var nihiaConnection = AbstractNIHostInterop.createInterop(surface.getMaschine().getDeviceId(), serial, surface, host, false);
+
+
+                        // HACK: for some reason, on MacOS NIHIA is _way_ more reliable after the second connection.
+                        //
+                        // We should probably figure out why this is and correct, but for now immediately connecting
+                        // again seems to make things a lot more stable.
+                        if (OperatingSystem.isMacOS()) {
+                            nihiaConnection = AbstractNIHostInterop.createInterop(surface.getMaschine().getDeviceId(), serial, surface, host, false);
+                        }
+
+                        surface.addNiConnection(nihiaConnection);
+
+                        final NIGraphicDisplay display = new NIGraphicDisplay(this.host, this.valueChanger.getUpperBound(), this.configuration, nihiaConnection);
                         surface.addGraphicsDisplay(display);
 
                         this.host.println("Graphics display set up on Maschine with serial " + serial + ".");
@@ -1083,45 +1110,20 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
         super.flush();
 
         final MaschineControlSurface surface = this.getSurface();
-        final TouchstripCommand command = (TouchstripCommand) surface.getContinuous(ContinuousID.CROSSFADER).getCommand();
-        if (command != null)
-            command.updateValue();
 
-        if (this.maschine == Maschine.STUDIO) {
-            // Update main VU
-            final IMidiOutput midiOutput = surface.getMidiOutput();
-
-            final int value;
-            if (this.encoderManager.isParameterMode()) {
-                final EncoderMode activeEncoderMode = this.encoderManager.getActiveEncoderMode();
-                switch (activeEncoderMode) {
-                    case MASTER_VOLUME ->
-                            value = this.valueChanger.toMidiValue(this.model.getMasterTrack().getVolume());
-                    case MASTER_PANORAMA -> value = this.valueChanger.toMidiValue(this.model.getMasterTrack().getPan());
-                    case SELECTED_TRACK_VOLUME, SELECTED_TRACK_PANORAMA -> {
-                        final ITrack track;
-                        final Optional<ITrack> trackOptional = this.model.getTrackBank().getSelectedItem();
-                        track = trackOptional.orElse(EmptyTrack.INSTANCE);
-                        value = this.valueChanger.toMidiValue(activeEncoderMode == EncoderMode.SELECTED_TRACK_VOLUME ? track.getVolume() : track.getPan());
-                    }
-                    case CUE_VOLUME -> value = this.valueChanger.toMidiValue(this.model.getProject().getCueVolume());
-                    case CUE_MIX -> value = this.valueChanger.toMidiValue(this.model.getProject().getCueMix());
-                    case METRONOME_VOLUME ->
-                            value = this.valueChanger.toMidiValue(this.model.getTransport().getMetronomeVolume());
-                    default -> value = 0;
-                }
-            } else {
-                final ITrack track;
-                if (this.encoderManager.isActiveEncoderMode(EncoderMode.SELECTED_TRACK_VOLUME)) {
-                    final Optional<ITrack> trackOptional = this.model.getTrackBank().getSelectedItem();
-                    track = trackOptional.orElse(EmptyTrack.INSTANCE);
-                } else
-                    track = this.model.getMasterTrack();
-                value = this.valueChanger.toMidiValue(track.getVu());
-            }
-
-            midiOutput.sendCC(MaschineControlSurface.MONITOR_ENCODER, value);
+        //
+        // Update the track-select colors for each track.
+        //
+        var tracks = this.model.getTrackBank();
+        for (int i = 0; i < 8; ++i) {
+            var track = tracks.getItem(i);
+            surface.setButtonColor(ButtonID.get(ButtonID.TRACK_SELECT_1, i), track.getColor());
         }
+
+
+        surface.flushLights();
+
+
     }
 
 

@@ -116,8 +116,8 @@ public class ParameterView extends BaseView {
         padGrid.lightEx(1, 0, doesExist && cursorDevice.canSelectNext() ? MaschineColorManager.COLOR_ROSE : MaschineColorManager.COLOR_BLACK);
 
         final IParameterBank parameterBank = cursorDevice.getParameterBank();
-        padGrid.lightEx(2, 0, doesExist && parameterBank.canScrollBackwards() ? MaschineColorManager.COLOR_SKIN : MaschineColorManager.COLOR_BLACK);
-        padGrid.lightEx(3, 0, doesExist && parameterBank.canScrollForwards() ? MaschineColorManager.COLOR_SKIN : MaschineColorManager.COLOR_BLACK);
+        padGrid.lightEx(2, 0, doesExist && parameterBank.canScrollBackwards() ? MaschineColorManager.COLOR_PEACH : MaschineColorManager.COLOR_BLACK);
+        padGrid.lightEx(3, 0, doesExist && parameterBank.canScrollForwards() ? MaschineColorManager.COLOR_PEACH : MaschineColorManager.COLOR_BLACK);
 
         final SelectedDeviceMode<?, ?> deviceMode = (SelectedDeviceMode<?, ?>) this.surface.getModeManager().get(Modes.DEVICE_PARAMS);
         for (int i = 0; i < 8; i++) {

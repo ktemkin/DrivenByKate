@@ -112,7 +112,7 @@ public class KontrolProtocolControllerSetup extends AbstractControllerSetup<Kont
         // We don't need to hold on to this -- just having it created once is enough to allow serial autodetection to work later.
         try {
             AbstractNIHostInterop.createInterop(DEVICE_ID, "", null, null, false);
-        } catch (IOException ex) {
+        } catch (IOException ignored) {
         }
 
     }

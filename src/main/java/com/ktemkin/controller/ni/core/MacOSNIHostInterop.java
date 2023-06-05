@@ -25,6 +25,10 @@ import java.util.concurrent.Executors;
 public class MacOSNIHostInterop extends AbstractNIHostInterop {
 
     /**
+     * Executor that handles notifications off of the main callback thread.
+     */
+    private final ExecutorService notificationExecutor = Executors.newCachedThreadPool();
+    /**
      * The port we'll use to send requests to the NIHostIntegrationAgent.
      */
     private CFMessagePort requestPort;
@@ -44,10 +48,6 @@ public class MacOSNIHostInterop extends AbstractNIHostInterop {
      * Count how many times the other side has failed to send us a notification; useful for detecting stalls
      */
     private int notificationTimeoutCount;
-    /**
-     * Executor that handles notifications off of the main callback thread.
-     */
-    private ExecutorService notificationExecutor = Executors.newCachedThreadPool();
 
     /**
      * Creates a new interface for connecting to the NIHostIntegrationAgent.
@@ -219,7 +219,7 @@ public class MacOSNIHostInterop extends AbstractNIHostInterop {
             case CoreFoundationLibrary.kCFRunLoopRunHandledSource -> this.notificationTimeoutCount = 0;
             case CoreFoundationLibrary.kCFRunLoopTimedOut -> {
                 this.notificationTimeoutCount += 1;
-                if (this.notificationTimeoutCount > 1) {
+                if (this.notificationTimeoutCount > 2) {
                     this.debugPrint("WARNING: Messages seem to have stopped! Panic-restarting comms, if we can.");
                     this.subscribeToEvents();
                     this.notificationTimeoutCount = 0;

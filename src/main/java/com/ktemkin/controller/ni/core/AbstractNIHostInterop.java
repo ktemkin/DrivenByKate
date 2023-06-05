@@ -13,7 +13,10 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -33,7 +36,7 @@ public abstract class AbstractNIHostInterop {
     /**
      * Constant used to indicate a device was found in power-on position.
      */
-    protected final static int NI_DEVICE_ON = 0x5a48a720;
+    protected final static int NI_DEVICE_OFF = 0x3444e2d;
     /**
      * The software identifier for Maschine 2 ('2MhN').
      */
@@ -60,7 +63,7 @@ public abstract class AbstractNIHostInterop {
      */
     protected final static int NI_MSG_HANDSHAKE = 0x03447500;
     /**
-     * The message ID for a "create ports for me" handshake, in a per-device contxt.
+     * The message ID for a "create ports for me" handshake, in a per-device context.
      */
     protected final static int NI_MSG_CONNECT = 0x03444900;
     /**
@@ -183,7 +186,7 @@ public abstract class AbstractNIHostInterop {
     /**
      * Stores a collection of serials known to a relevant device type.
      */
-    protected final static Map<Integer, Set<String>> knownSerials = new IdentityHashMap<>();
+    protected final static Map<Integer, Set<String>> knownSerials = new HashMap<>();
     //
     // Global background connection to the NIHostIntegrationAgent.
     //
@@ -265,7 +268,7 @@ public abstract class AbstractNIHostInterop {
         }
 
         // Otherwise, subscribe to various events.
-        else if (!this.tryToUseMidi) {
+        if (!this.tryToUseMidi) {
             this.subscribeToEvents();
         }
     }
@@ -336,9 +339,11 @@ public abstract class AbstractNIHostInterop {
      * Adds a device to the list of available devices.
      */
     protected static void addAvailableDevice(int deviceId, String serial) {
+
         synchronized (globalStateLock) {
             var serialSet = AbstractNIHostInterop.serialSetForDeviceType(deviceId);
             serialSet.add(serial);
+
         }
     }
 
@@ -358,6 +363,22 @@ public abstract class AbstractNIHostInterop {
      * @param deviceId The NI device identifier for the device type to be fetched.
      */
     public static String getSingleDeviceSerial(int deviceId) {
+
+        synchronized (globalStateLock) {
+            var serialSet = AbstractNIHostInterop.serialSetForDeviceType(deviceId);
+
+            if (serialSet.size() == 1) {
+                return (String) serialSet.toArray(new String[1])[0];
+            }
+        }
+
+        // If we didn't get a serial, give ourselves half a second for the NIHIA to respond.
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException ignored) {
+        }
+
+
         synchronized (globalStateLock) {
             var serialSet = AbstractNIHostInterop.serialSetForDeviceType(deviceId);
             if (serialSet.size() == 1) {
@@ -416,9 +437,10 @@ public abstract class AbstractNIHostInterop {
      * Used to request that the device display our data, specifically.
      */
     public void requestFocus() {
+
         // If we're trying to use MIDI, we'll skip this, as MIDI and acquisition are mutually
-        // exclusive -- and we can only have focus if we're acquired ther device.
-        if (!this.tryToUseMidi) {
+        // exclusive -- and we can only have focus if we're acquired the device.
+        if (this.tryToUseMidi) {
             return;
         }
 
@@ -533,7 +555,6 @@ public abstract class AbstractNIHostInterop {
         notificationExecutor.submit(() -> {
             while (!this.isShutdown.get()) {
                 this.pollForNotifications();
-                ;
             }
         });
     }
@@ -569,9 +590,20 @@ public abstract class AbstractNIHostInterop {
         //
         // Acquisition prevents MIDI events from being sent out, so we'll skip it
         // if we're trying to use MIDI anyway.
-        if (!this.tryToUseMidi) {
-            this.pushRequest(NI_WHOLE_MSG_ACQUIRE);
+        if (this.tryToUseMidi) {
+            return;
         }
+
+        this.pushRequest(NI_WHOLE_MSG_ACQUIRE);
+
+        // If this is a Maschine device, we'll send a few additional request messages.
+        // On a Kontrol device, these aren't actually necessary.
+        if (this.isKontrol) {
+            return;
+        }
+
+        this.pushRequest(new byte[]{0x54, 0x73, 0x49, 0x03, 0x00, 0x00, 0x00, 0x00});
+        this.pushRequest(new byte[]{0x46, 0x67, 0x43, 0x03});
     }
 
     /**
@@ -605,6 +637,10 @@ public abstract class AbstractNIHostInterop {
      */
     private void handlePadEvent(ByteBuffer notificationData) {
 
+        if (this.eventHandler == null) {
+            return;
+        }
+
         // Discard the timing, which we don't care about.
         notificationData.getInt();
         notificationData.getInt();
@@ -614,8 +650,9 @@ public abstract class AbstractNIHostInterop {
         while (notificationData.hasRemaining()) {
             var padNumber = notificationData.getInt();
             notificationData.getInt();
-            var pressure = notificationData.getInt();
+            final long pressure = Integer.toUnsignedLong(notificationData.getInt());
 
+            this.scheduleImmediateTask(() -> this.eventHandler.handlePadEvent(padNumber, pressure));
         }
     }
 
@@ -634,7 +671,7 @@ public abstract class AbstractNIHostInterop {
         String serial = responseChars.subSequence(0, serialLength - 1).toString();
 
         // If we've gotten a new device, handle it.
-        if (newState == NI_DEVICE_ON) {
+        if (newState != NI_DEVICE_OFF) {
             AbstractNIHostInterop.addAvailableDevice(deviceType, serial);
             this.debugPrint("New device %s added.", serial);
         } else {
@@ -756,12 +793,20 @@ public abstract class AbstractNIHostInterop {
             return;
         }
 
-        // For now, discard the timestamp...
+        // Extract just the values of interest from our encoder.
         data.getInt();
+        long encoderValue = Integer.toUnsignedLong(data.getInt());
+        data.getInt();
+        data.getInt();
+        var encoderDirection = data.getInt();
 
-        // ... but keep the encoder value.
-        var encoderValue = data.getInt();
-        this.scheduleImmediateTask(() -> this.eventHandler.handleMainEncoderEvent(encoderValue));
+        this.debugPrint("DIRECTION: %x", encoderDirection);
+
+        // If this was the opposite direction, flip the sign on our encoder value.
+        encoderValue *= encoderDirection;
+
+        long finalEncoderValue = encoderValue;
+        this.scheduleImmediateTask(() -> this.eventHandler.handleMainEncoderEvent(finalEncoderValue));
     }
 
     /**

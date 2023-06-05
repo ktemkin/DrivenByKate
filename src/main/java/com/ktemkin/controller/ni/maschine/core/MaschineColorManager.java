@@ -56,14 +56,89 @@ public class MaschineColorManager extends ColorManager {
     public static final int COLOR_ORANGE_LO = 9;
     public static final int COLOR_PURPLE = 50;
     public static final int COLOR_PURPLE_LO = 53;
-    public static final int COLOR_SKIN = 11;
+    public static final int COLOR_PEACH = 11;
     public static final int COLOR_YELLOW_LO = 21;
     public static final int COLOR_YELLOW = 22;
-
     /**
      * The 8 parameter colors.
      */
     public static final List<Integer> PARAM_COLORS = List.of(Integer.valueOf(MaschineColorManager.COLOR_RED), Integer.valueOf(MaschineColorManager.COLOR_AMBER), Integer.valueOf(MaschineColorManager.COLOR_YELLOW), Integer.valueOf(MaschineColorManager.COLOR_GREEN), Integer.valueOf(MaschineColorManager.COLOR_LIME), Integer.valueOf(MaschineColorManager.COLOR_SKY), Integer.valueOf(MaschineColorManager.COLOR_PURPLE), Integer.valueOf(MaschineColorManager.COLOR_PINK));
+
+    /**
+     * Indexable collection of NI colors, for color conversions.
+     */
+    private final static int[] NI_COLORS = {
+            COLOR_BLACK,
+            COLOR_DARK_GREY,
+            COLOR_GREY,
+            COLOR_WHITE,
+            COLOR_ROSE,
+            COLOR_RED,
+            COLOR_RED_LO,
+            COLOR_AMBER,
+            COLOR_AMBER_LO,
+            COLOR_LIME,
+            COLOR_LIME_LO,
+            COLOR_GREEN,
+            COLOR_GREEN_LO,
+            COLOR_SPRING,
+            COLOR_SPRING_LO,
+            COLOR_TURQUOISE_LO,
+            COLOR_TURQUOISE,
+            COLOR_SKY,
+            COLOR_SKY_LO,
+            COLOR_BLUE,
+            COLOR_BLUE_LO,
+            COLOR_MAGENTA,
+            COLOR_MAGENTA_LO,
+            COLOR_PINK,
+            COLOR_PINK_LO,
+            COLOR_ORANGE,
+            COLOR_ORANGE_LO,
+            COLOR_PURPLE,
+            COLOR_PURPLE_LO,
+            COLOR_PEACH,
+            COLOR_YELLOW_LO,
+            COLOR_YELLOW,
+    };
+
+    /**
+     * Array of Java colors with indices that match the NI_COLORS above.
+     */
+    private final static ColorEx[] JAVA_COLORS = {
+            ColorEx.BLACK,
+            ColorEx.DARK_GRAY,
+            ColorEx.GRAY,
+            ColorEx.WHITE,
+            ColorEx.ROSE,
+            ColorEx.RED,
+            ColorEx.darker(ColorEx.RED),
+            ColorEx.DARK_YELLOW,
+            ColorEx.darker(ColorEx.DARK_YELLOW),
+            ColorEx.brighter(ColorEx.GREEN),
+            ColorEx.DARK_GREEN,
+            ColorEx.GREEN,
+            ColorEx.DARK_GREEN,
+            ColorEx.brighter(ColorEx.GREEN),
+            ColorEx.darker(ColorEx.GREEN),
+            ColorEx.brighter(ColorEx.DARK_BLUE),
+            ColorEx.brighter(ColorEx.BLUE),
+            ColorEx.BLUE,
+            ColorEx.DARK_BLUE,
+            ColorEx.BLUE,
+            ColorEx.DARK_BLUE,
+            ColorEx.PURPLE,
+            ColorEx.DARK_PURPLE,
+            ColorEx.PINK,
+            ColorEx.darker(ColorEx.PINK),
+            ColorEx.ORANGE,
+            ColorEx.DARK_ORANGE,
+            ColorEx.PURPLE,
+            ColorEx.DARK_PURPLE,
+            ColorEx.PINK,
+            ColorEx.DARK_YELLOW,
+            ColorEx.YELLOW,
+    };
 
 
     /**
@@ -149,7 +224,7 @@ public class MaschineColorManager extends ColorManager {
         this.registerColorIndex(DAWColor.DAW_COLOR_BLUE, COLOR_BLUE);
         this.registerColorIndex(DAWColor.DAW_COLOR_LIGHT_PURPLE, COLOR_MAGENTA);
         this.registerColorIndex(DAWColor.DAW_COLOR_LIGHT_PINK, COLOR_PINK);
-        this.registerColorIndex(DAWColor.DAW_COLOR_ROSE, COLOR_SKIN);
+        this.registerColorIndex(DAWColor.DAW_COLOR_ROSE, COLOR_PEACH);
         this.registerColorIndex(DAWColor.DAW_COLOR_REDDISH_BROWN, COLOR_AMBER);
         this.registerColorIndex(DAWColor.DAW_COLOR_LIGHT_BROWN, COLOR_AMBER_LO);
         this.registerColorIndex(DAWColor.DAW_COLOR_LIGHT_GREEN, COLOR_SPRING);
@@ -188,16 +263,23 @@ public class MaschineColorManager extends ColorManager {
         this.registerColor(COLOR_ORANGE_LO, ColorEx.DARK_ORANGE);
         this.registerColor(COLOR_PURPLE, ColorEx.PURPLE);
         this.registerColor(COLOR_PURPLE_LO, ColorEx.PURPLE);
-        this.registerColor(COLOR_SKIN, ColorEx.ROSE);
+        this.registerColor(COLOR_PEACH, ColorEx.ROSE);
     }
 
+
+    /**
+     * Converts a Java color to a Native Instruments color.
+     */
+    public int getNIColor(ColorEx color) {
+        return NI_COLORS[ColorEx.getClosestColorIndex(color, JAVA_COLORS)];
+    }
 
     /**
      * Workaround for darker/brighter colors. Returns the index with the lowest brightness in a
      * color row.
      *
-     * @param colorIndex The index of the color for which to get the color with the lowest
-     *                   brightness
+     * @param color The index of the color for which to get the color with the lowest
+     *              brightness
      * @return The index
      */
     public int dimOrHighlightColor(final ColorEx color, final boolean isSelected) {

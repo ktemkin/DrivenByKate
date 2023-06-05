@@ -263,7 +263,7 @@ public class PlayView extends AbstractPlayView<MaschineControlSurface, MaschineC
         for (int i = 48; i < 50; i++)
             padGrid.light(i, isKeyboardEnabled ? MaschineColorManager.COLOR_ROSE : MaschineColorManager.COLOR_BLACK);
         for (int i = 50; i < 52; i++)
-            padGrid.light(i, isKeyboardEnabled ? MaschineColorManager.COLOR_SKIN : MaschineColorManager.COLOR_BLACK);
+            padGrid.light(i, isKeyboardEnabled ? MaschineColorManager.COLOR_PEACH : MaschineColorManager.COLOR_BLACK);
     }
 
     /**
@@ -496,5 +496,20 @@ public class PlayView extends AbstractPlayView<MaschineControlSurface, MaschineC
                 noteMode.setNote(clip, notePosition);
             modeManager.setActive(Modes.NOTE);
         }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void playNote(int note, int velocity) {
+
+        this.surface.getHost().println(String.format("NOTE: %d, VEL: %d", note, velocity));
+
+        // The Maschine itself doesn't send MIDI once we've set up a NIHIA connection.
+        // Send notes in its place.
+        this.surface.sendMidiEvent(MidiConstants.CMD_NOTE_ON, note, velocity);
+        super.playNote(note, velocity);
     }
 }

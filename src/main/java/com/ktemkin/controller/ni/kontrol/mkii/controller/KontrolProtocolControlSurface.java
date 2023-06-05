@@ -410,8 +410,6 @@ public class KontrolProtocolControlSurface extends AbstractControlSurface<Kontro
     @Override
     public void handleButtonEvent(int rawButtonId, ButtonEvent event) {
 
-        this.host.println(String.format("Button event (0x%x is %s).", rawButtonId, event));
-
         // Convert our button from a NIHIA message number to a concrete ButtonID.
         var buttonId = this.translateNIHIAButton(rawButtonId);
         var button = this.getButton(buttonId);
@@ -456,7 +454,7 @@ public class KontrolProtocolControlSurface extends AbstractControlSurface<Kontro
      * {@inheritDocs}
      */
     @Override
-    public void handleMainEncoderEvent(int newValue) {
+    public void handleMainEncoderEvent(long newValue) {
     }
 
 
@@ -506,7 +504,6 @@ public class KontrolProtocolControlSurface extends AbstractControlSurface<Kontro
     public void updateKeyzones() {
         if (this.niConnection != null) {
             this.niConnection.configureKeyzones(KontrolProtocolColorManager.COLOR_BLUE);
-            ;
         }
     }
 
@@ -578,71 +575,102 @@ public class KontrolProtocolControlSurface extends AbstractControlSurface<Kontro
      */
     public ButtonID translateNIHIAButton(int rawButton) {
         switch (rawButton) {
-            case 0x00:
+            case 0x00 -> {
                 return ButtonID.ROW2_5;              // Above the screen.
-            case 0x01:
+            }
+            case 0x01 -> {
                 return ButtonID.ROW2_6;
-            case 0x02:
+            }
+            case 0x02 -> {
                 return ButtonID.ROW2_7;
-            case 0x03:
+            }
+            case 0x03 -> {
                 return ButtonID.ROW2_8;
-            case 0x04:
+            }
+            case 0x04 -> {
                 return ButtonID.ROW2_1;
-            case 0x05:
+            }
+            case 0x05 -> {
                 return ButtonID.ROW2_2;
-            case 0x06:
+            }
+            case 0x06 -> {
                 return ButtonID.ROW2_3;
-            case 0x07:
+            }
+            case 0x07 -> {
                 return ButtonID.ROW2_4;
-            case 0x0b:
+            }
+            case 0x0b -> {
                 return ButtonID.SCALES;              // Scales
-            case 0x0a:
+            }
+            case 0x0a -> {
                 return ButtonID.REPEAT;              // ARP
-            case 0x0f:
+            }
+            case 0x0f -> {
                 return ButtonID.SHIFT;               // Shift
-            case 0x14:
+            }
+            case 0x14 -> {
                 return ButtonID.PAGE_LEFT;           // Preset up button
-            case 0x16:
+            }
+            case 0x16 -> {
                 return ButtonID.PAGE_RIGHT;          // Preset down button
-            case 0x15:
+            }
+            case 0x15 -> {
                 return ButtonID.BANK_RIGHT;          // Right arrow, left of screen
-            case 0x17:
+            }
+            case 0x17 -> {
                 return ButtonID.BANK_LEFT;           // Left arrow, left of screen
-            case 0x1c:
+            }
+            case 0x1c -> {
                 return ButtonID.TRACK;               // Track
-            case 0x1e:
+            }
+            case 0x1e -> {
                 return ButtonID.CONFIGURE_PITCHBEND; // Key mode.
-            case 0x21:
+            }
+            case 0x21 -> {
                 return ButtonID.DEVICE;              // Plugin.
-            case 0x22:
+            }
+            case 0x22 -> {
                 return ButtonID.BROWSE;              // Browser
-            case 0x23:
+            }
+            case 0x23 -> {
                 return ButtonID.SETUP;
-            case 0x24:
+            }
+            case 0x24 -> {
                 return ButtonID.PARAM_PAGE1;         // Instance
-            case 0x25:
+            }
+            case 0x25 -> {
                 return ButtonID.VOLUME;              // Midi; used as 'volume' since we can't get Mixer
-            case 0x37:
+            }
+            case 0x37 -> {
                 return ButtonID.KNOB1_TOUCH;         // Knobs below the screen.
-            case 0x36:
+            }
+            case 0x36 -> {
                 return ButtonID.KNOB2_TOUCH;
-            case 0x35:
+            }
+            case 0x35 -> {
                 return ButtonID.KNOB3_TOUCH;
-            case 0x34:
+            }
+            case 0x34 -> {
                 return ButtonID.KNOB4_TOUCH;
-            case 0x33:
+            }
+            case 0x33 -> {
                 return ButtonID.KNOB5_TOUCH;
-            case 0x32:
+            }
+            case 0x32 -> {
                 return ButtonID.KNOB6_TOUCH;
-            case 0x31:
+            }
+            case 0x31 -> {
                 return ButtonID.KNOB7_TOUCH;
-            case 0x30:
+            }
+            case 0x30 -> {
                 return ButtonID.KNOB8_TOUCH;
+            }
 
             // Print a message for any unknown buttons, so we can implement them later.
-            default:
+            default -> {
                 this.host.println(String.format("Unknown NIHIA button 0x%x pressed!", rawButton));
                 return null;
+            }
         }
 
     }

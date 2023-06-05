@@ -32,9 +32,9 @@ public interface INIEventHandler {
      * Called when a new "main encoder rotated" event has occurred.
      * Note that directional input is handled over MIDI.
      *
-     * @param encoderValue The new encoder value for the knob.
+     * @param newValue The new encoder value for the knob.
      */
-    void handleMainEncoderEvent(int newValue);
+    void handleMainEncoderEvent(long newValue);
 
 
     /**
@@ -53,7 +53,7 @@ public interface INIEventHandler {
      * @param padNumber   The number of the pad, indexed from the _top_.
      * @param newPressure The new pressure; or 0 if the pad's been released.
      */
-    default void handlePadEvent(int padNumber, int newPressure) {
+    default void handlePadEvent(int padNumber, long newPressure) {
     }
 
 }
