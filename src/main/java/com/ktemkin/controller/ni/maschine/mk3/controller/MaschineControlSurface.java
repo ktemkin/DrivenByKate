@@ -21,6 +21,7 @@ import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.midi.IMidiInput;
 import de.mossgrabers.framework.daw.midi.IMidiOutput;
 import de.mossgrabers.framework.daw.midi.MidiConstants;
+import de.mossgrabers.framework.scale.Scales;
 import de.mossgrabers.framework.utils.ButtonEvent;
 
 import java.nio.ByteBuffer;
@@ -165,15 +166,18 @@ public class MaschineControlSurface extends AbstractMaschineControlSurface<Masch
      */
     // FIXME(ktemkin): find an elegant way to get this bound
     private final ColorEx[] colorForButton = new ColorEx[512];
-    private int ribbonValue = -1;
-    private AbstractNIHostInterop niConnection;
-    // @formatter:on
-
     /**
      * Tracks whether an individual pad is down,
      * so we know whether to emit NOTE_ON or aftertouch events.
      */
     private final boolean[] padDown = new boolean[NUM_PADS];
+    /**
+     * A reference to our current Scales translator.
+     */
+    private final Scales scales;
+    private int ribbonValue = -1;
+    // @formatter:on
+    private AbstractNIHostInterop niConnection;
 
 
     /**
@@ -186,13 +190,14 @@ public class MaschineControlSurface extends AbstractMaschineControlSurface<Masch
      * @param output        The MIDI output
      * @param input         The MIDI input
      */
-    public MaschineControlSurface(final IHost host, final ColorManager colorManager, final Maschine maschine, final MaschineConfiguration configuration, final IMidiOutput output, final IMidiInput input)
+    public MaschineControlSurface(final IHost host, final ColorManager colorManager, final Maschine maschine, final MaschineConfiguration configuration, final IMidiOutput output, final IMidiInput input, final Scales scales)
     {
         super(host, configuration, colorManager, maschine, output, input, new MaschinePadGrid(colorManager, output), maschine.getWidth(), maschine.getHeight());
 
         var padGrid = (MaschinePadGrid) this.getPadGrid();
         padGrid.setSurface(this);
 
+        this.scales = scales;
     }
 
 
@@ -413,7 +418,13 @@ public class MaschineControlSurface extends AbstractMaschineControlSurface<Masch
     @Override
     public void handlePadEvent(int padNumber, long newPressure)
     {
-        final int note = MaschinePadGrid.GRID_TO_MIDI[padNumber];
+        final int[] padOffsetMatrix = this.scales.getActiveMatrix();
+
+        // Our notion of grid numbering is flipped and rotated from the hardware's.
+        // Fortunately, the mapping between our two notions is encoded in GRID_TO_MIDI --
+        // at least, once we've subtracted away the start note.
+        final int noteBase = MaschinePadGrid.GRID_TO_MIDI[padNumber] - MaschinePadGrid.START_NOTE;
+        final int note = padOffsetMatrix[noteBase] + scales.getStartNote();
 
         final long pressure = newPressure - PAD_PRESSURE_MIN;
         final int velocity = Math.max(1, this.pressureToVelocity(pressure));

@@ -18,6 +18,11 @@ import de.mossgrabers.framework.daw.midi.IMidiOutput;
  */
 public class MaschinePadGrid extends BlinkingPadGrid
 {
+    /**
+     * The note at which our pad grid's "midi" starts.
+     */
+    public static final int START_NOTE = 36;
+
 
     /**
      * Matrix that converts a grid position to a midi value.
@@ -55,7 +60,7 @@ public class MaschinePadGrid extends BlinkingPadGrid
      */
     public MaschinePadGrid(final ColorManager colorManager, final IMidiOutput output)
     {
-        super(colorManager, output, 4, 4, 36);
+        super(colorManager, output, 4, 4, START_NOTE);
     }
 
 
@@ -90,14 +95,12 @@ public class MaschinePadGrid extends BlinkingPadGrid
 
         // Ignore pads we don't have.
         if ((relativeNote < 0) || (relativeNote >= MIDI_TO_GRID.length)) {
+            this.surface.getHost().println(String.format("REJECT NOTE %d", note));
             return;
         }
 
         // Fetch the pad number...
         int pad = MIDI_TO_GRID[relativeNote];
-
-        // FIXME: this isn't the correct pad matching;
-        // we have to do something like in our direct code
 
         // ... convert it to a button ID...
         ButtonID button = ButtonID.get(ButtonID.PAD1, pad);

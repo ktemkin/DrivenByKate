@@ -85,7 +85,8 @@ import java.util.function.BooleanSupplier;
  * @author Kate Temkin
  * @author Jürgen Moßgraber
  */
-public class MaschineControllerSetup extends AbstractControllerSetup<MaschineControlSurface, MaschineConfiguration> {
+public class MaschineControllerSetup extends AbstractControllerSetup<MaschineControlSurface, MaschineConfiguration>
+{
     // @formatter:off
     /** The drum grid matrix. */
     private static final int [] DRUM_MATRIX =
@@ -119,7 +120,8 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * @param documentSettings The document (project) specific settings
      * @param maschine         The specific maschine model
      */
-    public MaschineControllerSetup(final IHost host, final ISetupFactory factory, final ISettingsUI globalSettings, final ISettingsUI documentSettings, final Maschine maschine) {
+    public MaschineControllerSetup(final IHost host, final ISetupFactory factory, final ISettingsUI globalSettings, final ISettingsUI documentSettings, final Maschine maschine)
+    {
         super(factory, host, globalSettings, documentSettings);
 
         this.maschine = maschine;
@@ -140,7 +142,8 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * {@inheritDoc}
      */
     @Override
-    public void init() {
+    public void init()
+    {
         if (OperatingSystem.get() == OperatingSystem.LINUX)
             throw new FrameworkException("Maschine is not supported on Linux since there is no Native Instruments DAW Integration Host.");
 
@@ -152,7 +155,8 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * {@inheritDoc}
      */
     @Override
-    protected void createScales() {
+    protected void createScales()
+    {
         this.scales = new Scales(this.valueChanger, 36, 52, 4, 4);
         this.scales.setDrumMatrix(DRUM_MATRIX);
     }
@@ -162,7 +166,8 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * {@inheritDoc}
      */
     @Override
-    protected void createModel() {
+    protected void createModel()
+    {
         final ModelSetup ms = new ModelSetup();
         ms.setHasFullFlatTrackList(true);
         ms.setNumTracks(this.maschine.hasGroupButtons() ? 8 : 16);
@@ -180,11 +185,12 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * {@inheritDoc}
      */
     @Override
-    protected void createSurface() {
+    protected void createSurface()
+    {
         final IMidiAccess midiAccess = this.factory.createMidiAccess();
         final IMidiOutput output = midiAccess.createOutput();
         final IMidiInput input = midiAccess.createInput(this.maschine.getName(), "80????", "90????");
-        final MaschineControlSurface surface = new MaschineControlSurface(this.host, this.colorManager, this.maschine, this.configuration, output, input);
+        final MaschineControlSurface surface = new MaschineControlSurface(this.host, this.colorManager, this.maschine, this.configuration, output, input, this.scales);
         this.surfaces.add(surface);
 
         if (this.maschine.hasMCUDisplay()) {
@@ -251,7 +257,8 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * {@inheritDoc}
      */
     @Override
-    protected void createModes() {
+    protected void createModes()
+    {
         final MaschineControlSurface surface = this.getSurface();
         final ModeManager modeManager = surface.getModeManager();
 
@@ -284,7 +291,8 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * {@inheritDoc}
      */
     @Override
-    protected void createViews() {
+    protected void createViews()
+    {
         final MaschineControlSurface surface = this.getSurface();
         final ViewManager viewManager = surface.getViewManager();
 
@@ -314,7 +322,8 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * {@inheritDoc}
      */
     @Override
-    protected void createObservers() {
+    protected void createObservers()
+    {
         super.createObservers();
 
         final MaschineControlSurface surface = this.getSurface();
@@ -331,7 +340,8 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * {@inheritDoc}
      */
     @Override
-    protected void registerTriggerCommands() {
+    protected void registerTriggerCommands()
+    {
         final MaschineControlSurface surface = this.getSurface();
         final ModeManager modeManager = surface.getModeManager();
         final ViewManager viewManager = surface.getViewManager();
@@ -368,17 +378,21 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
 
         this.addButton(ButtonID.NEW, this.maschine.hasCursorKeys() ? "MACRO" : "GROUP", new NewCommand<>(this.model, surface), MaschineControlSurface.GROUP);
 
-        final AutomationCommand<MaschineControlSurface, MaschineConfiguration> automationCommand = new AutomationCommand<>(this.model, surface) {
+        final AutomationCommand<MaschineControlSurface, MaschineConfiguration> automationCommand = new AutomationCommand<>(this.model, surface)
+        {
             @Override
-            protected void cleanupShift() {
+            protected void cleanupShift()
+            {
                 this.surface.setStopConsumed();
             }
 
         };
         this.addButton(ButtonID.AUTOMATION, "AUTO", automationCommand, MaschineControlSurface.AUTO, automationCommand::isLit);
-        this.addButton(ButtonID.OVERDUB, this.maschine == Maschine.STUDIO || this.maschine == Maschine.MK2 ? "ENTER" : "LOCK", new OverdubCommand<>(this.model, surface) {
+        this.addButton(ButtonID.OVERDUB, this.maschine == Maschine.STUDIO || this.maschine == Maschine.MK2 ? "ENTER" : "LOCK", new OverdubCommand<>(this.model, surface)
+        {
             @Override
-            protected void shiftedFunction() {
+            protected void shiftedFunction()
+            {
                 this.surface.setStopConsumed();
                 super.shiftedFunction();
             }
@@ -420,9 +434,11 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
 
         }, MaschineControlSurface.PLUGIN, () -> this.maschine.hasMCUDisplay() || surface.isShiftPressed() ? this.model.getCursorDevice().isWindowOpen() : modeManager.isActive(Modes.DEVICE_PARAMS));
 
-        this.addButton(ButtonID.DEVICE_ON_OFF, "SAMPLING", new ConvertCommand<>(this.model, surface) {
+        this.addButton(ButtonID.DEVICE_ON_OFF, "SAMPLING", new ConvertCommand<>(this.model, surface)
+        {
             @Override
-            protected void sliceToSampler() {
+            protected void sliceToSampler()
+            {
                 this.surface.setStopConsumed();
                 super.sliceToSampler();
             }
@@ -440,10 +456,12 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
 
         this.addButton(ButtonID.ADD_TRACK, fileLabel, new ProjectButtonCommand(this.model, surface), MaschineControlSurface.PROJECT);
         this.addButton(ButtonID.ADD_EFFECT, this.maschine.hasCursorKeys() ? "SETTINGS" : "FAVORITES", new AddDeviceCommand(this.model, surface), MaschineControlSurface.FAVORITES);
-        this.addButton(ButtonID.BROWSE, this.maschine == Maschine.STUDIO || this.maschine == Maschine.MK2 ? "BROWSE" : "BROWSER", new BrowserCommand<>(this.model, surface, ButtonID.SHIFT, ButtonID.SELECT) {
+        this.addButton(ButtonID.BROWSE, this.maschine == Maschine.STUDIO || this.maschine == Maschine.MK2 ? "BROWSE" : "BROWSER", new BrowserCommand<>(this.model, surface, ButtonID.SHIFT, ButtonID.SELECT)
+        {
             /** {@inheritDoc} */
             @Override
-            protected boolean getCommit() {
+            protected boolean getCommit()
+            {
                 // Discard browser, confirmation is via encoder
                 return false;
             }
@@ -517,7 +535,8 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
     }
 
 
-    private void registerCursorKeys(final MaschineControlSurface surface) {
+    private void registerCursorKeys(final MaschineControlSurface surface)
+    {
         if (!this.maschine.hasCursorKeys())
             return;
 
@@ -535,7 +554,8 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
     }
 
 
-    private void registerDisplayButtons(final MaschineControlSurface surface, final ModeManager modeManager) {
+    private void registerDisplayButtons(final MaschineControlSurface surface, final ModeManager modeManager)
+    {
         if (!this.maschine.hasMCUDisplay())
             return;
 
@@ -581,7 +601,8 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
     }
 
 
-    private void registerGroupButtons(final MaschineControlSurface surface) {
+    private void registerGroupButtons(final MaschineControlSurface surface)
+    {
         if (!this.maschine.hasGroupButtons())
             return;
 
@@ -592,7 +613,8 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
     }
 
 
-    private void registerMaschineStudioButtons(final MaschineControlSurface surface) {
+    private void registerMaschineStudioButtons(final MaschineControlSurface surface)
+    {
         this.addButton(ButtonID.METRONOME, "METRO", new MetronomeCommand<>(this.model, surface, false), MaschineControlSurface.METRO, () -> this.model.getTransport().isMetronomeOn());
 
         this.addButton(ButtonID.UNDO, "UNDO", this.createShiftViewFunction(surface, 0, 2), MaschineControlSurface.EDIT_UNDO);
@@ -607,12 +629,14 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
     }
 
 
-    private TriggerCommand createShiftViewFunction(final MaschineControlSurface surface, final int padIndex, final int shiftPadIndex) {
+    private TriggerCommand createShiftViewFunction(final MaschineControlSurface surface, final int padIndex, final int shiftPadIndex)
+    {
         return (event, velocity) -> this.shiftView.executeFunction(surface.isShiftPressed() ? shiftPadIndex : padIndex, event);
     }
 
 
-    private int getEncoderColor(final ButtonID arrowButton) {
+    private int getEncoderColor(final ButtonID arrowButton)
+    {
         final MaschineControlSurface surface = this.getSurface();
         final ModeManager modeManager = surface.getModeManager();
         final Modes modeID = modeManager.getActiveID();
@@ -659,7 +683,8 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * {@inheritDoc}
      */
     @Override
-    protected void registerContinuousCommands() {
+    protected void registerContinuousCommands()
+    {
         final MaschineControlSurface surface = this.getSurface();
         final ModeManager modeManager = surface.getModeManager();
         final ViewManager viewManager = surface.getViewManager();
@@ -735,7 +760,8 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * {@inheritDoc}
      */
     @Override
-    protected void layoutControls() {
+    protected void layoutControls()
+    {
         switch (this.maschine) {
             case MK2 -> this.layoutMk2();
             case MK3, PLUS -> this.layoutMk3();
@@ -748,7 +774,8 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
     }
 
 
-    private void layoutMk2() {
+    private void layoutMk2()
+    {
         final MaschineControlSurface surface = this.getSurface();
 
         surface.getButton(ButtonID.PAD1).setBounds(425.5, 604.5, 76.25, 79.0);
@@ -829,7 +856,8 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
     }
 
 
-    private void layoutStudio() {
+    private void layoutStudio()
+    {
         final MaschineControlSurface surface = this.getSurface();
 
         surface.getButton(ButtonID.PAD1).setBounds(425.5, 590.0, 76.25, 79.0);
@@ -930,7 +958,8 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
     }
 
 
-    private void layoutMk3() {
+    private void layoutMk3()
+    {
         final MaschineControlSurface surface = this.getSurface();
 
         surface.getButton(ButtonID.PAD1).setBounds(425.5, 652.25, 76.25, 79.0);
@@ -1029,7 +1058,8 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
     }
 
 
-    private void layoutMikroMk3() {
+    private void layoutMikroMk3()
+    {
         final MaschineControlSurface surface = this.getSurface();
 
         surface.getButton(ButtonID.PAD1).setBounds(427.0, 336.0, 76.25, 79.0);
@@ -1095,7 +1125,8 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * {@inheritDoc}
      */
     @Override
-    public void startup() {
+    public void startup()
+    {
         final MaschineControlSurface surface = this.getSurface();
         surface.getModeManager().setActive(Modes.VOLUME);
         surface.getViewManager().setActive(Views.PLAY);
@@ -1106,7 +1137,8 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * {@inheritDoc}
      */
     @Override
-    public void flush() {
+    public void flush()
+    {
         super.flush();
 
         final MaschineControlSurface surface = this.getSurface();
@@ -1127,7 +1159,8 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
     }
 
 
-    private boolean isRibbonMode(final Set<RibbonMode> modes) {
+    private boolean isRibbonMode(final Set<RibbonMode> modes)
+    {
         return modes.contains(this.configuration.getRibbonMode());
     }
 
@@ -1136,7 +1169,8 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * {@inheritDoc}
      */
     @Override
-    protected BindType getTriggerBindType(final ButtonID buttonID) {
+    protected BindType getTriggerBindType(final ButtonID buttonID)
+    {
         return buttonID == ButtonID.ROW2_7 ? BindType.NOTE : BindType.CC;
     }
 }
