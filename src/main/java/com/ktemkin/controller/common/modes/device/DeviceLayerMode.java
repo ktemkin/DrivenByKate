@@ -4,16 +4,13 @@
 
 package com.ktemkin.controller.common.modes.device;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.Push1Display;
-import com.ktemkin.controller.ableton.push.controller.PushColorManager;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
 import com.ktemkin.controller.ableton.push.parameterprovider.PushSelectedLayerOrDrumPadParameterProvider;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import com.ktemkin.controller.common.modes.BaseMode;
+import com.ktemkin.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.controller.color.ColorEx;
-import com.ktemkin.framework.controller.display.IGraphicDisplay;
-import de.mossgrabers.framework.controller.display.ITextDisplay;
 import de.mossgrabers.framework.controller.valuechanger.IValueChanger;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.IChannel;
@@ -47,7 +44,7 @@ public class DeviceLayerMode extends BaseMode<ILayer>
 
     protected final ICursorDevice cursorDevice;
 
-    protected final PushConfiguration configuration;
+    protected final CommonUIConfiguration configuration;
 
 
     /**
@@ -56,7 +53,7 @@ public class DeviceLayerMode extends BaseMode<ILayer>
      * @param surface The control surface
      * @param model   The model
      */
-    public DeviceLayerMode(final PushControlSurface surface, final IModel model)
+    public DeviceLayerMode(final CommonUIControlSurface surface, final IModel model)
     {
         this(Modes.NAME_LAYER, surface, model);
 
@@ -71,7 +68,7 @@ public class DeviceLayerMode extends BaseMode<ILayer>
      * @param surface The control surface
      * @param model   The model
      */
-    DeviceLayerMode(final String name, final PushControlSurface surface, final IModel model)
+    DeviceLayerMode(final String name, final CommonUIControlSurface surface, final IModel model)
     {
         super(name, surface, model, model.getCursorDevice().getLayerBank());
 
@@ -388,7 +385,7 @@ public class DeviceLayerMode extends BaseMode<ILayer>
 
         this.updateMenuItems(-1);
 
-        final PushConfiguration config = this.surface.getConfiguration();
+        final CommonUIConfiguration config = this.surface.getConfiguration();
 
         for (int i = 0; i < 8; i++) {
             final IChannel layer = this.bank.getItem(offset + i);
@@ -507,6 +504,8 @@ public class DeviceLayerMode extends BaseMode<ILayer>
     @Override
     public int getButtonColor(final ButtonID buttonID)
     {
+        var colorManager = this.getColorManager();
+
         final ICursorDevice cd = this.model.getCursorDevice();
         if (cd == null || !cd.hasLayers()) {
             return super.getButtonColor(buttonID);
@@ -520,9 +519,9 @@ public class DeviceLayerMode extends BaseMode<ILayer>
             final IChannel dl = this.bank.getItem(offset + buttonID.ordinal() - ButtonID.ROW1_1.ordinal());
             if (dl.doesExist() && dl.isActivated()) {
                 if (dl.isSelected()) {
-                    return PushColorManager.PUSH2_COLOR_ORANGE_HI;
+                    return colorManager.getDeviceColor(ColorEx.brighter(ColorEx.ORANGE));
                 }
-                return PushColorManager.PUSH2_COLOR_YELLOW_LO;
+                return colorManager.getDeviceColor(ColorEx.DARK_YELLOW);
             }
             return super.getButtonColor(buttonID);
         }
@@ -535,44 +534,26 @@ public class DeviceLayerMode extends BaseMode<ILayer>
                 if (layer.doesExist()) {
                     if (muteState) {
                         if (layer.isMute()) {
-                            return PushColorManager.PUSH2_COLOR2_AMBER_LO;
+                            return colorManager.getDeviceColor(ColorEx.DARK_YELLOW);
                         }
                     }
                     else if (layer.isSolo()) {
-                        return PushColorManager.PUSH2_COLOR2_YELLOW_HI;
+                        return colorManager.getDeviceColor(ColorEx.YELLOW);
                     }
                 }
-                return PushColorManager.PUSH2_COLOR_BLACK;
+                return colorManager.getDeviceColor(ColorEx.BLACK);
             }
 
             final ModeManager modeManager = this.surface.getModeManager();
             return switch (index) {
-                case 0 -> modeManager.isActive(Modes.DEVICE_LAYER_VOLUME) ? PushColorManager.PUSH2_COLOR2_WHITE : PushColorManager.PUSH2_COLOR_BLACK;
-                case 1 -> modeManager.isActive(Modes.DEVICE_LAYER_PAN) ? PushColorManager.PUSH2_COLOR2_WHITE : PushColorManager.PUSH2_COLOR_BLACK;
-                case 4, 5, 6, 7 -> modeManager.isActive(Modes.get(Modes.DEVICE_LAYER_SEND1, index - 4)) ? PushColorManager.PUSH2_COLOR2_WHITE : PushColorManager.PUSH2_COLOR_BLACK;
-                default -> PushColorManager.PUSH2_COLOR_BLACK;
+                case 0 -> colorManager.getDeviceColor(modeManager.isActive(Modes.DEVICE_LAYER_VOLUME) ? ColorEx.WHITE : ColorEx.BLACK);
+                case 1 -> colorManager.getDeviceColor(modeManager.isActive(Modes.DEVICE_LAYER_PAN) ? ColorEx.WHITE : ColorEx.BLACK);
+                case 4, 5, 6, 7 -> colorManager.getDeviceColor(modeManager.isActive(Modes.get(Modes.DEVICE_LAYER_SEND1, index - 4)) ? ColorEx.WHITE : ColorEx.BLACK);
+                default -> colorManager.getDeviceColor(ColorEx.BLACK);
             };
-
         }
 
         return super.getButtonColor(buttonID);
-    }
-
-
-    /**
-     * Draw the fourth row.
-     *
-     * @param display The display
-     */
-    protected void drawRow4(final ITextDisplay display)
-    {
-        // Drum Pad Bank has size of 16, layers only 8
-        final int offset = this.getDrumPadIndex();
-        for (int i = 0; i < 8; i++) {
-            final IChannel layer = this.bank.getItem(offset + i);
-            final String   n     = StringUtils.shortenAndFixASCII(layer.getName(), layer.isSelected() ? 7 : 8);
-            display.setCell(3, i, layer.isSelected() ? Push1Display.SELECT_ARROW + n : n);
-        }
     }
 
 

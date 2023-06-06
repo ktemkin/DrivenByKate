@@ -4,14 +4,13 @@
 
 package com.ktemkin.controller.common.modes.track;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.Push1Display;
-import com.ktemkin.controller.ableton.push.controller.PushColorManager;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIColorManager;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import com.ktemkin.controller.common.modes.BaseMode;
-import de.mossgrabers.framework.controller.ButtonID;
 import com.ktemkin.framework.controller.display.IGraphicDisplay;
-import de.mossgrabers.framework.controller.display.ITextDisplay;
+import de.mossgrabers.framework.controller.ButtonID;
+import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.controller.valuechanger.IValueChanger;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.constants.Capability;
@@ -25,7 +24,6 @@ import de.mossgrabers.framework.mode.Modes;
 import de.mossgrabers.framework.parameter.IParameter;
 import de.mossgrabers.framework.utils.ButtonEvent;
 import de.mossgrabers.framework.utils.Pair;
-import de.mossgrabers.framework.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +48,7 @@ public abstract class AbstractTrackMode extends BaseMode<ITrack>
      * @param surface The control surface
      * @param model   The model
      */
-    protected AbstractTrackMode(final String name, final PushControlSurface surface, final IModel model)
+    protected AbstractTrackMode(final String name, final CommonUIControlSurface surface, final IModel model)
     {
         super(name, surface, model, model.getCurrentTrackBank());
 
@@ -167,7 +165,7 @@ public abstract class AbstractTrackMode extends BaseMode<ITrack>
             return;
         }
 
-        final PushConfiguration config = this.surface.getConfiguration();
+        final CommonUIConfiguration config = this.surface.getConfiguration();
         if (config.isMuteLongPressed() || config.isSoloLongPressed() || config.isMuteSoloLocked()) {
             if (config.isMuteState()) {
                 track.toggleMute();
@@ -299,14 +297,15 @@ public abstract class AbstractTrackMode extends BaseMode<ITrack>
     @Override
     public int getButtonColor(final ButtonID buttonID)
     {
-        final PushConfiguration config = this.surface.getConfiguration();
-        final ITrackBank        tb     = this.model.getCurrentTrackBank();
+        final CommonUIConfiguration config       = this.surface.getConfiguration();
+        final ITrackBank            tb           = this.model.getCurrentTrackBank();
+        final CommonUIColorManager  colorManager = this.getColorManager();
 
         int index = this.isButtonRow(0, buttonID);
         if (index >= 0) {
             final ITrack track = tb.getItem(index);
             if (!track.doesExist() || !track.isActivated()) {
-                return this.colorManager.getColorIndex(PushColorManager.PUSH_BLACK);
+                return colorManager.getDeviceColor(ColorEx.BLACK);
             }
 
             final ITrack  cursorTrack = this.model.getCursorTrack();
@@ -314,10 +313,10 @@ public abstract class AbstractTrackMode extends BaseMode<ITrack>
             final boolean isSel       = track.getIndex() == selIndex;
 
             if (track.isRecArm()) {
-                return this.colorManager.getColorIndex(isSel ? PushColorManager.PUSH_RED_HI : PushColorManager.PUSH_RED_LO);
+                return colorManager.getDeviceColor(isSel ? ColorEx.RED : ColorEx.DARK_RED);
             }
 
-            return this.colorManager.getColorIndex(isSel ? PushColorManager.PUSH_ORANGE_HI : PushColorManager.PUSH_YELLOW_LO);
+            return colorManager.getDeviceColor(isSel ? ColorEx.ORANGE : ColorEx.DARK_ORANGE);
         }
 
         index = this.isButtonRow(1, buttonID);
@@ -325,7 +324,7 @@ public abstract class AbstractTrackMode extends BaseMode<ITrack>
             final ITrack track = tb.getItem(index);
 
             if (this.surface.isPressed(ButtonID.STOP_CLIP)) {
-                return track.doesExist() && track.isPlaying() ? PushColorManager.PUSH2_COLOR_RED_HI : PushColorManager.PUSH2_COLOR_BLACK;
+                return colorManager.getDeviceColor(track.doesExist() && track.isPlaying() ? ColorEx.RED : ColorEx.BLACK);
             }
 
             if (config.isMuteLongPressed() || config.isSoloLongPressed() || config.isMuteSoloLocked()) {
@@ -336,35 +335,31 @@ public abstract class AbstractTrackMode extends BaseMode<ITrack>
             final ModeManager modeManager = this.surface.getModeManager();
             switch (index) {
                 case 0 -> {
-                    return modeManager.isActive(Modes.VOLUME) ? PushColorManager.PUSH2_COLOR2_WHITE : PushColorManager.PUSH2_COLOR_BLACK;
+                    return colorManager.getDeviceColor(modeManager.isActive(Modes.VOLUME) ? ColorEx.WHITE : ColorEx.BLACK);
                 }
                 case 1 -> {
-                    return modeManager.isActive(Modes.PAN) ? PushColorManager.PUSH2_COLOR2_WHITE : PushColorManager.PUSH2_COLOR_BLACK;
+                    return colorManager.getDeviceColor(modeManager.isActive(Modes.PAN) ? ColorEx.WHITE : ColorEx.BLACK);
                 }
                 case 2 -> {
-                    return modeManager.isActive(Modes.CROSSFADER) ? PushColorManager.PUSH2_COLOR2_WHITE : PushColorManager.PUSH2_COLOR_BLACK;
+                    return colorManager.getDeviceColor(modeManager.isActive(Modes.CROSSFADER) ? ColorEx.WHITE : ColorEx.BLACK);
                 }
                 case 4 -> {
-                    final Modes sendMode1 = Modes.SEND1;
-                    return modeManager.isActive(sendMode1) ? PushColorManager.PUSH2_COLOR2_WHITE : PushColorManager.PUSH2_COLOR_BLACK;
+                    return colorManager.getDeviceColor(modeManager.isActive(Modes.SEND1) ? ColorEx.WHITE : ColorEx.BLACK);
                 }
                 case 5 -> {
-                    final Modes sendMode2 = Modes.SEND2;
-                    return modeManager.isActive(sendMode2) ? PushColorManager.PUSH2_COLOR2_WHITE : PushColorManager.PUSH2_COLOR_BLACK;
+                    return colorManager.getDeviceColor(modeManager.isActive(Modes.SEND2) ? ColorEx.WHITE : ColorEx.BLACK);
                 }
                 case 6 -> {
-                    final Modes sendMode3 = Modes.SEND3;
-                    return modeManager.isActive(sendMode3) ? PushColorManager.PUSH2_COLOR2_WHITE : PushColorManager.PUSH2_COLOR_BLACK;
+                    return colorManager.getDeviceColor(modeManager.isActive(Modes.SEND3) ? ColorEx.WHITE : ColorEx.BLACK);
                 }
                 case 7 -> {
                     if (this.lastSendIsAccessible()) {
-                        final Modes sendMode4 = Modes.SEND4;
-                        return modeManager.isActive(sendMode4) ? PushColorManager.PUSH2_COLOR2_WHITE : PushColorManager.PUSH2_COLOR_BLACK;
+                        return colorManager.getDeviceColor(modeManager.isActive(Modes.SEND4) ? ColorEx.WHITE : ColorEx.BLACK);
                     }
-                    return tb.hasParent() ? PushColorManager.PUSH2_COLOR2_WHITE : PushColorManager.PUSH2_COLOR_BLACK;
+                    return colorManager.getDeviceColor(tb.hasParent() ? ColorEx.WHITE : ColorEx.BLACK);
                 }
                 default -> {
-                    return PushColorManager.PUSH2_COLOR_BLACK;
+                    return colorManager.getDeviceColor(ColorEx.BLACK);
                 }
             }
         }
@@ -375,43 +370,23 @@ public abstract class AbstractTrackMode extends BaseMode<ITrack>
 
     protected int getTrackStateColor(final boolean muteState, final ITrack t)
     {
+        final CommonUIColorManager colorManager = this.getColorManager();
+
         if (!t.doesExist()) {
-            return PushColorManager.PUSH2_COLOR_BLACK;
+            return colorManager.getDeviceColor(ColorEx.BLACK);
         }
 
         if (muteState) {
             if (t.isMute()) {
-                return PushColorManager.PUSH2_COLOR2_AMBER_LO;
+                return colorManager.getDeviceColor(ColorEx.DARK_YELLOW);
             }
         }
         else if (t.isSolo()) {
-            return PushColorManager.PUSH2_COLOR2_YELLOW_HI;
+            return colorManager.getDeviceColor(ColorEx.YELLOW);
         }
 
-        return PushColorManager.PUSH2_COLOR_BLACK;
+        return colorManager.getDeviceColor(ColorEx.BLACK);
     }
-
-
-    protected void drawRow4(final ITextDisplay d)
-    {
-        final ITrackBank       tb       = this.model.getCurrentTrackBank();
-        final Optional<ITrack> selTrack = tb.getSelectedItem();
-
-        // Format track names
-        final int selIndex = selTrack.isEmpty() ? -1 : selTrack.get().getIndex();
-        for (int i = 0; i < 8; i++) {
-            final boolean isSel     = i == selIndex;
-            final ITrack  t         = tb.getItem(i);
-            String        trackName = t.getName();
-            if (t.doesExist() && t.isGroup()) {
-                trackName = (t.isGroupExpanded() ? Push1Display.THREE_ROWS : Push1Display.FOLDER) + trackName;
-            }
-            final String n = StringUtils.shortenAndFixASCII(trackName, isSel ? 7 : 8);
-            d.setCell(3, i, isSel ? Push1Display.SELECT_ARROW + n : n);
-        }
-    }
-
-    // Push 2
 
 
     // Called from sub-classes
@@ -419,10 +394,10 @@ public abstract class AbstractTrackMode extends BaseMode<ITrack>
     {
         this.updateMenuItems(selectedMenu);
 
-        final IValueChanger     valueChanger = this.model.getValueChanger();
-        final ITrackBank        tb           = this.model.getCurrentTrackBank();
-        final PushConfiguration config       = this.surface.getConfiguration();
-        final ICursorTrack      cursorTrack  = this.model.getCursorTrack();
+        final IValueChanger         valueChanger = this.model.getValueChanger();
+        final ITrackBank            tb           = this.model.getCurrentTrackBank();
+        final CommonUIConfiguration config       = this.surface.getConfiguration();
+        final ICursorTrack          cursorTrack  = this.model.getCursorTrack();
         for (int i = 0; i < 8; i++) {
             final ITrack                t              = tb.getItem(i);
             final Pair<String, Boolean> pair           = this.menu.get(i);
@@ -443,7 +418,7 @@ public abstract class AbstractTrackMode extends BaseMode<ITrack>
             this.updateStopMenu();
             return;
         }
-        final PushConfiguration config = this.surface.getConfiguration();
+        final CommonUIConfiguration config = this.surface.getConfiguration();
         if (config.isMuteLongPressed() || config.isMuteSoloLocked() && config.isMuteState()) {
             this.updateMuteMenu();
         }

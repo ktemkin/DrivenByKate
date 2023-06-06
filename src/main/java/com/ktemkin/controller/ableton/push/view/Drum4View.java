@@ -6,6 +6,8 @@ package com.ktemkin.controller.ableton.push.view;
 
 import com.ktemkin.controller.ableton.push.PushConfiguration;
 import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.clip.INoteClip;
@@ -19,14 +21,17 @@ import de.mossgrabers.framework.view.sequencer.AbstractDrum4View;
  *
  * @author Jürgen Moßgraber
  */
-public class Drum4View extends AbstractDrum4View<PushControlSurface, PushConfiguration> {
+public class Drum4View extends AbstractDrum4View<CommonUIControlSurface, CommonUIConfiguration>
+{
+
     /**
      * Constructor.
      *
      * @param surface The surface
      * @param model   The model
      */
-    public Drum4View(final PushControlSurface surface, final IModel model) {
+    public Drum4View(final CommonUIControlSurface surface, final IModel model)
+    {
         super(surface, model, true);
     }
 
@@ -35,9 +40,11 @@ public class Drum4View extends AbstractDrum4View<PushControlSurface, PushConfigu
      * {@inheritDoc}
      */
     @Override
-    public String getButtonColorID(final ButtonID buttonID) {
-        if (ButtonID.isSceneButton(buttonID) && this.surface.isPressed(ButtonID.REPEAT))
+    public String getButtonColorID(final ButtonID buttonID)
+    {
+        if (ButtonID.isSceneButton(buttonID) && this.surface.isPressed(ButtonID.REPEAT)) {
             return NoteRepeatSceneHelper.getButtonColorID(this.surface, buttonID);
+        }
         return super.getButtonColorID(buttonID);
     }
 
@@ -46,9 +53,11 @@ public class Drum4View extends AbstractDrum4View<PushControlSurface, PushConfigu
      * {@inheritDoc}
      */
     @Override
-    public void onGridNoteLongPress(final int note) {
-        if (!this.isActive())
+    public void onGridNoteLongPress(final int note)
+    {
+        if (!this.isActive()) {
             return;
+        }
 
         final int index = note - DRUM_START_KEY;
         this.surface.getButton(ButtonID.get(ButtonID.PAD1, index)).setConsumed();
@@ -69,9 +78,11 @@ public class Drum4View extends AbstractDrum4View<PushControlSurface, PushConfigu
      * {@inheritDoc}
      */
     @Override
-    public void onButton(final ButtonID buttonID, final ButtonEvent event, final int velocity) {
-        if (!ButtonID.isSceneButton(buttonID) || event != ButtonEvent.DOWN)
+    public void onButton(final ButtonID buttonID, final ButtonEvent event, final int velocity)
+    {
+        if (!ButtonID.isSceneButton(buttonID) || event != ButtonEvent.DOWN) {
             return;
+        }
 
         final int index = buttonID.ordinal() - ButtonID.SCENE1.ordinal();
         if (this.surface.isPressed(ButtonID.REPEAT)) {
@@ -87,21 +98,25 @@ public class Drum4View extends AbstractDrum4View<PushControlSurface, PushConfigu
      * {@inheritDoc}
      */
     @Override
-    protected boolean handleSequencerAreaButtonCombinations(final INoteClip clip, final NotePosition notePosition, final int row, final int velocity, final int accentVelocity) {
+    protected boolean handleSequencerAreaButtonCombinations(final INoteClip clip, final NotePosition notePosition, final int row, final int velocity, final int accentVelocity)
+    {
         final boolean isSelectPressed = this.surface.isSelectPressed();
 
         if (this.surface.isShiftPressed()) {
-            if (velocity > 0)
+            if (velocity > 0) {
                 this.handleSequencerAreaRepeatOperator(clip, notePosition, velocity, !isSelectPressed);
+            }
             return true;
         }
 
         if (isSelectPressed) {
-            if (velocity > 0)
+            if (velocity > 0) {
                 this.editNote(clip, notePosition, true);
+            }
             return true;
         }
 
         return super.handleSequencerAreaButtonCombinations(clip, notePosition, row, velocity, accentVelocity);
     }
+
 }

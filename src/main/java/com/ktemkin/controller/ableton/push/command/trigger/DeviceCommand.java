@@ -4,8 +4,8 @@
 
 package com.ktemkin.controller.ableton.push.command.trigger;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.command.core.AbstractTriggerCommand;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.mode.Modes;
@@ -17,14 +17,17 @@ import de.mossgrabers.framework.utils.ButtonEvent;
  *
  * @author Jürgen Moßgraber
  */
-public class DeviceCommand extends AbstractTriggerCommand<PushControlSurface, PushConfiguration> {
+public class DeviceCommand extends AbstractTriggerCommand<CommonUIControlSurface, CommonUIConfiguration>
+{
+
     /**
      * Constructor.
      *
      * @param model   The model
      * @param surface The surface
      */
-    public DeviceCommand(final IModel model, final PushControlSurface surface) {
+    public DeviceCommand(final IModel model, final CommonUIControlSurface surface)
+    {
         super(model, surface);
     }
 
@@ -33,8 +36,11 @@ public class DeviceCommand extends AbstractTriggerCommand<PushControlSurface, Pu
      * {@inheritDoc}
      */
     @Override
-    public void execute(final ButtonEvent event, final int velocity) {
-        if (event == ButtonEvent.DOWN)
+    public void execute(final ButtonEvent event, final int velocity)
+    {
+        if (event == ButtonEvent.DOWN) {
             this.surface.getModeManager().setActive(Modes.DEVICE_PARAMS);
+        }
     }
+
 }

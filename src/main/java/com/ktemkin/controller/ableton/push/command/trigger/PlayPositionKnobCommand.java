@@ -4,8 +4,8 @@
 
 package com.ktemkin.controller.ableton.push.command.trigger;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.command.continuous.PlayPositionCommand;
 import de.mossgrabers.framework.command.core.TriggerCommand;
 import de.mossgrabers.framework.daw.IModel;
@@ -17,14 +17,17 @@ import de.mossgrabers.framework.utils.ButtonEvent;
  *
  * @author Jürgen Moßgraber
  */
-public class PlayPositionKnobCommand extends PlayPositionCommand<PushControlSurface, PushConfiguration> implements TriggerCommand {
+public class PlayPositionKnobCommand extends PlayPositionCommand<CommonUIControlSurface, CommonUIConfiguration> implements TriggerCommand
+{
+
     /**
      * Constructor.
      *
      * @param model   The model
      * @param surface The surface
      */
-    public PlayPositionKnobCommand(final IModel model, final PushControlSurface surface) {
+    public PlayPositionKnobCommand(final IModel model, final CommonUIControlSurface surface)
+    {
         super(model, surface);
     }
 
@@ -33,7 +36,8 @@ public class PlayPositionKnobCommand extends PlayPositionCommand<PushControlSurf
      * {@inheritDoc}
      */
     @Override
-    public void execute(final int value) {
+    public void execute(final int value)
+    {
         if (this.surface.isSelectPressed()) {
             this.transport.changeLoopLength(this.model.getValueChanger().isIncrease(value), this.surface.isKnobSensitivitySlow());
             return;
@@ -48,22 +52,27 @@ public class PlayPositionKnobCommand extends PlayPositionCommand<PushControlSurf
      * {@inheritDoc}
      */
     @Override
-    public void execute(final ButtonEvent event, final int velocity) {
+    public void execute(final ButtonEvent event, final int velocity)
+    {
         final boolean activate = event != ButtonEvent.UP;
 
         if (this.surface.isSelectPressed()) {
-            if (activate)
+            if (activate) {
                 this.mvHelper.delayDisplay(() -> "Loop Length: " + this.transport.getLoopLengthBeatText());
+            }
             return;
         }
 
         this.transport.setTempoIndication(activate);
-        if (activate)
+        if (activate) {
             this.displayPosition();
+        }
     }
 
 
-    private void displayPosition() {
+    private void displayPosition()
+    {
         this.surface.getDisplay().notify(this.transport.getBeatText() + " - " + this.transport.getPositionText());
     }
+
 }

@@ -4,8 +4,8 @@
 
 package com.ktemkin.controller.ableton.push.command.trigger;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.command.trigger.clip.QuantizeCommand;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.daw.IModel;
@@ -19,14 +19,17 @@ import de.mossgrabers.framework.utils.ButtonEvent;
  *
  * @author Jürgen Moßgraber
  */
-public class PushQuantizeCommand extends QuantizeCommand<PushControlSurface, PushConfiguration> {
+public class PushQuantizeCommand extends QuantizeCommand<CommonUIControlSurface, CommonUIConfiguration>
+{
+
     /**
      * Constructor.
      *
      * @param model   The model
      * @param surface The surface
      */
-    public PushQuantizeCommand(final IModel model, final PushControlSurface surface) {
+    public PushQuantizeCommand(final IModel model, final CommonUIControlSurface surface)
+    {
         super(model, surface);
     }
 
@@ -35,7 +38,8 @@ public class PushQuantizeCommand extends QuantizeCommand<PushControlSurface, Pus
      * {@inheritDoc}
      */
     @Override
-    public void execute(final ButtonEvent event, final int velocity) {
+    public void execute(final ButtonEvent event, final int velocity)
+    {
         final ModeManager modeManager = this.surface.getModeManager();
         if (event == ButtonEvent.LONG || event == ButtonEvent.DOWN && this.surface.isShiftPressed()) {
             modeManager.setTemporary(Modes.REC_ARM);
@@ -43,12 +47,16 @@ public class PushQuantizeCommand extends QuantizeCommand<PushControlSurface, Pus
             return;
         }
 
-        if (event != ButtonEvent.UP)
+        if (event != ButtonEvent.UP) {
             return;
+        }
 
-        if (Modes.REC_ARM.equals(modeManager.getActiveID()))
+        if (Modes.REC_ARM.equals(modeManager.getActiveID())) {
             modeManager.restore();
-        else
+        }
+        else {
             this.quantize();
+        }
     }
+
 }

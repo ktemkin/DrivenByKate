@@ -4,8 +4,8 @@
 
 package com.ktemkin.controller.ableton.push.command.trigger;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.command.trigger.Direction;
 import de.mossgrabers.framework.command.trigger.mode.CursorCommand;
 import de.mossgrabers.framework.daw.IModel;
@@ -19,7 +19,9 @@ import de.mossgrabers.framework.view.Views;
  *
  * @author Jürgen Moßgraber
  */
-public class PushCursorCommand extends CursorCommand<PushControlSurface, PushConfiguration> {
+public class PushCursorCommand extends CursorCommand<CommonUIControlSurface, CommonUIConfiguration>
+{
+
     private final ISceneBank sceneBank64;
 
 
@@ -30,7 +32,8 @@ public class PushCursorCommand extends CursorCommand<PushControlSurface, PushCon
      * @param model     The model
      * @param surface   The surface
      */
-    public PushCursorCommand(final Direction direction, final IModel model, final PushControlSurface surface) {
+    public PushCursorCommand(final Direction direction, final IModel model, final CommonUIControlSurface surface)
+    {
         super(direction, model, surface, false);
 
         this.sceneBank64 = model.getSceneBank(64);
@@ -41,12 +44,15 @@ public class PushCursorCommand extends CursorCommand<PushControlSurface, PushCon
      * Scroll scenes up.
      */
     @Override
-    protected void scrollUp() {
+    protected void scrollUp()
+    {
         final ISceneBank sceneBank = this.getSceneBank();
-        if (this.surface.isShiftPressed() || this.isScenePlay())
+        if (this.surface.isShiftPressed() || this.isScenePlay()) {
             sceneBank.selectPreviousPage();
-        else
+        }
+        else {
             sceneBank.scrollBackwards();
+        }
     }
 
 
@@ -54,12 +60,15 @@ public class PushCursorCommand extends CursorCommand<PushControlSurface, PushCon
      * Scroll scenes down.
      */
     @Override
-    protected void scrollDown() {
+    protected void scrollDown()
+    {
         final ISceneBank sceneBank = this.getSceneBank();
-        if (this.surface.isShiftPressed() || this.isScenePlay())
+        if (this.surface.isShiftPressed() || this.isScenePlay()) {
             sceneBank.selectNextPage();
-        else
+        }
+        else {
             sceneBank.scrollForwards();
+        }
     }
 
 
@@ -67,10 +76,12 @@ public class PushCursorCommand extends CursorCommand<PushControlSurface, PushCon
      * {@inheritDoc}
      */
     @Override
-    protected void scrollLeft() {
+    protected void scrollLeft()
+    {
         final IMode activeMode = this.surface.getModeManager().getActive();
-        if (activeMode != null)
+        if (activeMode != null) {
             activeMode.selectPreviousItemPage();
+        }
     }
 
 
@@ -78,10 +89,12 @@ public class PushCursorCommand extends CursorCommand<PushControlSurface, PushCon
      * {@inheritDoc}
      */
     @Override
-    protected void scrollRight() {
+    protected void scrollRight()
+    {
         final IMode activeMode = this.surface.getModeManager().getActive();
-        if (activeMode != null)
+        if (activeMode != null) {
             activeMode.selectNextItemPage();
+        }
     }
 
 
@@ -89,9 +102,11 @@ public class PushCursorCommand extends CursorCommand<PushControlSurface, PushCon
      * {@inheritDoc}
      */
     @Override
-    protected ISceneBank getSceneBank() {
-        if (this.isScenePlay())
+    protected ISceneBank getSceneBank()
+    {
+        if (this.isScenePlay()) {
             return this.sceneBank64;
+        }
         return this.model.getCurrentTrackBank().getSceneBank();
     }
 
@@ -100,19 +115,22 @@ public class PushCursorCommand extends CursorCommand<PushControlSurface, PushCon
      * {@inheritDoc}
      */
     @Override
-    protected void updateArrowStates() {
+    protected void updateArrowStates()
+    {
         final ISceneBank sceneBank = this.getSceneBank();
-        this.canScrollUp = sceneBank.canScrollBackwards();
+        this.canScrollUp   = sceneBank.canScrollBackwards();
         this.canScrollDown = sceneBank.canScrollForwards();
 
-        final IMode mode = this.surface.getModeManager().getActive();
+        final IMode   mode         = this.surface.getModeManager().getActive();
         final boolean shiftPressed = this.surface.isShiftPressed();
-        this.canScrollLeft = mode != null && (shiftPressed ? mode.hasPreviousItem() : mode.hasPreviousItemPage());
+        this.canScrollLeft  = mode != null && (shiftPressed ? mode.hasPreviousItem() : mode.hasPreviousItemPage());
         this.canScrollRight = mode != null && (shiftPressed ? mode.hasNextItem() : mode.hasNextItemPage());
     }
 
 
-    private boolean isScenePlay() {
+    private boolean isScenePlay()
+    {
         return this.surface.getViewManager().isActive(Views.SCENE_PLAY);
     }
+
 }

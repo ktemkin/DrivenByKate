@@ -4,8 +4,8 @@
 
 package com.ktemkin.controller.ableton.push.command.continuous;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.command.core.AbstractTriggerCommand;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.daw.IModel;
@@ -22,14 +22,17 @@ import de.mossgrabers.framework.utils.ButtonEvent;
  *
  * @author Jürgen Moßgraber
  */
-public class ConfigurePitchbendCommand extends AbstractTriggerCommand<PushControlSurface, PushConfiguration> {
+public class ConfigurePitchbendCommand extends AbstractTriggerCommand<CommonUIControlSurface, CommonUIConfiguration>
+{
+
     /**
      * Constructor.
      *
      * @param model   The model
      * @param surface The surface
      */
-    public ConfigurePitchbendCommand(final IModel model, final PushControlSurface surface) {
+    public ConfigurePitchbendCommand(final IModel model, final CommonUIControlSurface surface)
+    {
         super(model, surface);
     }
 
@@ -38,29 +41,32 @@ public class ConfigurePitchbendCommand extends AbstractTriggerCommand<PushContro
      * {@inheritDoc}
      */
     @Override
-    public void executeNormal(final ButtonEvent event) {
+    public void executeNormal(final ButtonEvent event)
+    {
         // Reset parameters if Delete button is held
 
-        if (event != ButtonEvent.DOWN || !this.surface.isDeletePressed())
+        if (event != ButtonEvent.DOWN || !this.surface.isDeletePressed()) {
             return;
+        }
 
         this.surface.setTriggerConsumed(ButtonID.DELETE);
 
         IParameter parameter = null;
 
         switch (this.surface.getConfiguration().getRibbonMode()) {
-            case PushConfiguration.RIBBON_MODE_FADER:
+            case CommonUIConfiguration.RIBBON_MODE_FADER:
                 parameter = this.model.getCursorTrack().getVolumeParameter();
                 break;
 
-            case PushConfiguration.RIBBON_MODE_LAST_TOUCHED:
+            case CommonUIConfiguration.RIBBON_MODE_LAST_TOUCHED:
                 final IMode activeMode = this.surface.getModeManager().getActive();
                 if (activeMode != null) {
                     final int touchedKnob = activeMode.getLastTouchedKnob();
                     if (touchedKnob >= 0) {
                         final IParameterProvider parameterProvider = activeMode.getParameterProvider();
-                        if (parameterProvider != null)
+                        if (parameterProvider != null) {
                             parameter = parameterProvider.get(touchedKnob);
+                        }
                     }
                 }
                 break;
@@ -70,8 +76,9 @@ public class ConfigurePitchbendCommand extends AbstractTriggerCommand<PushContro
                 break;
         }
 
-        if (parameter != null)
+        if (parameter != null) {
             parameter.resetValue();
+        }
     }
 
 
@@ -79,11 +86,15 @@ public class ConfigurePitchbendCommand extends AbstractTriggerCommand<PushContro
      * {@inheritDoc}
      */
     @Override
-    public void executeShifted(final ButtonEvent event) {
-        if (event != ButtonEvent.DOWN)
+    public void executeShifted(final ButtonEvent event)
+    {
+        if (event != ButtonEvent.DOWN) {
             return;
+        }
         final ModeManager modeManager = this.surface.getModeManager();
-        if (!modeManager.isActive(Modes.RIBBON))
+        if (!modeManager.isActive(Modes.RIBBON)) {
             modeManager.setTemporary(Modes.RIBBON);
+        }
     }
+
 }

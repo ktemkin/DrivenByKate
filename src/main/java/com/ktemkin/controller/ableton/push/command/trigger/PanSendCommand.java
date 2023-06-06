@@ -4,8 +4,8 @@
 
 package com.ktemkin.controller.ableton.push.command.trigger;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.command.core.AbstractTriggerCommand;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.bank.ITrackBank;
@@ -19,7 +19,7 @@ import de.mossgrabers.framework.utils.ButtonEvent;
  *
  * @author Jürgen Moßgraber
  */
-public class PanSendCommand extends AbstractTriggerCommand<PushControlSurface, PushConfiguration>
+public class PanSendCommand extends AbstractTriggerCommand<CommonUIControlSurface, CommonUIConfiguration>
 {
 
     /**
@@ -28,7 +28,7 @@ public class PanSendCommand extends AbstractTriggerCommand<PushControlSurface, P
      * @param model   The model
      * @param surface The surface
      */
-    public PanSendCommand(final IModel model, final PushControlSurface surface)
+    public PanSendCommand(final IModel model, final CommonUIControlSurface surface)
     {
         super(model, surface);
     }
@@ -48,8 +48,8 @@ public class PanSendCommand extends AbstractTriggerCommand<PushControlSurface, P
         final Modes       currentMode = modeManager.getActiveIDIgnoreTemporary();
 
         // Layer mode selection for Push 1
-        Modes                   mode;
-        final PushConfiguration config = this.surface.getConfiguration();
+        Modes                       mode;
+        final CommonUIConfiguration config = this.surface.getConfiguration();
         if (this.model.isEffectTrackBankActive()) {
             // No Sends on FX tracks
             mode = Modes.PAN;
