@@ -4,9 +4,13 @@
 
 package com.ktemkin.framework.graphics.canvas.component;
 
+import com.ktemkin.framework.graphics.IGraphicsContext;
 import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.daw.resource.ChannelType;
-import de.mossgrabers.framework.graphics.*;
+import de.mossgrabers.framework.graphics.Align;
+import de.mossgrabers.framework.graphics.IGraphicsConfiguration;
+import de.mossgrabers.framework.graphics.IGraphicsDimensions;
+import de.mossgrabers.framework.graphics.IGraphicsInfo;
 import de.mossgrabers.framework.graphics.canvas.component.LabelComponent.LabelLayout;
 
 
@@ -124,10 +128,10 @@ public class ParameterComponent extends de.mossgrabers.framework.graphics.canvas
     public void draw(final IGraphicsInfo info) {
         super.draw(info);
 
-        final IGraphicsContext gc = info.getContext();
-        final IGraphicsDimensions dimensions = info.getDimensions();
+        final IGraphicsContext       gc            = (IGraphicsContext) info.getContext();
+        final IGraphicsDimensions    dimensions    = info.getDimensions();
         final IGraphicsConfiguration configuration = info.getConfiguration();
-        final double left = info.getBounds().left();
+        final double                 left          = info.getBounds().left();
         final double width = info.getBounds().width();
         final double height = info.getBounds().height();
 
@@ -154,8 +158,8 @@ public class ParameterComponent extends de.mossgrabers.framework.graphics.canvas
         final ColorEx textColor = configuration.getColorText();
         final double fontSize = elementHeight * 2 / 3;
         final double halfInset = inset * 0.5;
-        gc.drawTextInBounds(this.paramValueText, left + inset - 1, controlsTop - halfInset, elementWidth, elementHeight, Align.CENTER, textColor, fontSize * info.getFontScalingFactor() * 1.4);
-        gc.drawTextInBounds(this.paramName, left + inset - 1, controlsTop + halfInset + elementHeight * 3, elementWidth, elementHeight, Align.CENTER, textColor, fontSize * info.getFontScalingFactor());
+        gc.drawTextInBounds(this.paramValueText, left + inset - 1, controlsTop - halfInset, elementWidth, elementHeight, Align.CENTER, textColor, fontSize * 1.4);
+        gc.drawTextInBounds(this.paramName, left + inset - 1, controlsTop + halfInset + elementHeight * 3, elementWidth, elementHeight, Align.CENTER, textColor, fontSize);
 
         // Value knob
         if (isValueMissing)
