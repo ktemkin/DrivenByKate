@@ -4,8 +4,8 @@
 
 package com.ktemkin.controller.ableton.push.command.trigger;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.command.core.AbstractTriggerCommand;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.featuregroup.IView;
@@ -20,14 +20,17 @@ import de.mossgrabers.framework.view.sequencer.AbstractSequencerView;
  *
  * @author Jürgen Moßgraber
  */
-public class PageRightCommand extends AbstractTriggerCommand<PushControlSurface, PushConfiguration> {
+public class PageRightCommand extends AbstractTriggerCommand<CommonUIControlSurface, CommonUIConfiguration>
+{
+
     /**
      * Constructor.
      *
      * @param model   The model
      * @param surface The surface
      */
-    public PageRightCommand(final IModel model, final PushControlSurface surface) {
+    public PageRightCommand(final IModel model, final CommonUIControlSurface surface)
+    {
         super(model, surface);
     }
 
@@ -36,16 +39,20 @@ public class PageRightCommand extends AbstractTriggerCommand<PushControlSurface,
      * {@inheritDoc}
      */
     @Override
-    public void execute(final ButtonEvent event, final int velocity) {
+    public void execute(final ButtonEvent event, final int velocity)
+    {
         final ViewManager viewManager = this.surface.getViewManager();
         if (viewManager.isActive(Views.SESSION)) {
-            if (event == ButtonEvent.DOWN)
+            if (event == ButtonEvent.DOWN) {
                 this.model.getCurrentTrackBank().selectNextPage();
+            }
             return;
         }
 
         final IView activeView = viewManager.getActive();
-        if (activeView instanceof final AbstractSequencerView<?, ?> sequencerView)
+        if (activeView instanceof final AbstractSequencerView<?, ?> sequencerView) {
             sequencerView.onRight(event);
+        }
     }
+
 }

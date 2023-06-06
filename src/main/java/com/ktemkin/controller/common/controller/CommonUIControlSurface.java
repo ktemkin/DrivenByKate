@@ -6,6 +6,7 @@ package com.ktemkin.controller.common.controller;
 
 import com.ktemkin.controller.common.CommonUIConfiguration;
 import de.mossgrabers.framework.controller.AbstractControlSurface;
+import de.mossgrabers.framework.controller.IControlSurface;
 import de.mossgrabers.framework.controller.color.ColorManager;
 import de.mossgrabers.framework.controller.grid.PadGridImpl;
 import de.mossgrabers.framework.daw.IHost;
@@ -21,7 +22,7 @@ import de.mossgrabers.framework.daw.midi.IMidiOutput;
  * @author Kate Temkin
  * @author Jürgen Moßgraber
  */
-public class CommonUIControlSurface<C extends CommonUIConfiguration> extends AbstractControlSurface<C>
+public class CommonUIControlSurface extends AbstractControlSurface<CommonUIConfiguration> implements IControlSurface<CommonUIConfiguration>
 {
 
     /**
@@ -36,7 +37,7 @@ public class CommonUIControlSurface<C extends CommonUIConfiguration> extends Abs
     public CommonUIControlSurface(final IHost host, final ColorManager colorManager, final CommonUIConfiguration configuration, final IMidiOutput output, final IMidiInput input, final double width, final double height)
     {
         super(host,
-                (C) configuration,
+                configuration,
                 colorManager,
                 output,
                 input,

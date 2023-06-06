@@ -4,8 +4,8 @@
 
 package com.ktemkin.controller.ableton.push.command.trigger;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.command.core.AbstractTriggerCommand;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.featuregroup.IView;
@@ -18,7 +18,9 @@ import de.mossgrabers.framework.view.TransposeView;
  *
  * @author Jürgen Moßgraber
  */
-public class OctaveCommand extends AbstractTriggerCommand<PushControlSurface, PushConfiguration> {
+public class OctaveCommand extends AbstractTriggerCommand<CommonUIControlSurface, CommonUIConfiguration>
+{
+
     private final boolean isUp;
 
 
@@ -29,7 +31,8 @@ public class OctaveCommand extends AbstractTriggerCommand<PushControlSurface, Pu
      * @param model   The model
      * @param surface The surface
      */
-    public OctaveCommand(final boolean isUp, final IModel model, final PushControlSurface surface) {
+    public OctaveCommand(final boolean isUp, final IModel model, final CommonUIControlSurface surface)
+    {
         super(model, surface);
 
         this.isUp = isUp;
@@ -40,13 +43,17 @@ public class OctaveCommand extends AbstractTriggerCommand<PushControlSurface, Pu
      * {@inheritDoc}
      */
     @Override
-    public void execute(final ButtonEvent event, final int velocity) {
+    public void execute(final ButtonEvent event, final int velocity)
+    {
         final IView activeView = this.surface.getViewManager().getActive();
         if (activeView instanceof final TransposeView transposeView) {
-            if (this.isUp)
+            if (this.isUp) {
                 transposeView.onOctaveUp(event);
-            else
+            }
+            else {
                 transposeView.onOctaveDown(event);
+            }
         }
     }
+
 }

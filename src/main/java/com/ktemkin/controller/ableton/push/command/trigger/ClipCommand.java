@@ -4,8 +4,8 @@
 
 package com.ktemkin.controller.ableton.push.command.trigger;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import com.ktemkin.controller.common.modes.track.ClipMode;
 import de.mossgrabers.framework.command.core.AbstractTriggerCommand;
 import de.mossgrabers.framework.daw.IModel;
@@ -19,7 +19,7 @@ import de.mossgrabers.framework.utils.ButtonEvent;
  *
  * @author Jürgen Moßgraber
  */
-public class ClipCommand extends AbstractTriggerCommand<PushControlSurface, PushConfiguration>
+public class ClipCommand extends AbstractTriggerCommand<CommonUIControlSurface, CommonUIConfiguration>
 {
 
     /**
@@ -28,7 +28,7 @@ public class ClipCommand extends AbstractTriggerCommand<PushControlSurface, Push
      * @param model   The model
      * @param surface The surface
      */
-    public ClipCommand(final IModel model, final PushControlSurface surface)
+    public ClipCommand(final IModel model, final CommonUIControlSurface surface)
     {
         super(model, surface);
     }
@@ -40,13 +40,17 @@ public class ClipCommand extends AbstractTriggerCommand<PushControlSurface, Push
     @Override
     public void execute(final ButtonEvent event, final int velocity)
     {
-        if (event != ButtonEvent.DOWN) {return;}
+        if (event != ButtonEvent.DOWN) {
+            return;
+        }
 
         final ModeManager modeManager = this.surface.getModeManager();
         if (modeManager.isActive(Modes.CLIP)) {
             ((ClipMode) modeManager.get(Modes.CLIP)).togglePianoRoll();
         }
-        else {modeManager.setActive(Modes.CLIP);}
+        else {
+            modeManager.setActive(Modes.CLIP);
+        }
     }
 
 }

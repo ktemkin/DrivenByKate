@@ -4,7 +4,7 @@
 
 package com.ktemkin.controller.ableton.push.parameterprovider;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
+import com.ktemkin.controller.common.CommonUIConfiguration;
 import de.mossgrabers.framework.daw.data.IChannel;
 import de.mossgrabers.framework.daw.data.ISpecificDevice;
 import de.mossgrabers.framework.daw.data.empty.EmptyParameter;
@@ -21,7 +21,7 @@ import de.mossgrabers.framework.parameterprovider.device.SelectedLayerOrDrumPadP
 public class PushSelectedLayerOrDrumPadParameterProvider extends SelectedLayerOrDrumPadParameterProvider implements ISettingObserver
 {
 
-    private final PushConfiguration configuration;
+    private final CommonUIConfiguration configuration;
 
 
     /**
@@ -30,7 +30,7 @@ public class PushSelectedLayerOrDrumPadParameterProvider extends SelectedLayerOr
      * @param configuration The configuration
      * @param device        Uses the layer bank from the given device to get the parameters
      */
-    public PushSelectedLayerOrDrumPadParameterProvider(final ISpecificDevice device, final PushConfiguration configuration)
+    public PushSelectedLayerOrDrumPadParameterProvider(final ISpecificDevice device, final CommonUIConfiguration configuration)
     {
         super(device);
 

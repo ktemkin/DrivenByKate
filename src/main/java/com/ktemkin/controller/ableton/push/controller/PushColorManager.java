@@ -4,6 +4,7 @@
 
 package com.ktemkin.controller.ableton.push.controller;
 
+import com.ktemkin.controller.common.controller.CommonUIColorManager;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.controller.color.ColorIndexException;
@@ -13,6 +14,7 @@ import de.mossgrabers.framework.daw.DAWColor;
 import de.mossgrabers.framework.featuregroup.AbstractFeatureGroup;
 import de.mossgrabers.framework.featuregroup.AbstractMode;
 import de.mossgrabers.framework.scale.Scales;
+import de.mossgrabers.framework.utils.Pair;
 import de.mossgrabers.framework.view.AbstractPlayView;
 import de.mossgrabers.framework.view.AbstractSessionView;
 import de.mossgrabers.framework.view.ScenePlayView;
@@ -20,14 +22,15 @@ import de.mossgrabers.framework.view.sequencer.AbstractDrumView;
 import de.mossgrabers.framework.view.sequencer.AbstractSequencerView;
 import de.mossgrabers.framework.view.sequencer.ClipLengthView;
 
+import java.util.List;
+
 
 /**
  * Different colors to use for the pads and buttons of Push 1 and Push 2.
  *
  * @author Jürgen Moßgraber
  */
-@SuppressWarnings ("javadoc")
-public class PushColorManager extends ColorManager
+public class PushColorManager extends CommonUIColorManager
 {
 
     /**
@@ -634,7 +637,98 @@ public class PushColorManager extends ColorManager
         this.registerColorIndex(PUSH_BUTTON_STATE_STOP_ON, PUSH2_COLOR2_RED_LO);
         this.registerColorIndex(PUSH_BUTTON_STATE_STOP_HI, PUSH2_COLOR2_RED_HI);
 
-        for (int i = 0; i < 128; i++) {this.registerColor(i, getPaletteColor(i));}
+        for (int i = 0; i < 128; i++) {
+            this.registerColor(i, getPaletteColor(i));
+        }
+    }
+
+
+    @Override
+    protected List<Pair<Integer, ColorEx>> getColorMappings()
+    {
+        // FIXME(ktemkin): set these to more accurately match the push
+        return List.of(
+                new Pair<>(PUSH2_COLOR2_BLACK, ColorEx.BLACK),
+                new Pair<>(PUSH2_COLOR2_GREY_LO, ColorEx.DARK_GRAY),
+                new Pair<>(PUSH2_COLOR2_GREY_MD, ColorEx.GRAY),
+                new Pair<>(PUSH2_COLOR2_GREY_LT, ColorEx.LIGHT_GRAY),
+                new Pair<>(PUSH2_COLOR2_WHITE, ColorEx.WHITE),
+                new Pair<>(PUSH2_COLOR2_ROSE, hi(ColorEx.PINK)),
+                new Pair<>(PUSH2_COLOR2_RED_HI, hi(ColorEx.RED)),
+                new Pair<>(PUSH2_COLOR2_RED, ColorEx.RED_WINE),
+                new Pair<>(PUSH2_COLOR2_RED_LO, ColorEx.DARK_RED),
+                new Pair<>(PUSH2_COLOR2_RED_AMBER, lo(ColorEx.DARK_RED)),
+                new Pair<>(PUSH2_COLOR2_AMBER_HI, hi(hi(ColorEx.YELLOW))),
+                new Pair<>(PUSH2_COLOR2_AMBER, hi(ColorEx.YELLOW)),
+                new Pair<>(PUSH2_COLOR2_AMBER_LO, ColorEx.DARK_YELLOW),
+                new Pair<>(PUSH2_COLOR2_AMBER_YELLOW, ColorEx.YELLOW),
+                new Pair<>(PUSH2_COLOR2_YELLOW_HI, hi(ColorEx.YELLOW)),
+                new Pair<>(PUSH2_COLOR2_YELLOW, ColorEx.YELLOW),
+                new Pair<>(PUSH2_COLOR2_YELLOW_LO, ColorEx.DARK_YELLOW),
+                new Pair<>(PUSH2_COLOR2_YELLOW_LIME, ColorEx.GREEN),
+                new Pair<>(PUSH2_COLOR2_LIME_HI, hi(hi(ColorEx.GREEN))),
+                new Pair<>(PUSH2_COLOR2_LIME, hi(ColorEx.GREEN)),
+                new Pair<>(PUSH2_COLOR2_LIME_LO, ColorEx.DARK_GREEN),
+                new Pair<>(PUSH2_COLOR2_LIME_GREEN, ColorEx.GREEN),
+                new Pair<>(PUSH2_COLOR2_GREEN_HI, ColorEx.GREEN),
+                new Pair<>(PUSH2_COLOR2_GREEN, ColorEx.GREEN),
+                new Pair<>(PUSH2_COLOR2_GREEN_LO, ColorEx.DARK_GREEN),
+                new Pair<>(PUSH2_COLOR2_GREEN_SPRING, ColorEx.GREEN),
+                new Pair<>(PUSH2_COLOR2_SPRING_HI, ColorEx.OLIVE),
+                new Pair<>(PUSH2_COLOR2_SPRING, ColorEx.OLIVE),
+                new Pair<>(PUSH2_COLOR2_SPRING_LO, ColorEx.DARK_GREEN),
+                new Pair<>(PUSH2_COLOR2_SPRING_TURQUOISE, ColorEx.DARK_BLUE),
+                new Pair<>(PUSH2_COLOR2_TURQUOISE_LO, ColorEx.DARK_BLUE),
+                new Pair<>(PUSH2_COLOR2_TURQUOISE, ColorEx.BLUE),
+                new Pair<>(PUSH2_COLOR2_TURQUOISE_HI, ColorEx.CYAN),
+                new Pair<>(PUSH2_COLOR2_TURQUOISE_CYAN, ColorEx.CYAN),
+                new Pair<>(PUSH2_COLOR2_CYAN_HI, hi(ColorEx.CYAN)),
+                new Pair<>(PUSH2_COLOR2_CYAN, ColorEx.CYAN),
+                new Pair<>(PUSH2_COLOR2_CYAN_LO, lo(ColorEx.CYAN)),
+                new Pair<>(PUSH2_COLOR2_CYAN_SKY, hi(hi(ColorEx.CYAN))),
+                new Pair<>(PUSH2_COLOR2_SKY_HI, hi(ColorEx.SKY_BLUE)),
+                new Pair<>(PUSH2_COLOR2_SKY, ColorEx.SKY_BLUE),
+                new Pair<>(PUSH2_COLOR2_SKY_LO, lo(ColorEx.SKY_BLUE)),
+                new Pair<>(PUSH2_COLOR2_SKY_OCEAN, lo(lo(ColorEx.SKY_BLUE))),
+                new Pair<>(PUSH2_COLOR2_OCEAN_HI, hi(ColorEx.MINT)),
+                new Pair<>(PUSH2_COLOR2_OCEAN, ColorEx.MINT),
+                new Pair<>(PUSH2_COLOR2_OCEAN_LO, lo(ColorEx.MINT)),
+                new Pair<>(PUSH2_COLOR2_OCEAN_BLUE, ColorEx.BLUE),
+                new Pair<>(PUSH2_COLOR2_BLUE_HI, hi(ColorEx.BLUE)),
+                new Pair<>(PUSH2_COLOR2_BLUE, ColorEx.BLUE),
+                new Pair<>(PUSH2_COLOR2_BLUE_LO, lo(ColorEx.BLUE)),
+                new Pair<>(PUSH2_COLOR2_ORCHID_HI, hi(ColorEx.DARK_PURPLE)),
+                new Pair<>(PUSH2_COLOR2_ORCHID, ColorEx.DARK_PURPLE),
+                new Pair<>(PUSH2_COLOR2_ORCHID_LO, lo(ColorEx.DARK_PURPLE)),
+                new Pair<>(PUSH2_COLOR2_MAGENTA_HI, hi(ColorEx.PURPLE)),
+                new Pair<>(PUSH2_COLOR2_MAGENTA, ColorEx.PURPLE),
+                new Pair<>(PUSH2_COLOR2_MAGENTA_LO, lo(ColorEx.PURPLE)),
+                new Pair<>(PUSH2_COLOR2_PINK_HI, hi(ColorEx.PINK)),
+                new Pair<>(PUSH2_COLOR2_PINK, ColorEx.PINK),
+                new Pair<>(PUSH2_COLOR2_PINK_LO, lo(ColorEx.PINK)),
+                new Pair<>(PUSH2_COLOR2_SILVER, hi(ColorEx.GRAY)),
+                new Pair<>(PUSH2_COLOR2_ORANGE, ColorEx.ORANGE),
+                new Pair<>(PUSH2_COLOR2_ORANGE_LIGHT, hi(ColorEx.ORANGE)),
+                new Pair<>(PUSH2_COLOR2_LIGHT_BROWN, ColorEx.DARK_ORANGE)
+        );
+    }
+
+
+    /**
+     * Shortcut for ColorEx.brigther.
+     */
+    private ColorEx hi(ColorEx c)
+    {
+        return ColorEx.brighter(c);
+    }
+
+
+    /**
+     * Shortcut for ColorEx.darker.
+     */
+    private ColorEx lo(ColorEx c)
+    {
+        return ColorEx.darker(c);
     }
 
 
@@ -646,7 +740,9 @@ public class PushColorManager extends ColorManager
      */
     public static int[] getPaletteColorRGB(final int index)
     {
-        if (index >= 70 && index <= 96) {return DAWColor.getColorEntry(index - 69).toIntRGB255();}
+        if (index >= 70 && index <= 96) {
+            return DAWColor.getColorEntry(index - 69).toIntRGB255();
+        }
         return DEFAULT_PALETTE[index];
     }
 
@@ -659,7 +755,9 @@ public class PushColorManager extends ColorManager
      */
     public static ColorEx getPaletteColor(final int index)
     {
-        if (index >= 70 && index <= 96) {return DAWColor.getColorEntry(index - 69);}
+        if (index >= 70 && index <= 96) {
+            return DAWColor.getColorEntry(index - 69);
+        }
         return ColorEx.fromRGB(DEFAULT_PALETTE[index][0], DEFAULT_PALETTE[index][1], DEFAULT_PALETTE[index][2]);
     }
 
@@ -670,13 +768,19 @@ public class PushColorManager extends ColorManager
     @Override
     public ColorEx getColor(final int colorIndex, final ButtonID buttonID)
     {
-        if (colorIndex < 0) {return ColorEx.BLACK;}
+        if (colorIndex < 0) {
+            return ColorEx.BLACK;
+        }
 
         switch (buttonID) {
             case NEW, DUPLICATE, FIXED_LENGTH, QUANTIZE, DOUBLE, DELETE, UNDO, METRONOME, TAP_TEMPO, VOLUME, PAN_SEND, TRACK, CLIP, DEVICE, BROWSE, PAGE_LEFT, PAGE_RIGHT, SCALES, USER, REPEAT, ACCENT, OCTAVE_DOWN, OCTAVE_UP, ADD_EFFECT, ADD_TRACK, NOTE, SESSION, SELECT, SHIFT, ARROW_LEFT, ARROW_RIGHT, ARROW_DOWN, ARROW_UP, MASTERTRACK, SETUP, LAYOUT -> {
                 int color = PUSH2_COLOR2_WHITE;
-                if (colorIndex == 0) {color = PUSH2_COLOR2_BLACK;}
-                else if (colorIndex == 8) {color = PUSH2_COLOR2_GREY_LO;}
+                if (colorIndex == 0) {
+                    color = PUSH2_COLOR2_BLACK;
+                }
+                else if (colorIndex == 8) {
+                    color = PUSH2_COLOR2_GREY_LO;
+                }
                 return this.colorByIndex.get(color);
             }
             default -> {
@@ -685,7 +789,9 @@ public class PushColorManager extends ColorManager
         }
 
         final ColorEx color = this.colorByIndex.get(colorIndex);
-        if (color == null) {throw new ColorIndexException("Color for index " + colorIndex + " is not registered!");}
+        if (color == null) {
+            throw new ColorIndexException("Color for index " + colorIndex + " is not registered!");
+        }
         return color;
     }
 

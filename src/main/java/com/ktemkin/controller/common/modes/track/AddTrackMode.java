@@ -4,13 +4,12 @@
 
 package com.ktemkin.controller.common.modes.track;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.PushColorManager;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import com.ktemkin.controller.common.modes.BaseMode;
+import com.ktemkin.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.controller.color.ColorEx;
-import com.ktemkin.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.IDeviceMetadata;
 import de.mossgrabers.framework.daw.data.IItem;
@@ -40,7 +39,7 @@ public class AddTrackMode extends BaseMode<IItem>
      * @param surface The control surface
      * @param model   The model
      */
-    public AddTrackMode(final PushControlSurface surface, final IModel model)
+    public AddTrackMode(final CommonUIControlSurface surface, final IModel model)
     {
         super("Add Track", surface, model);
     }
@@ -56,7 +55,7 @@ public class AddTrackMode extends BaseMode<IItem>
             return;
         }
 
-        final PushConfiguration     conf        = this.surface.getConfiguration();
+        final CommonUIConfiguration conf        = this.surface.getConfiguration();
         final List<IDeviceMetadata> devices     = new ArrayList<>();
         final ChannelType           channelType;
         String                      channelName = null;
@@ -103,7 +102,7 @@ public class AddTrackMode extends BaseMode<IItem>
         String                      channelName = null;
         final List<IDeviceMetadata> devices     = new ArrayList<>();
         if (index > 0) {
-            final PushConfiguration         conf               = this.surface.getConfiguration();
+            final CommonUIConfiguration     conf               = this.surface.getConfiguration();
             final Optional<IDeviceMetadata> instrumentFavorite = conf.getInstrumentFavorite(index - 1);
             if (instrumentFavorite.isPresent()) {
                 final IDeviceMetadata deviceMetadata = instrumentFavorite.get();
@@ -123,26 +122,28 @@ public class AddTrackMode extends BaseMode<IItem>
     @Override
     public int getButtonColor(final ButtonID buttonID)
     {
+        var colorManager = this.getColorManager();
+
         int index = this.isButtonRow(0, buttonID);
         if (index >= 0) {
             if (index == 0) {
-                return PushColorManager.PUSH2_COLOR2_GREEN_HI;
+                return colorManager.getDeviceColor(ColorEx.GREEN);
             }
             if (index < 4) {
-                return PushColorManager.PUSH2_COLOR2_GREEN_LO;
+                return colorManager.getDeviceColor(ColorEx.DARK_GREEN);
             }
             if (index == 4) {
-                return PushColorManager.PUSH2_COLOR2_BLUE_HI;
+                return colorManager.getDeviceColor(ColorEx.BLUE);
             }
-            return PushColorManager.PUSH2_COLOR2_BLUE_LO;
+            return colorManager.getDeviceColor(ColorEx.DARK_BLUE);
         }
 
         index = this.isButtonRow(1, buttonID);
         if (index >= 0) {
             if (index == 0) {
-                return PushColorManager.PUSH2_COLOR2_YELLOW_HI;
+                return colorManager.getDeviceColor(ColorEx.YELLOW);
             }
-            return PushColorManager.PUSH2_COLOR2_YELLOW_LO;
+            return colorManager.getDeviceColor(ColorEx.DARK_YELLOW);
         }
 
         return this.colorManager.getColorIndex(AbstractFeatureGroup.BUTTON_COLOR_OFF);
@@ -155,7 +156,7 @@ public class AddTrackMode extends BaseMode<IItem>
     @Override
     public void updateGraphicsDisplay(final IGraphicDisplay display)
     {
-        final PushConfiguration conf = this.surface.getConfiguration();
+        final CommonUIConfiguration conf = this.surface.getConfiguration();
 
         display.addOptionElement("Instrument", STR_EMPTY, false, ColorEx.YELLOW, "Audio", STR_EMPTY, false, ColorEx.GREEN, false, false);
 

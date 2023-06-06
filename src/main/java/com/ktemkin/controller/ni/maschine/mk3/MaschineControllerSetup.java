@@ -223,14 +223,11 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
                         var nihiaConnection = AbstractNIHostInterop.createInterop(surface.getMaschine().getDeviceId(), serial, surface, host, false);
 
 
-                        // HACK: for some reason, on MacOS NIHIA is _way_ more reliable after the second connection.
+                        // HACK: for some reason,  NIHIA is _way_ more reliable after the second connection.
                         //
                         // We should probably figure out why this is and correct, but for now immediately connecting
                         // again seems to make things a lot more stable.
-                        if (OperatingSystem.isMacOS()) {
-                            nihiaConnection = AbstractNIHostInterop.createInterop(surface.getMaschine().getDeviceId(), serial, surface, host, false);
-                        }
-
+                        nihiaConnection = AbstractNIHostInterop.createInterop(surface.getMaschine().getDeviceId(), serial, surface, host, false);
                         surface.addNiConnection(nihiaConnection);
 
                         final NIGraphicDisplay display = new NIGraphicDisplay(this.host, this.valueChanger.getUpperBound(), this.configuration, nihiaConnection);

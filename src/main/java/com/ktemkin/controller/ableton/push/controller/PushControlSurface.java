@@ -23,7 +23,7 @@ import java.util.List;
  *
  * @author Jürgen Moßgraber
  */
-public class PushControlSurface extends CommonUIControlSurface<PushConfiguration>
+public class PushControlSurface extends CommonUIControlSurface
 {
     // @formatter:off
     /** The names for the dynamic curves. */
@@ -669,7 +669,9 @@ default->{
      */
     public void sendPadVelocityCurve ()
     {
-        final int [] velocities = generateVelocityCurve (this.configuration.getPadSensitivity (), this.configuration.getPadGain (), this.configuration.getPadDynamics ());
+        var configuration = (PushConfiguration)this.configuration;
+
+        final int [] velocities = generateVelocityCurve (configuration.getPadSensitivity (), configuration.getPadGain (), configuration.getPadDynamics ());
         for (int index = 0; index < velocities.length; index += PAD_VELOCITY_CURVE_CHUNK_SIZE)
         {
             final int [] args = new int [2 + PAD_VELOCITY_CURVE_CHUNK_SIZE];
@@ -686,11 +688,13 @@ default->{
      */
     public void sendPadThreshold ()
     {
+        var configuration = (PushConfiguration)this.configuration;
+
         final int [] args = new int [9];
         args[0] = 27;
         add7L5M (args, 1, 33); // threshold0
         add7L5M (args, 3, 31); // threshold1
-        final int padSensitivity = this.configuration.getPadSensitivity ();
+        final int padSensitivity = configuration.getPadSensitivity ();
         add7L5M (args, 5, PUSH2_CPMIN[padSensitivity]); // cpmin
         add7L5M (args, 7, PUSH2_CPMAX[padSensitivity]); // cpmax
         this.sendPush2SysEx (args);

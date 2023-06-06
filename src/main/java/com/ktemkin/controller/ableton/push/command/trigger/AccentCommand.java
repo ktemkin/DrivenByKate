@@ -4,8 +4,8 @@
 
 package com.ktemkin.controller.ableton.push.command.trigger;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.command.core.AbstractTriggerCommand;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.mode.Modes;
@@ -17,7 +17,9 @@ import de.mossgrabers.framework.utils.ButtonEvent;
  *
  * @author Jürgen Moßgraber
  */
-public class AccentCommand extends AbstractTriggerCommand<PushControlSurface, PushConfiguration> {
+public class AccentCommand extends AbstractTriggerCommand<CommonUIControlSurface, CommonUIConfiguration>
+{
+
     private boolean quitAccentMode;
 
 
@@ -27,7 +29,8 @@ public class AccentCommand extends AbstractTriggerCommand<PushControlSurface, Pu
      * @param model   The model
      * @param surface The surface
      */
-    public AccentCommand(final IModel model, final PushControlSurface surface) {
+    public AccentCommand(final IModel model, final CommonUIControlSurface surface)
+    {
         super(model, surface);
     }
 
@@ -36,23 +39,24 @@ public class AccentCommand extends AbstractTriggerCommand<PushControlSurface, Pu
      * {@inheritDoc}
      */
     @Override
-    public void execute(final ButtonEvent event, final int velocity) {
+    public void execute(final ButtonEvent event, final int velocity)
+    {
         switch (event) {
-            case DOWN:
-                this.quitAccentMode = false;
-                break;
-            case LONG:
+            case DOWN -> this.quitAccentMode = false;
+            case LONG -> {
                 this.quitAccentMode = true;
                 this.surface.getModeManager().setTemporary(Modes.ACCENT);
-                break;
-            case UP:
-                if (this.quitAccentMode)
+            }
+            case UP -> {
+                if (this.quitAccentMode) {
                     this.surface.getModeManager().restore();
+                }
                 else {
-                    final PushConfiguration config = this.surface.getConfiguration();
+                    final CommonUIConfiguration config = this.surface.getConfiguration();
                     config.setAccentEnabled(!config.isAccentActive());
                 }
-                break;
+            }
         }
     }
+
 }

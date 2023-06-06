@@ -6,6 +6,7 @@ package com.ktemkin.controller.ableton.push.view;
 
 import com.ktemkin.controller.ableton.push.controller.PushColorManager;
 import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.daw.constants.Resolution;
 import de.mossgrabers.framework.daw.midi.INoteRepeat;
@@ -32,7 +33,7 @@ public class NoteRepeatSceneHelper {
      * @param buttonID The ID of the button
      * @return A color ID
      */
-    public static String getButtonColorID(final PushControlSurface surface, final ButtonID buttonID) {
+    public static String getButtonColorID(final CommonUIControlSurface surface, final ButtonID buttonID) {
         final INoteRepeat noteRepeat = surface.getMidiInput().getDefaultNoteInput().getNoteRepeat();
         final int sceneIndex = 7 - (buttonID.ordinal() - ButtonID.SCENE1.ordinal());
         if (surface.isShiftPressed())
@@ -47,7 +48,7 @@ public class NoteRepeatSceneHelper {
      * @param surface    The surface
      * @param sceneIndex The index of the scene
      */
-    public static void handleNoteRepeatSelection(final PushControlSurface surface, final int sceneIndex) {
+    public static void handleNoteRepeatSelection(final CommonUIControlSurface surface, final int sceneIndex) {
         surface.setTriggerConsumed(ButtonID.REPEAT);
         final INoteRepeat noteRepeat = surface.getMidiInput().getDefaultNoteInput().getNoteRepeat();
         if (surface.isShiftPressed())

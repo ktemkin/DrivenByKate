@@ -765,10 +765,14 @@ public class CommonUIConfiguration extends AbstractConfiguration implements IGra
      */
     public Modes getCurrentLayerMixMode()
     {
-        if (this.layerMode != null) {return this.layerMode;}
+        if (this.layerMode != null) {
+            return this.layerMode;
+        }
 
         final Modes currentMixMode = this.getCurrentMixMode();
-        if (currentMixMode == null) {this.layerMode = Modes.DEVICE_LAYER;}
+        if (currentMixMode == null) {
+            this.layerMode = Modes.DEVICE_LAYER;
+        }
         else {
             switch (currentMixMode) {
                 case VOLUME:
@@ -1095,6 +1099,54 @@ public class CommonUIConfiguration extends AbstractConfiguration implements IGra
         });
 
         settingsUI.getSignalSetting(" ", CATEGORY_DEBUG, "Display window").addSignalObserver(value -> this.notifyObservers(DEBUG_WINDOW));
+    }
+
+
+    public void changePadSensitivity(int value)
+    {
+    }
+
+
+    public void changePadGain(int value)
+    {
+    }
+
+
+    public void changePadDynamics(int value)
+    {
+    }
+
+
+    public void setPadSensitivity(int i)
+    {
+    }
+
+
+    public void setPadGain(int i)
+    {
+    }
+
+
+    public void setPadDynamics(int i)
+    {
+    }
+
+
+    public int getPadSensitivity()
+    {
+        return 0;
+    }
+
+
+    public int getPadGain()
+    {
+        return 0;
+    }
+
+
+    public int getPadDynamics()
+    {
+        return 0;
     }
 
 

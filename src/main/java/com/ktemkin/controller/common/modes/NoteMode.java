@@ -4,13 +4,10 @@
 
 package com.ktemkin.controller.common.modes;
 
-import com.ktemkin.controller.ableton.push.controller.PushColorManager;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
+import com.ktemkin.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.controller.color.ColorEx;
-import de.mossgrabers.framework.controller.display.Format;
-import com.ktemkin.framework.controller.display.IGraphicDisplay;
-import de.mossgrabers.framework.controller.display.ITextDisplay;
 import de.mossgrabers.framework.controller.valuechanger.IValueChanger;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.IModel;
@@ -43,10 +40,6 @@ import java.util.Map;
 public class NoteMode extends BaseMode<IItem> implements INoteMode
 {
 
-    private static final String OFF = "  Off";
-
-    private static final String ON  = "   On";
-
     private static final String[] MENU =
             {
                     "Common",
@@ -59,7 +52,7 @@ public class NoteMode extends BaseMode<IItem> implements INoteMode
                     "Recurr. Pattern"
             };
 
-    private static final String[]                      RECURRENCE_PRESETS =
+    private static final String[] RECURRENCE_PRESETS =
             {
                     "First",
                     "Not first",
@@ -71,13 +64,13 @@ public class NoteMode extends BaseMode<IItem> implements INoteMode
                     "Even",
             };
 
-    private final        IHost                         host;
+    private final IHost host;
 
-    private final        NoteEditor                    noteEditor         = new NoteEditor();
+    private final NoteEditor noteEditor = new NoteEditor();
 
-    private final        Map<Page, IParameterProvider> pageParamProviders = new EnumMap<>(Page.class);
+    private final Map<Page, IParameterProvider> pageParamProviders = new EnumMap<>(Page.class);
 
-    private              Page                          page               = Page.NOTE;
+    private Page page = Page.NOTE;
 
 
     /**
@@ -86,7 +79,7 @@ public class NoteMode extends BaseMode<IItem> implements INoteMode
      * @param surface The control surface
      * @param model   The model
      */
-    public NoteMode(final PushControlSurface surface, final IModel model)
+    public NoteMode(final CommonUIControlSurface surface, final IModel model)
     {
         super("Note", surface, model);
 
@@ -191,26 +184,24 @@ public class NoteMode extends BaseMode<IItem> implements INoteMode
             switch (this.page) {
                 case NOTE:
                     switch (index) {
-                        case 5:
+                        case 5 -> {
                             if (this.host.supports(NoteAttribute.CHANCE)) {
                                 clip.updateStepIsChanceEnabled(notePosition, !stepInfo.isChanceEnabled());
                             }
-                            break;
-
-                        case 6:
+                        }
+                        case 6 -> {
                             if (this.host.supports(NoteAttribute.OCCURRENCE)) {
                                 clip.updateStepIsOccurrenceEnabled(notePosition, !stepInfo.isOccurrenceEnabled());
                             }
-                            break;
-
-                        case 7:
+                        }
+                        case 7 -> {
                             if (this.host.supports(NoteAttribute.RECURRENCE_LENGTH)) {
                                 clip.updateStepIsRecurrenceEnabled(notePosition, !stepInfo.isRecurrenceEnabled());
                             }
-                            break;
-
-                        default:
+                        }
+                        default -> {
                             return;
+                        }
                     }
                     break;
 
@@ -228,34 +219,30 @@ public class NoteMode extends BaseMode<IItem> implements INoteMode
                         if (this.surface.isShiftPressed()) {
                             switch (index) {
                                 // First
-                                case 0:
-                                    clip.updateStepRecurrenceMask(notePosition, 1);
-                                    break;
+                                case 0 -> clip.updateStepRecurrenceMask(notePosition, 1);
+
                                 // Not first
-                                case 1:
-                                    clip.updateStepRecurrenceMask(notePosition, 254);
-                                    break;
+                                case 1 -> clip.updateStepRecurrenceMask(notePosition, 254);
+
                                 // Last
-                                case 3:
+                                case 3 -> {
                                     final int lastRecurrence = 1 << stepInfo.getRecurrenceLength() - 1;
                                     clip.updateStepRecurrenceMask(notePosition, lastRecurrence);
-                                    break;
+                                }
                                 // Not last
-                                case 4:
+                                case 4 -> {
                                     final int notLastRecurrence = (1 << stepInfo.getRecurrenceLength() - 1) - 1;
                                     clip.updateStepRecurrenceMask(notePosition, notLastRecurrence);
-                                    break;
+                                }
                                 // Even
-                                case 6:
-                                    clip.updateStepRecurrenceMask(notePosition, 85);
-                                    break;
+                                case 6 -> clip.updateStepRecurrenceMask(notePosition, 85);
+
                                 // Odd
-                                case 7:
-                                    clip.updateStepRecurrenceMask(notePosition, 170);
-                                    break;
+                                case 7 -> clip.updateStepRecurrenceMask(notePosition, 170);
+
                                 // Not used
-                                default:
-                                    break;
+                                default -> {
+                                }
                             }
                         }
                         else {
@@ -279,31 +266,25 @@ public class NoteMode extends BaseMode<IItem> implements INoteMode
         }
 
         switch (index) {
-            case 0:
-                this.page = Page.NOTE;
-                break;
-
-            case 1:
+            case 0 -> this.page = Page.NOTE;
+            case 1 -> {
                 if (this.host.supports(NoteAttribute.TIMBRE)) {
                     this.page = Page.EXPRESSIONS;
                 }
-                break;
-
-            case 2:
+            }
+            case 2 -> {
                 if (this.host.supports(NoteAttribute.REPEAT)) {
                     this.page = Page.REPEAT;
                 }
-                break;
-
-            case 7:
+            }
+            case 7 -> {
                 if (this.host.supports(NoteAttribute.RECURRENCE_LENGTH)) {
                     this.page = Page.RECCURRENCE_PATTERN;
                 }
-                break;
-
-            default:
-                // Not used:
-                break;
+            }
+            default -> {
+            }
+            // Not used:
         }
 
         this.rebind();
@@ -376,11 +357,10 @@ public class NoteMode extends BaseMode<IItem> implements INoteMode
         }
 
         switch (this.page) {
-            case NOTE:
-                final double noteVelocity = stepInfo.getVelocity();
-                final int parameterValue = valueChanger.fromNormalizedValue(noteVelocity);
+            case NOTE -> {
+                final double noteVelocity   = stepInfo.getVelocity();
+                final int    parameterValue = valueChanger.fromNormalizedValue(noteVelocity);
                 display.addParameterElementWithPlainMenu(this.host.supports(NoteAttribute.REPEAT) ? MENU[2] : " ", false, null, null, false, "Velocity", parameterValue, StringUtils.formatPercentage(noteVelocity), this.isKnobTouched(2), parameterValue);
-
                 if (this.host.supports(NoteAttribute.VELOCITY_SPREAD)) {
                     final double noteVelocitySpread   = stepInfo.getVelocitySpread();
                     final int    parameterSpreadValue = valueChanger.fromNormalizedValue(noteVelocitySpread);
@@ -389,7 +369,6 @@ public class NoteMode extends BaseMode<IItem> implements INoteMode
                 else {
                     display.addEmptyElement(true);
                 }
-
                 if (this.host.supports(NoteAttribute.RELEASE_VELOCITY)) {
                     final double noteReleaseVelocity   = stepInfo.getReleaseVelocity();
                     final int    parameterReleaseValue = valueChanger.fromNormalizedValue(noteReleaseVelocity);
@@ -398,7 +377,6 @@ public class NoteMode extends BaseMode<IItem> implements INoteMode
                 else {
                     display.addEmptyElement(true);
                 }
-
                 if (this.host.supports(NoteAttribute.CHANCE)) {
                     final double chance      = stepInfo.getChance();
                     final int    chanceValue = valueChanger.fromNormalizedValue(chance);
@@ -407,7 +385,6 @@ public class NoteMode extends BaseMode<IItem> implements INoteMode
                 else {
                     display.addEmptyElement(true);
                 }
-
                 if (this.host.supports(NoteAttribute.OCCURRENCE)) {
                     final NoteOccurrenceType occurrence = stepInfo.getOccurrence();
                     display.addParameterElementWithPlainMenu(MENU[6], false, stepInfo.isOccurrenceEnabled() ? "On" : "Off", null, false, "Occurrence", -1, StringUtils.optimizeName(occurrence.getName(), 9), this.isKnobTouched(6), -1);
@@ -415,7 +392,6 @@ public class NoteMode extends BaseMode<IItem> implements INoteMode
                 else {
                     display.addEmptyElement(true);
                 }
-
                 if (this.host.supports(NoteAttribute.RECURRENCE_LENGTH)) {
                     final int    recurrence    = stepInfo.getRecurrenceLength();
                     final String recurrenceStr = recurrence < 2 ? "Off" : Integer.toString(recurrence);
@@ -425,59 +401,45 @@ public class NoteMode extends BaseMode<IItem> implements INoteMode
                 else {
                     display.addEmptyElement(true);
                 }
-
-                break;
-
-            case EXPRESSIONS:
+            }
+            case EXPRESSIONS -> {
                 display.addParameterElementWithPlainMenu(MENU[2], false, null, null, false, null, -1, null, false, -1);
-
-                final double noteGain = stepInfo.getGain();
-                final int parameterGainValue = Math.min(1023, valueChanger.fromNormalizedValue(noteGain));
+                final double noteGain           = stepInfo.getGain();
+                final int    parameterGainValue = Math.min(1023, valueChanger.fromNormalizedValue(noteGain));
                 display.addParameterElementWithPlainMenu(MENU[3], false, null, null, false, "Gain", parameterGainValue, StringUtils.formatPercentage(noteGain), this.isKnobTouched(3), parameterGainValue);
-
-                final double notePan = stepInfo.getPan();
-                final int parameterPanValue = valueChanger.fromNormalizedValue((notePan + 1.0) / 2.0);
+                final double notePan           = stepInfo.getPan();
+                final int    parameterPanValue = valueChanger.fromNormalizedValue((notePan + 1.0) / 2.0);
                 display.addParameterElementWithPlainMenu(MENU[4], false, null, null, false, "Pan", parameterPanValue, StringUtils.formatPercentage(notePan), this.isKnobTouched(4), parameterPanValue);
-
-                final double noteTranspose = stepInfo.getTranspose();
-                final int parameterTransposeValue = valueChanger.fromNormalizedValue((noteTranspose + 24.0) / 48.0);
-                display.addParameterElementWithPlainMenu(MENU[5], false, null, null, false, "Pitch", parameterTransposeValue, String.format("%.1f", Double.valueOf(noteTranspose)), this.isKnobTouched(5), parameterTransposeValue);
-
-                final double noteTimbre = stepInfo.getTimbre();
-                final int parameterTimbreValue = valueChanger.fromNormalizedValue((noteTimbre + 1.0) / 2.0);
+                final double noteTranspose           = stepInfo.getTranspose();
+                final int    parameterTransposeValue = valueChanger.fromNormalizedValue((noteTranspose + 24.0) / 48.0);
+                display.addParameterElementWithPlainMenu(MENU[5], false, null, null, false, "Pitch", parameterTransposeValue, String.format("%.1f", noteTranspose), this.isKnobTouched(5), parameterTransposeValue);
+                final double noteTimbre           = stepInfo.getTimbre();
+                final int    parameterTimbreValue = valueChanger.fromNormalizedValue((noteTimbre + 1.0) / 2.0);
                 display.addParameterElementWithPlainMenu(MENU[6], false, null, null, false, "Timbre", parameterTimbreValue, StringUtils.formatPercentage(noteTimbre), this.isKnobTouched(6), parameterTimbreValue);
-
-                final double notePressure = stepInfo.getPressure();
-                final int parameterPressureValue = valueChanger.fromNormalizedValue(notePressure);
+                final double notePressure           = stepInfo.getPressure();
+                final int    parameterPressureValue = valueChanger.fromNormalizedValue(notePressure);
                 display.addParameterElementWithPlainMenu(MENU[7], this.page == Page.RECCURRENCE_PATTERN, null, null, false, "Pressure", parameterPressureValue, StringUtils.formatPercentage(notePressure), this.isKnobTouched(7), parameterPressureValue);
-                break;
-
-            case REPEAT:
+            }
+            case REPEAT -> {
                 display.addParameterElementWithPlainMenu(MENU[2], true, null, null, false, null, -1, null, false, -1);
-
-                final int repeatCount = stepInfo.getRepeatCount();
+                final int    repeatCount      = stepInfo.getRepeatCount();
                 final String repeatCountValue = stepInfo.getFormattedRepeatCount();
-                final int rc = (repeatCount + 127) * (this.model.getValueChanger().getUpperBound() - 1) / 254;
+                final int    rc               = (repeatCount + 127) * (this.model.getValueChanger().getUpperBound() - 1) / 254;
                 display.addParameterElementWithPlainMenu(MENU[3], false, stepInfo.isRepeatEnabled() ? "On" : "Off", null, false, "Count", rc, repeatCountValue, this.isKnobTouched(3), rc);
-
-                final double repeatCurve = stepInfo.getRepeatCurve();
-                final int repeatCurveValue = valueChanger.fromNormalizedValue((repeatCurve + 1.0) / 2.0);
+                final double repeatCurve      = stepInfo.getRepeatCurve();
+                final int    repeatCurveValue = valueChanger.fromNormalizedValue((repeatCurve + 1.0) / 2.0);
                 display.addParameterElementWithPlainMenu(MENU[4], false, null, null, false, "Curve", repeatCurveValue, StringUtils.formatPercentage(repeatCurve), this.isKnobTouched(4), repeatCurveValue);
-
-                final double repeatVelocityCurve = stepInfo.getRepeatVelocityCurve();
-                final int repeatVelocityCurveValue = valueChanger.fromNormalizedValue((repeatVelocityCurve + 1.0) / 2.0);
+                final double repeatVelocityCurve      = stepInfo.getRepeatVelocityCurve();
+                final int    repeatVelocityCurveValue = valueChanger.fromNormalizedValue((repeatVelocityCurve + 1.0) / 2.0);
                 display.addParameterElementWithPlainMenu(MENU[5], false, null, null, false, "Vel. Curve", repeatVelocityCurveValue, StringUtils.formatPercentage(repeatVelocityCurve), this.isKnobTouched(5), repeatVelocityCurveValue);
-
-                final double repeatVelocityEnd = stepInfo.getRepeatVelocityEnd();
-                final int repeatVelocityEndValue = valueChanger.fromNormalizedValue((repeatVelocityEnd + 1.0) / 2.0);
+                final double repeatVelocityEnd      = stepInfo.getRepeatVelocityEnd();
+                final int    repeatVelocityEndValue = valueChanger.fromNormalizedValue((repeatVelocityEnd + 1.0) / 2.0);
                 display.addParameterElementWithPlainMenu(MENU[6], false, null, null, false, "Vel. End", repeatVelocityEndValue, StringUtils.formatPercentage(repeatVelocityEnd), this.isKnobTouched(6), repeatVelocityEndValue);
-
                 display.addParameterElementWithPlainMenu(MENU[7], false, null, null, false, null, -1, null, false, -1);
-                break;
-
-            case RECCURRENCE_PATTERN:
+            }
+            case RECCURRENCE_PATTERN -> {
                 final int recurrenceLength = stepInfo.getRecurrenceLength();
-                final int mask = stepInfo.getRecurrenceMask();
+                final int mask             = stepInfo.getRecurrenceMask();
                 for (int i = 0; i < 8; i++) {
                     ColorEx color = ColorEx.BLACK;
                     String  label = "-";
@@ -498,13 +460,13 @@ public class NoteMode extends BaseMode<IItem> implements INoteMode
                         final int    recurrence    = stepInfo.getRecurrenceLength();
                         final String recurrenceStr = recurrence < 2 ? "Off" : Integer.toString(recurrence);
                         final int    recurrenceVal = (recurrence - 1) * (this.model.getValueChanger().getUpperBound() - 1) / 7;
-                        display.addParameterElementWithPlainMenu(MENU[i], i == 7, label, color, false, "Recurrence", recurrenceVal, recurrenceStr, this.isKnobTouched(7), recurrenceVal);
+                        display.addParameterElementWithPlainMenu(MENU[i], true, label, color, false, "Recurrence", recurrenceVal, recurrenceStr, this.isKnobTouched(7), recurrenceVal);
                     }
                     else {
-                        display.addParameterElementWithPlainMenu(MENU[i], i == 7, label, color, false, null, -1, null, false, -1);
+                        display.addParameterElementWithPlainMenu(MENU[i], false, label, color, false, null, -1, null, false, -1);
                     }
                 }
-                break;
+            }
         }
     }
 
@@ -515,9 +477,11 @@ public class NoteMode extends BaseMode<IItem> implements INoteMode
     @Override
     public int getButtonColor(final ButtonID buttonID)
     {
+        var colorManager = this.getColorManager();
+
         final List<NotePosition> notes = this.noteEditor.getNotes();
         if (notes.isEmpty()) {
-            return this.colorManager.getColorIndex(PushColorManager.PUSH_BLACK);
+            return colorManager.getDeviceColor(ColorEx.BLACK);
         }
 
         final INoteClip clip = this.noteEditor.getClip();
@@ -529,13 +493,13 @@ public class NoteMode extends BaseMode<IItem> implements INoteMode
                 switch (this.page) {
                     case NOTE:
                         if (index == 5 && this.host.supports(NoteAttribute.CHANCE)) {
-                            return this.colorManager.getColorIndex(stepInfo.isChanceEnabled() ? PushColorManager.PUSH_ORANGE_HI : PushColorManager.PUSH_ORANGE_LO);
+                            return colorManager.getDeviceColor(stepInfo.isChanceEnabled() ? ColorEx.ORANGE : ColorEx.DARK_ORANGE);
                         }
                         if (index == 6 && this.host.supports(NoteAttribute.OCCURRENCE)) {
-                            return this.colorManager.getColorIndex(stepInfo.isOccurrenceEnabled() ? PushColorManager.PUSH_ORANGE_HI : PushColorManager.PUSH_ORANGE_LO);
+                            return colorManager.getDeviceColor(stepInfo.isOccurrenceEnabled() ? ColorEx.ORANGE : ColorEx.DARK_ORANGE);
                         }
                         if (index == 7 && this.host.supports(NoteAttribute.RECURRENCE_LENGTH)) {
-                            return this.colorManager.getColorIndex(stepInfo.isRecurrenceEnabled() ? PushColorManager.PUSH_ORANGE_HI : PushColorManager.PUSH_ORANGE_LO);
+                            return colorManager.getDeviceColor(stepInfo.isRecurrenceEnabled() ? ColorEx.ORANGE : ColorEx.DARK_ORANGE);
                         }
                         break;
 
@@ -544,68 +508,65 @@ public class NoteMode extends BaseMode<IItem> implements INoteMode
 
                     case REPEAT:
                         if (index == 3) {
-                            return this.colorManager.getColorIndex(stepInfo.isRepeatEnabled() ? PushColorManager.PUSH_ORANGE_HI : PushColorManager.PUSH_ORANGE_LO);
+                            return colorManager.getDeviceColor(stepInfo.isRepeatEnabled() ? ColorEx.ORANGE : ColorEx.DARK_ORANGE);
                         }
                         break;
 
                     case RECCURRENCE_PATTERN:
                         if (this.surface.isShiftPressed()) {
-                            return this.colorManager.getColorIndex(RECURRENCE_PRESETS[index].isBlank() ? PushColorManager.PUSH_BLACK : PushColorManager.PUSH_GREEN_LO);
+                            return colorManager.getDeviceColor(RECURRENCE_PRESETS[index].isBlank() ? ColorEx.BLACK : ColorEx.DARK_GREEN);
                         }
 
                         final int recurrenceLength = stepInfo.getRecurrenceLength();
                         final int mask = stepInfo.getRecurrenceMask();
                         final boolean isOn = (mask & 1 << index) > 0;
-                        String color = PushColorManager.PUSH_BLACK;
+                        ColorEx color = ColorEx.BLACK;
                         if (index < recurrenceLength) {
-                            color = isOn ? PushColorManager.PUSH_ORANGE_HI : PushColorManager.PUSH_ORANGE_LO;
+                            color = isOn ? ColorEx.ORANGE : ColorEx.DARK_ORANGE;
                         }
-                        return this.colorManager.getColorIndex(color);
+                        return colorManager.getDeviceColor(color);
                 }
 
-                return this.colorManager.getColorIndex(PushColorManager.PUSH_BLACK);
+                return colorManager.getDeviceColor(ColorEx.BLACK);
             }
 
             index = this.isButtonRow(1, buttonID);
             if (index >= 0) {
                 switch (this.page) {
-                    case NOTE:
+                    case NOTE -> {
                         if (index == 0) {
-                            return this.colorManager.getColorIndex(PushColorManager.PUSH_GREEN_2);
+                            return colorManager.getDeviceColor(ColorEx.GREEN);
                         }
-                        break;
-
-                    case EXPRESSIONS:
+                    }
+                    case EXPRESSIONS -> {
                         if (index == 1) {
-                            return this.colorManager.getColorIndex(PushColorManager.PUSH_GREEN_2);
+                            return colorManager.getDeviceColor(ColorEx.GREEN);
                         }
-                        break;
-
-                    case REPEAT:
+                    }
+                    case REPEAT -> {
                         if (index == 2) {
-                            return this.colorManager.getColorIndex(PushColorManager.PUSH_GREEN_2);
+                            return colorManager.getDeviceColor(ColorEx.GREEN);
                         }
-                        break;
-
-                    case RECCURRENCE_PATTERN:
+                    }
+                    case RECCURRENCE_PATTERN -> {
                         if (index == 7) {
-                            return this.colorManager.getColorIndex(PushColorManager.PUSH_GREEN_2);
+                            return colorManager.getDeviceColor(ColorEx.GREEN);
                         }
-                        break;
+                    }
                 }
 
                 if (index == 0 || index == 1 && this.host.supports(NoteAttribute.TIMBRE)) {
-                    return this.colorManager.getColorIndex(PushColorManager.PUSH_GREY_LO_2);
+                    return colorManager.getDeviceColor(ColorEx.DARK_GRAY);
                 }
                 if (index == 2 && this.host.supports(NoteAttribute.REPEAT) || index == 7 && this.host.supports(NoteAttribute.RECURRENCE_LENGTH)) {
-                    return this.colorManager.getColorIndex(PushColorManager.PUSH_GREY_LO_2);
+                    return colorManager.getDeviceColor(ColorEx.DARK_GRAY);
                 }
 
-                return this.colorManager.getColorIndex(PushColorManager.PUSH_BLACK_2);
+                return colorManager.getDeviceColor(ColorEx.BLACK);
             }
         }
 
-        return this.colorManager.getColorIndex(PushColorManager.PUSH_BLACK);
+        return colorManager.getDeviceColor(ColorEx.BLACK);
     }
 
 

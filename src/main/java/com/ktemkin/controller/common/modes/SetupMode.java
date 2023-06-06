@@ -4,11 +4,10 @@
 
 package com.ktemkin.controller.common.modes;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
-import de.mossgrabers.framework.controller.ButtonID;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import com.ktemkin.framework.controller.display.IGraphicDisplay;
-import de.mossgrabers.framework.controller.display.ITextDisplay;
+import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.IItem;
 import de.mossgrabers.framework.daw.resource.ChannelType;
@@ -23,14 +22,17 @@ import de.mossgrabers.framework.utils.ButtonEvent;
  *
  * @author Jürgen Moßgraber
  */
-public class SetupMode extends BaseMode<IItem> {
+public class SetupMode extends BaseMode<IItem>
+{
+
     /**
      * Constructor.
      *
      * @param surface The control surface
      * @param model   The model
      */
-    public SetupMode(final PushControlSurface surface, final IModel model) {
+    public SetupMode(final CommonUIControlSurface surface, final IModel model)
+    {
         super("Setup", surface, model);
     }
 
@@ -39,8 +41,9 @@ public class SetupMode extends BaseMode<IItem> {
      * {@inheritDoc}
      */
     @Override
-    public void onKnobValue(final int index, final int value) {
-        final PushConfiguration config = this.surface.getConfiguration();
+    public void onKnobValue(final int index, final int value)
+    {
+        final CommonUIConfiguration config = this.surface.getConfiguration();
         switch (index) {
             case 2:
                 config.changeDisplayBrightness(value);
@@ -68,15 +71,17 @@ public class SetupMode extends BaseMode<IItem> {
      * {@inheritDoc}
      */
     @Override
-    public void onKnobTouch(final int index, final boolean isTouched) {
+    public void onKnobTouch(final int index, final boolean isTouched)
+    {
         this.setTouchedKnob(index, isTouched);
 
-        if (!isTouched || !this.surface.isDeletePressed())
+        if (!isTouched || !this.surface.isDeletePressed()) {
             return;
+        }
 
         this.surface.setTriggerConsumed(ButtonID.DELETE);
 
-        final PushConfiguration config = this.surface.getConfiguration();
+        final CommonUIConfiguration config = this.surface.getConfiguration();
         switch (index) {
             case 2:
                 config.setDisplayBrightness(100);
@@ -104,13 +109,16 @@ public class SetupMode extends BaseMode<IItem> {
      * {@inheritDoc}
      */
     @Override
-    public String getButtonColorID(final ButtonID buttonID) {
+    public String getButtonColorID(final ButtonID buttonID)
+    {
         final int index = this.isButtonRow(1, buttonID);
         if (index >= 0) {
-            if (index == 0)
+            if (index == 0) {
                 return AbstractMode.BUTTON_COLOR_HI;
-            if (index == 1)
+            }
+            if (index == 1) {
                 return AbstractFeatureGroup.BUTTON_COLOR_ON;
+            }
         }
 
         return AbstractFeatureGroup.BUTTON_COLOR_OFF;
@@ -121,11 +129,14 @@ public class SetupMode extends BaseMode<IItem> {
      * {@inheritDoc}
      */
     @Override
-    public void onSecondRow(final int index, final ButtonEvent event) {
-        if (event != ButtonEvent.UP)
+    public void onSecondRow(final int index, final ButtonEvent event)
+    {
+        if (event != ButtonEvent.UP) {
             return;
-        if (index == 1)
+        }
+        if (index == 1) {
             this.surface.getModeManager().setTemporary(Modes.INFO);
+        }
     }
 
 
@@ -133,13 +144,14 @@ public class SetupMode extends BaseMode<IItem> {
      * {@inheritDoc}
      */
     @Override
-    public void updateGraphicsDisplay(final IGraphicDisplay display) {
-        final PushConfiguration config = this.surface.getConfiguration();
-        final int displayBrightness = config.getDisplayBrightness();
-        final int ledBrightness = config.getLedBrightness();
-        final int padSensitivity = config.getPadSensitivity();
-        final int padGain = config.getPadGain();
-        final int padDynamics = config.getPadDynamics();
+    public void updateGraphicsDisplay(final IGraphicDisplay display)
+    {
+        final CommonUIConfiguration config            = this.surface.getConfiguration();
+        final int                   displayBrightness = config.getDisplayBrightness();
+        final int                   ledBrightness     = config.getLedBrightness();
+        final int                   padSensitivity    = config.getPadSensitivity();
+        final int                   padGain           = config.getPadGain();
+        final int                   padDynamics       = config.getPadDynamics();
 
         display.addOptionElement("", "Setup", true, "", "", false, true);
         display.addOptionElement("Brightness", "Info", false, "", "", false, true);
@@ -150,4 +162,5 @@ public class SetupMode extends BaseMode<IItem> {
         display.addParameterElement(" ", false, "", (ChannelType) null, null, false, "Gain", padGain * 1023 / 10, Integer.toString(padGain), this.isKnobTouched(6), -1);
         display.addParameterElement(" ", false, "", (ChannelType) null, null, false, "Dynamics", padDynamics * 1023 / 10, Integer.toString(padDynamics), this.isKnobTouched(7), -1);
     }
+
 }

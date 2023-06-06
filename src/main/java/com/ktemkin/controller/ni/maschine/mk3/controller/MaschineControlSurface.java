@@ -35,19 +35,12 @@ import java.nio.ByteBuffer;
  */
 public class MaschineControlSurface extends AbstractMaschineControlSurface<MaschineConfiguration> implements INIEventHandler
 {
-    // MIDI CC
+    // MIDI CCs
+    // These should be erased and replaced with just NI use.
     public static final int TOUCHSTRIP = 1;
     public static final int TOUCHSTRIP_TOUCH = 2;
-
-    public static final int FOOTSWITCH1_TIP = 3;
-    public static final int FOOTSWITCH1_RING = 4;
-    public static final int FOOTSWITCH2_TIP = 5;
-    public static final int FOOTSWITCH2_RING = 6;
-
     public static final int ENCODER = 7;
-    public static final int ENCODER_PUSH = 8;
     public static final int ENCODER_TOUCH = 9;
-
     /**
      * Mode buttons are from CC 22 to 29.
      */
@@ -64,58 +57,20 @@ public class MaschineControlSurface extends AbstractMaschineControlSurface<Masch
     public static final int CURSOR_RIGHT = 31;
     public static final int CURSOR_DOWN = 32;
     public static final int CURSOR_LEFT = 33;
-
     public static final int GROUP = 34;
-    public static final int AUTO = 35;
-    public static final int LOCK = 36;
-    public static final int NOTE_REPEAT = 37;
-
-    public static final int PROJECT = 38;
-    public static final int FAVORITES = 39;
     public static final int BROWSER = 40;
-
     public static final int CHANNEL = 41;
     public static final int ARRANGER = 42;
     public static final int MIXER = 43;
-
     public static final int VOLUME = 44;
-    public static final int PLUGIN = 45;
-    public static final int SWING = 46;
-    public static final int SAMPLING = 47;
     public static final int TEMPO = 48;
-
-    public static final int PITCH = 49;
-    public static final int MOD = 50;
-    public static final int PERFORM = 51;
-    public static final int NOTES = 52;
-
-    public static final int RESTART = 53;
-    public static final int ERASE = 54;
-    public static final int TAP_METRO = 55;
-    public static final int FOLLOW = 56;
     public static final int PLAY = 57;
     public static final int REC = 58;
     public static final int STOP = 59;
-
-    /**
-     * Mode button touch events are from CC 60 to 67.
-     */
     public static final int MODE_KNOB_TOUCH_1 = 60;
-
-    /**
-     * Mode buttons are from CC 70 to 77.
-     */
     public static final int MODE_KNOB_1 = 70;
-
-    public static final int FIXED_VEL = 80;
-    public static final int PAD_MODE = 81;
-    public static final int KEYBOARD = 82;
     public static final int CHORDS = 84;
     public static final int STEP = 83;
-    public static final int SCENE = 85;
-    public static final int PATTERN = 86;
-    public static final int EVENTS = 87;
-    public static final int VARIATION = 88;
     public static final int DUPLICATE = 89;
     public static final int SELECT = 90;
     public static final int SOLO = 91;
@@ -437,6 +392,7 @@ public class MaschineControlSurface extends AbstractMaschineControlSurface<Masch
         if (newPressure == 0) {
             this.sendMidiEvent(MidiConstants.CMD_NOTE_OFF, note, 0);
             this.padDown[padNumber] = false;
+            this.flushLights();
         }
         // If we have a pressure, and the pad is already down, this is an aftertouch event.
         else if (this.padDown[padNumber]) {
@@ -446,6 +402,7 @@ public class MaschineControlSurface extends AbstractMaschineControlSurface<Masch
         else {
             this.sendMidiEvent(MidiConstants.CMD_NOTE_ON, note, velocity);
             this.padDown[padNumber] = true;
+            this.flushLights();
         }
     }
 
