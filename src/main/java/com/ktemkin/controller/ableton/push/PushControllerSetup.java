@@ -4,14 +4,14 @@
 
 package com.ktemkin.controller.ableton.push;
 
-import com.ktemkin.controller.ableton.push.command.continuous.ConfigurePitchbendCommand;
-import com.ktemkin.controller.ableton.push.command.continuous.MastertrackTouchCommand;
-import com.ktemkin.controller.ableton.push.command.pitchbend.TouchstripCommand;
-import com.ktemkin.controller.ableton.push.command.trigger.*;
+import com.ktemkin.controller.common.command.continuous.ConfigurePitchbendCommand;
+import com.ktemkin.controller.common.command.continuous.MastertrackTouchCommand;
+import com.ktemkin.controller.common.command.pitchbend.TouchstripCommand;
+import com.ktemkin.controller.common.command.trigger.*;
 import com.ktemkin.controller.ableton.push.controller.Push2Display;
 import com.ktemkin.controller.ableton.push.controller.PushColorManager;
 import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
-import com.ktemkin.controller.ableton.push.view.*;
+import com.ktemkin.controller.common.view.*;
 import com.ktemkin.controller.common.modes.*;
 import com.ktemkin.controller.common.modes.device.*;
 import com.ktemkin.controller.common.modes.track.*;
