@@ -18,7 +18,7 @@ import de.mossgrabers.framework.view.Views;
  *
  * @author Jürgen Moßgraber
  */
-public class LayoutCommand extends AbstractTriggerCommand<CommonUIControlSurface, CommonUIConfiguration>
+public class LayoutCommand extends AbstractTriggerCommand<CommonUIControlSurface<CommonUIConfiguration>, CommonUIConfiguration>
 {
 
     /**

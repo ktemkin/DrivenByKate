@@ -4,9 +4,8 @@
 
 package com.ktemkin.controller.common.modes;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.Push1Display;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.controller.ButtonID;
 import com.ktemkin.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.daw.IModel;
@@ -82,49 +81,15 @@ public class RibbonMode extends BaseMode<IItem>
 
     private static final int[] FUNCTION_IDS =
             {
-                    PushConfiguration.RIBBON_MODE_PITCH,
-                    PushConfiguration.RIBBON_MODE_CC,
-                    PushConfiguration.RIBBON_MODE_CC_PB,
-                    PushConfiguration.RIBBON_MODE_PB_CC,
-                    PushConfiguration.RIBBON_MODE_FADER,
-                    PushConfiguration.RIBBON_MODE_LAST_TOUCHED
+                    CommonUIConfiguration.RIBBON_MODE_PITCH,
+                    CommonUIConfiguration.RIBBON_MODE_CC,
+                    CommonUIConfiguration.RIBBON_MODE_CC_PB,
+                    CommonUIConfiguration.RIBBON_MODE_PB_CC,
+                    CommonUIConfiguration.RIBBON_MODE_FADER,
+                    CommonUIConfiguration.RIBBON_MODE_LAST_TOUCHED
             };
 
-    private static final String[] NOTE_REPEAT_NAMES =
-            {
-                    "    Off",
-                    " Period",
-                    " Length"
-            };
-
-    private static final String[] NOTE_REPEAT_NAMES_SELECTED =
-            {
-                    "    " + Push1Display.SELECT_ARROW + "Off",
-                    Push1Display.SELECT_ARROW + "Period",
-                    Push1Display.SELECT_ARROW + "Length"
-            };
-
-    private static final String[] FUNCTION_NAMES =
-            {
-                    "Pitchbnd",
-                    "   CC   ",
-                    "CC/Pitch",
-                    "Pitch/CC",
-                    " Fader  ",
-                    " Touched"
-            };
-
-    private static final String[] FUNCTION_NAMES_SELECTED =
-            {
-                    Push1Display.SELECT_ARROW + "Pitchbd",
-                    "  " + Push1Display.SELECT_ARROW + "CC   ",
-                    Push1Display.SELECT_ARROW + "CC/Ptch",
-                    Push1Display.SELECT_ARROW + "Ptch/CC",
-                    Push1Display.SELECT_ARROW + "Fader  ",
-                    Push1Display.SELECT_ARROW + "Touched"
-            };
-
-    private final PushConfiguration configuration;
+    private final CommonUIConfiguration configuration;
 
 
     /**
@@ -133,7 +98,7 @@ public class RibbonMode extends BaseMode<IItem>
      * @param surface The control surface
      * @param model   The model
      */
-    public RibbonMode(final PushControlSurface surface, final IModel model)
+    public RibbonMode(final CommonUIControlSurface surface, final IModel model)
     {
         super("Ribbon", surface, model);
 
@@ -208,7 +173,7 @@ public class RibbonMode extends BaseMode<IItem>
         int index = this.isButtonRow(0, buttonID);
         if (index >= 0) {
             if (index < RibbonMode.FUNCTION_IDS.length) {
-                return this.configuration.getRibbonMode() == PushConfiguration.RIBBON_MODE_PITCH + index ? AbstractMode.BUTTON_COLOR_HI : AbstractFeatureGroup.BUTTON_COLOR_ON;
+                return this.configuration.getRibbonMode() == CommonUIConfiguration.RIBBON_MODE_PITCH + index ? AbstractMode.BUTTON_COLOR_HI : AbstractFeatureGroup.BUTTON_COLOR_ON;
             }
             return AbstractFeatureGroup.BUTTON_COLOR_OFF;
         }

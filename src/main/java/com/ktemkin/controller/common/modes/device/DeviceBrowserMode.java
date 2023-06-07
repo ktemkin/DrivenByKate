@@ -6,8 +6,7 @@ package com.ktemkin.controller.common.modes.device;
 
 import com.bitwig.extension.controller.api.BrowserResultsItemBank;
 import com.bitwig.extension.controller.api.PopupBrowser;
-import com.ktemkin.controller.ableton.push.controller.PushColorManager;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import com.ktemkin.controller.common.modes.BaseMode;
 import com.ktemkin.framework.controller.display.IGraphicDisplay;
 import com.ktemkin.framework.daw.resource.DBKResourceHandler;
@@ -73,7 +72,7 @@ public class DeviceBrowserMode extends BaseMode<IItem> {
      * @param surface The control surface
      * @param model   The model
      */
-    public DeviceBrowserMode(final PushControlSurface surface, final IModel model) {
+    public DeviceBrowserMode(final CommonUIControlSurface surface, final IModel model) {
         super("Browser", surface, model);
     }
 
@@ -581,26 +580,21 @@ public class DeviceBrowserMode extends BaseMode<IItem> {
 
     @Override
     public int getButtonColor(ButtonID button) {
+        final var white = this.getColorManager().getDeviceColor(ColorEx.WHITE);
+        final var black = this.getColorManager().getDeviceColor(ColorEx.BLACK);
+        final var blue  = this.getColorManager().getDeviceColor(ColorEx.CYAN);
 
         return switch (button) {
             case SELECT ->
-                    this.hasSelection ? PushColorManager.PUSH2_COLOR2_WHITE : PushColorManager.PUSH2_COLOR2_BLACK;
-            case ROW1_1, ROW2_1 ->
-                    (this.selectionDepth == 1) ? PushColorManager.PUSH2_COLOR2_SKY : PushColorManager.PUSH2_COLOR_BLACK;
-            case ROW1_2, ROW2_2 ->
-                    (this.selectionDepth == 1) ? PushColorManager.PUSH2_COLOR2_SKY : PushColorManager.PUSH2_COLOR_BLACK;
-            case ROW1_3, ROW2_3 ->
-                    (this.selectionDepth == 2) ? PushColorManager.PUSH2_COLOR2_SKY : PushColorManager.PUSH2_COLOR_BLACK;
-            case ROW1_4, ROW2_4 ->
-                    (this.selectionDepth == 2) ? PushColorManager.PUSH2_COLOR2_SKY : PushColorManager.PUSH2_COLOR_BLACK;
-            case ROW1_5, ROW2_5 ->
-                    (this.selectionDepth == 3) ? PushColorManager.PUSH2_COLOR2_SKY : PushColorManager.PUSH2_COLOR_BLACK;
-            case ROW1_6, ROW2_6 ->
-                    (this.selectionDepth == 3) ? PushColorManager.PUSH2_COLOR2_SKY : PushColorManager.PUSH2_COLOR_BLACK;
-            case ROW1_7, ROW2_7 ->
-                    (this.selectionDepth == 4) ? PushColorManager.PUSH2_COLOR2_SKY : PushColorManager.PUSH2_COLOR_BLACK;
-            case ROW1_8, ROW2_8 ->
-                    (this.selectionDepth == 4) ? PushColorManager.PUSH2_COLOR2_SKY : PushColorManager.PUSH2_COLOR_BLACK;
+                    this.hasSelection ? white : black;
+            case ROW1_1, ROW2_1, ROW1_2, ROW2_2 ->
+                    (this.selectionDepth == 1) ? blue : black;
+            case ROW1_3, ROW2_3, ROW1_4, ROW2_4 ->
+                    (this.selectionDepth == 2) ? blue : black;
+            case ROW1_5, ROW2_5, ROW1_6, ROW2_6 ->
+                    (this.selectionDepth == 3) ? blue : black;
+            case ROW1_7, ROW2_7, ROW1_8, ROW2_8 ->
+                    (this.selectionDepth == 4) ? blue : black;
             default -> super.getButtonColor(button);
         };
 

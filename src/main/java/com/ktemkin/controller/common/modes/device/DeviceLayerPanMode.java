@@ -4,8 +4,8 @@
 
 package com.ktemkin.controller.common.modes.device;
 
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
 import com.ktemkin.controller.ableton.push.parameterprovider.PushPanLayerOrDrumPadParameterProvider;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.controller.display.AbstractGraphicDisplay;
 import com.ktemkin.framework.controller.display.IGraphicDisplay;
@@ -31,7 +31,7 @@ public class DeviceLayerPanMode extends DeviceLayerMode
      * @param surface The control surface
      * @param model   The model
      */
-    public DeviceLayerPanMode(final PushControlSurface surface, final IModel model)
+    public DeviceLayerPanMode(final CommonUIControlSurface surface, final IModel model)
     {
         super(Modes.NAME_LAYER_PANORAMA, surface, model);
 

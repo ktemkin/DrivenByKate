@@ -19,7 +19,7 @@ import de.mossgrabers.framework.view.sequencer.AbstractPolySequencerView;
  *
  * @author Jürgen Moßgraber
  */
-public class PolySequencerView extends AbstractPolySequencerView<CommonUIControlSurface, CommonUIConfiguration>
+public class PolySequencerView extends AbstractPolySequencerView<CommonUIControlSurface<CommonUIConfiguration>, CommonUIConfiguration>
 {
 
     /**

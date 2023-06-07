@@ -4,7 +4,7 @@
 
 package com.ktemkin.controller.common.modes;
 
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.controller.ButtonID;
 import com.ktemkin.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.daw.IModel;
@@ -46,7 +46,7 @@ public class QuantizeMode extends BaseMode<IItem>
      * @param surface The control surface
      * @param model   The model
      */
-    public QuantizeMode(final PushControlSurface surface, final IModel model)
+    public QuantizeMode(final CommonUIControlSurface surface, final IModel model)
     {
         super("Record", surface, model);
     }

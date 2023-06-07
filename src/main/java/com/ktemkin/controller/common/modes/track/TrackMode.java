@@ -4,9 +4,9 @@
 
 package com.ktemkin.controller.common.modes.track;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
 import com.ktemkin.controller.ableton.push.parameterprovider.PushTrackParameterProvider;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.controller.color.ColorEx;
 import com.ktemkin.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.controller.valuechanger.IValueChanger;
@@ -35,11 +35,11 @@ public class TrackMode extends AbstractTrackMode
      * @param surface The control surface
      * @param model   The model
      */
-    public TrackMode(final PushControlSurface surface, final IModel model)
+    public TrackMode(final CommonUIControlSurface surface, final IModel model)
     {
         super("Track", surface, model);
 
-        this.setParameterProvider(new PushTrackParameterProvider(model, surface.getConfiguration()));
+        this.setParameterProvider(new PushTrackParameterProvider(model, (CommonUIConfiguration) surface.getConfiguration()));
     }
 
 
@@ -77,7 +77,7 @@ public class TrackMode extends AbstractTrackMode
 
         final ICursorTrack cursorTrack = this.model.getCursorTrack();
 
-        final PushConfiguration config = this.surface.getConfiguration();
+        final CommonUIConfiguration config = this.surface.getConfiguration();
         for (int i = 0; i < 8; i++) {
             final ITrack t = tb.getItem(i);
 

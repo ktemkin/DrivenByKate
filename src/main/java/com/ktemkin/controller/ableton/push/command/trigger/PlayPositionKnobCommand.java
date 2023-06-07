@@ -17,7 +17,7 @@ import de.mossgrabers.framework.utils.ButtonEvent;
  *
  * @author Jürgen Moßgraber
  */
-public class PlayPositionKnobCommand extends PlayPositionCommand<CommonUIControlSurface, CommonUIConfiguration> implements TriggerCommand
+public class PlayPositionKnobCommand extends PlayPositionCommand<CommonUIControlSurface<CommonUIConfiguration>, CommonUIConfiguration> implements TriggerCommand
 {
 
     /**

@@ -4,7 +4,7 @@
 
 package com.ktemkin.controller.common.modes;
 
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.controller.ButtonID;
 import com.ktemkin.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.daw.IModel;
@@ -45,7 +45,7 @@ public class MarkerMode extends BaseMode<IMarker>
      * @param surface The control surface
      * @param model   The model
      */
-    public MarkerMode(final PushControlSurface surface, final IModel model)
+    public MarkerMode(final CommonUIControlSurface surface, final IModel model)
     {
         super("Marker", surface, model, model.getMarkerBank());
     }

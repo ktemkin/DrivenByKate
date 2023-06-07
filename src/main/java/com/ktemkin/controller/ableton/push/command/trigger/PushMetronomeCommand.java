@@ -4,8 +4,8 @@
 
 package com.ktemkin.controller.ableton.push.command.trigger;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.command.trigger.transport.MetronomeCommand;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.daw.IModel;
@@ -20,7 +20,7 @@ import de.mossgrabers.framework.utils.ButtonEvent;
  *
  * @author Jürgen Moßgraber
  */
-public class PushMetronomeCommand extends MetronomeCommand<PushControlSurface, PushConfiguration> {
+public class PushMetronomeCommand extends MetronomeCommand<CommonUIControlSurface<CommonUIConfiguration>, CommonUIConfiguration> {
     private final ModeManager modeManager;
 
 
@@ -30,7 +30,7 @@ public class PushMetronomeCommand extends MetronomeCommand<PushControlSurface, P
      * @param model   The model
      * @param surface The surface
      */
-    public PushMetronomeCommand(final IModel model, final PushControlSurface surface) {
+    public PushMetronomeCommand(final IModel model, final CommonUIControlSurface surface) {
         super(model, surface, false);
 
         this.modeManager = this.surface.getModeManager();

@@ -22,7 +22,7 @@ import de.mossgrabers.framework.utils.ButtonEvent;
  *
  * @author Jürgen Moßgraber
  */
-public class ConfigurePitchbendCommand extends AbstractTriggerCommand<CommonUIControlSurface, CommonUIConfiguration>
+public class ConfigurePitchbendCommand extends AbstractTriggerCommand<CommonUIControlSurface<CommonUIConfiguration>, CommonUIConfiguration>
 {
 
     /**

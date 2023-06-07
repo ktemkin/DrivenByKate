@@ -72,7 +72,7 @@ public class DeviceLayerMode extends BaseMode<ILayer>
     {
         super(name, surface, model, model.getCursorDevice().getLayerBank());
 
-        this.configuration = this.surface.getConfiguration();
+        this.configuration = (CommonUIConfiguration) this.surface.getConfiguration();
         this.cursorDevice  = this.model.getCursorDevice();
         this.cursorDevice.addHasDrumPadsObserver(hasDrumPads -> this.switchBanks(this.cursorDevice.hasDrumPads() ? this.cursorDevice.getDrumPadBank() : this.cursorDevice.getLayerBank()));
 

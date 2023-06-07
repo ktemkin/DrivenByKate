@@ -4,19 +4,17 @@
 
 package com.ktemkin.controller.common.modes.device;
 
-import com.ktemkin.controller.ableton.push.controller.PushColorManager;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import com.ktemkin.controller.common.modes.BaseMode;
 import de.mossgrabers.framework.controller.ButtonID;
 import com.ktemkin.framework.controller.display.IGraphicDisplay;
+import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.IChannel;
 import de.mossgrabers.framework.daw.data.ICursorDevice;
 import de.mossgrabers.framework.daw.data.ILayer;
 import de.mossgrabers.framework.daw.data.bank.IBank;
 import de.mossgrabers.framework.daw.data.bank.IDrumPadBank;
-import de.mossgrabers.framework.featuregroup.AbstractFeatureGroup;
-import de.mossgrabers.framework.featuregroup.AbstractMode;
 import de.mossgrabers.framework.featuregroup.ViewManager;
 import de.mossgrabers.framework.utils.ButtonEvent;
 import de.mossgrabers.framework.view.ColorSelectMode;
@@ -40,7 +38,7 @@ public class DeviceLayerDetailsMode extends BaseMode<ILayer>
      * @param surface The control surface
      * @param model   The model
      */
-    public DeviceLayerDetailsMode(final PushControlSurface surface, final IModel model)
+    public DeviceLayerDetailsMode(final CommonUIControlSurface surface, final IModel model)
     {
         super("Layer details", surface, model, model.getCursorDevice().getLayerBank());
 
@@ -150,33 +148,22 @@ public class DeviceLayerDetailsMode extends BaseMode<ILayer>
         int index = this.isButtonRow(0, buttonID);
         if (index >= 0) {
             final IChannel channel = channelOpt.get();
-            String         colorID;
-            switch (index) {
-                case 0:
-                    colorID = channel.isActivated() ? PushColorManager.PUSH_YELLOW_MD : PushColorManager.PUSH_YELLOW_LO;
-                    break;
-                case 2:
-                    colorID = channel.isMute() ? PushColorManager.PUSH_ORANGE_HI : PushColorManager.PUSH_ORANGE_LO;
-                    break;
-                case 3:
-                    colorID = channel.isSolo() ? PushColorManager.PUSH_ORANGE_HI : PushColorManager.PUSH_ORANGE_LO;
-                    break;
-                case 7:
-                    colorID = PushColorManager.PUSH_GREEN_HI;
-                    break;
-                default:
-                    colorID = PushColorManager.PUSH_BLACK;
-                    break;
-            }
-            return this.colorManager.getColorIndex(colorID);
+            return switch (index) {
+                case 0 -> this.getColorManager().getDeviceColor(channel.isActivated() ? ColorEx.YELLOW : ColorEx.DARK_YELLOW);
+                case 2 -> this.getColorManager().getDeviceColor(channel.isMute() ? ColorEx.ORANGE : ColorEx.DARK_ORANGE);
+                case 3 -> this.getColorManager().getDeviceColor(channel.isSolo() ? ColorEx.ORANGE : ColorEx.DARK_ORANGE);
+                 case 7 -> this.getColorManager().getDeviceColor(ColorEx.GREEN);
+                default -> this.getColorManager().getDeviceColor(ColorEx.BLACK);
+            };
         }
 
         index = this.isButtonRow(1, buttonID);
         if (index >= 0) {
             if (index >= 6) {
-                return this.colorManager.getColorIndex(this.bank instanceof IDrumPadBank ? AbstractMode.BUTTON_COLOR2_ON : AbstractFeatureGroup.BUTTON_COLOR_OFF);
+                return this.getColorManager().getDeviceColor(this.bank instanceof IDrumPadBank ? ColorEx.WHITE : ColorEx.BLACK);
+            } else {
+                return this.getColorManager().getDeviceColor(ColorEx.BLACK);
             }
-            return PushColorManager.PUSH2_COLOR_BLACK;
         }
 
         return super.getButtonColor(buttonID);

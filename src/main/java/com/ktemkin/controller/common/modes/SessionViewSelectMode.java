@@ -4,8 +4,8 @@
 
 package com.ktemkin.controller.common.modes;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.controller.ButtonID;
 import com.ktemkin.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.daw.IModel;
@@ -57,7 +57,7 @@ public class SessionViewSelectMode extends BaseMode<IItem>
      * @param surface The control surface
      * @param model   The model
      */
-    public SessionViewSelectMode(final PushControlSurface surface, final IModel model)
+    public SessionViewSelectMode(final CommonUIControlSurface surface, final IModel model)
     {
         super("Session View", surface, model);
     }
@@ -73,31 +73,25 @@ public class SessionViewSelectMode extends BaseMode<IItem>
             return;
         }
 
-        final PushConfiguration configuration = this.surface.getConfiguration();
+        final CommonUIConfiguration configuration = this.surface.getConfiguration();
 
         switch (index) {
-            case 0, 1:
+            case 0, 1 -> {
                 configuration.setFlipSession(index == 1);
                 this.activateView(VIEWS[index]);
-                break;
-
-            case 2:
+            }
+            case 2 -> {
                 configuration.setSceneView();
                 this.surface.getModeManager().restore();
-                break;
-
-            case 6:
-                this.surface.getModeManager().setActive(Modes.MARKERS);
-                break;
-
-            case 7:
+            }
+            case 6 -> this.surface.getModeManager().setActive(Modes.MARKERS);
+            case 7 -> {
                 this.surface.getModeManager().restore();
                 configuration.toggleScenesClipMode();
-                break;
-
-            default:
-                // Not used
-                break;
+            }
+            default -> {
+            }
+            // Not used
         }
     }
 

@@ -18,7 +18,7 @@ import de.mossgrabers.framework.utils.ButtonEvent;
  *
  * @author Jürgen Moßgraber
  */
-public class SelectCommand extends AbstractTriggerCommand<CommonUIControlSurface, CommonUIConfiguration>
+public class SelectCommand extends AbstractTriggerCommand<CommonUIControlSurface<CommonUIConfiguration>, CommonUIConfiguration>
 {
 
     /**

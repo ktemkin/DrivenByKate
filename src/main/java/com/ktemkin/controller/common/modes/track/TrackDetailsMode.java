@@ -4,12 +4,12 @@
 
 package com.ktemkin.controller.common.modes.track;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.PushColorManager;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import com.ktemkin.controller.common.modes.BaseMode;
 import de.mossgrabers.framework.controller.ButtonID;
 import com.ktemkin.framework.controller.display.IGraphicDisplay;
+import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.constants.Capability;
 import de.mossgrabers.framework.daw.data.ICursorTrack;
@@ -43,7 +43,7 @@ public class TrackDetailsMode extends BaseMode<ITrack>
      * @param surface The control surface
      * @param model   The model
      */
-    public TrackDetailsMode(final PushControlSurface surface, final IModel model)
+    public TrackDetailsMode(final CommonUIControlSurface surface, final IModel model)
     {
         super("Track details", surface, model, model.getCurrentTrackBank());
 
@@ -75,8 +75,8 @@ public class TrackDetailsMode extends BaseMode<ITrack>
             return;
         }
 
-        final PushConfiguration configuration = this.surface.getConfiguration();
-        final int               speed         = this.model.getValueChanger().isIncrease(value) ? 1 : -1;
+        final CommonUIConfiguration configuration = this.surface.getConfiguration();
+        final int                   speed         = this.model.getValueChanger().isIncrease(value) ? 1 : -1;
         configuration.setMidiEditChannel(configuration.getMidiEditChannel() + speed);
     }
 
@@ -185,6 +185,8 @@ public class TrackDetailsMode extends BaseMode<ITrack>
     @Override
     public int getButtonColor(final ButtonID buttonID)
     {
+        var colorManager = this.getColorManager();
+
         int index = this.isButtonRow(0, buttonID);
         if (index >= 0) {
             final ICursorTrack cursorTrack = this.model.getCursorTrack();
@@ -194,25 +196,25 @@ public class TrackDetailsMode extends BaseMode<ITrack>
 
             switch (index) {
                 case 0:
-                    return this.colorManager.getColorIndex(cursorTrack.isActivated() ? PushColorManager.PUSH_YELLOW_MD : PushColorManager.PUSH_YELLOW_LO);
+                    return colorManager.getDeviceColor(cursorTrack.isActivated() ? ColorEx.YELLOW : ColorEx.DARK_YELLOW);
                 case 1:
-                    return this.colorManager.getColorIndex(cursorTrack.isRecArm() ? PushColorManager.PUSH_RED_HI : PushColorManager.PUSH_RED_LO);
+                    return colorManager.getDeviceColor(cursorTrack.isRecArm() ? ColorEx.RED : ColorEx.DARK_RED);
                 case 2:
-                    return this.colorManager.getColorIndex(cursorTrack.isMute() ? PushColorManager.PUSH_ORANGE_HI : PushColorManager.PUSH_ORANGE_LO);
+                    return colorManager.getDeviceColor(cursorTrack.isMute() ? ColorEx.ORANGE : ColorEx.DARK_ORANGE);
                 case 3:
-                    return this.colorManager.getColorIndex(cursorTrack.isSolo() ? PushColorManager.PUSH_ORANGE_HI : PushColorManager.PUSH_ORANGE_LO);
+                    return colorManager.getDeviceColor(cursorTrack.isSolo() ? ColorEx.ORANGE : ColorEx.DARK_ORANGE);
                 case 4:
-                    return this.colorManager.getColorIndex(cursorTrack.isMonitor() ? PushColorManager.PUSH_GREEN_HI : PushColorManager.PUSH_GREEN_LO);
+                    return colorManager.getDeviceColor(cursorTrack.isMonitor() ? ColorEx.GREEN : ColorEx.DARK_GREEN);
                 case 5:
-                    return this.colorManager.getColorIndex(cursorTrack.isAutoMonitor() ? PushColorManager.PUSH_GREEN_HI : PushColorManager.PUSH_GREEN_LO);
+                    return colorManager.getDeviceColor(cursorTrack.isAutoMonitor() ? ColorEx.GREEN : ColorEx.DARK_GREEN);
                 case 6:
                     if (!this.hasPinning) {
-                        return PushColorManager.PUSH2_COLOR_BLACK;
+                        return colorManager.getDeviceColor(ColorEx.BLACK);
                     }
-                    return this.colorManager.getColorIndex(cursorTrack.isPinned() ? PushColorManager.PUSH_GREEN_HI : PushColorManager.PUSH_GREEN_LO);
+                    return colorManager.getDeviceColor(cursorTrack.isPinned() ? ColorEx.GREEN : ColorEx.DARK_GREEN);
                 default:
                 case 7:
-                    return PushColorManager.PUSH2_COLOR_GREEN_HI;
+                    return colorManager.getDeviceColor(ColorEx.GREEN);
             }
         }
 
@@ -235,7 +237,7 @@ public class TrackDetailsMode extends BaseMode<ITrack>
             return;
         }
 
-        final PushConfiguration configuration = this.surface.getConfiguration();
+        final CommonUIConfiguration configuration = this.surface.getConfiguration();
         switch (index) {
             case 6:
                 configuration.setMidiEditChannel(configuration.getMidiEditChannel() - 1);

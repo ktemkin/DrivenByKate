@@ -4,11 +4,10 @@
 
 package com.ktemkin.controller.common.modes.track;
 
-import com.ktemkin.controller.ableton.push.controller.PushColorManager;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.controller.ButtonID;
 import com.ktemkin.framework.controller.display.IGraphicDisplay;
-import de.mossgrabers.framework.controller.display.ITextDisplay;
+import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.clip.IClip;
 import de.mossgrabers.framework.daw.clip.INoteClip;
@@ -33,9 +32,7 @@ import de.mossgrabers.framework.view.sequencer.AbstractSequencerView;
 public class ClipMode extends AbstractTrackMode
 {
 
-    private static final String PLEASE_SELECT_A_CLIP_PUSH1 = "      Pleaseselect a clip.";
-
-    private static final String PLEASE_SELECT_A_CLIP_PUSH2 = "Please select a clip.";
+    private static final String PLEASE_SELECT_A_CLIP = "Please select a clip.";
 
     private boolean displayMidiNotes = false;
 
@@ -46,7 +43,7 @@ public class ClipMode extends AbstractTrackMode
      * @param surface The control surface
      * @param model   The model
      */
-    public ClipMode(final PushControlSurface surface, final IModel model)
+    public ClipMode(final CommonUIControlSurface surface, final IModel model)
     {
         super("Clip", surface, model);
     }
@@ -133,7 +130,7 @@ public class ClipMode extends AbstractTrackMode
             }
             if (!clip.doesExist()) {
                 display.addEmptyElement();
-                display.notify(PLEASE_SELECT_A_CLIP_PUSH2);
+                display.notify(PLEASE_SELECT_A_CLIP);
                 return;
             }
 
@@ -144,7 +141,7 @@ public class ClipMode extends AbstractTrackMode
         final IClip clip = this.model.getCursorClip();
         if (!clip.doesExist()) {
             display.addEmptyElement();
-            display.notify(PLEASE_SELECT_A_CLIP_PUSH2);
+            display.notify(PLEASE_SELECT_A_CLIP);
             return;
         }
 
@@ -209,20 +206,22 @@ public class ClipMode extends AbstractTrackMode
     @Override
     public int getButtonColor(final ButtonID buttonID)
     {
+        var colorManager = this.getColorManager();
+
         final int index = this.isButtonRow(1, buttonID);
         if (index >= 0) {
             if (index == 0) {
                 if (!this.model.getHost().supports(Capability.HAS_PINNING)) {
-                    return PushColorManager.PUSH2_COLOR2_BLACK;
+                    return colorManager.getDeviceColor(ColorEx.BLACK);
                 }
                 final IClip   clip     = this.model.getCursorClip();
                 final boolean isPinned = clip instanceof final INoteClip noteClip && noteClip.isPinned();
-                return isPinned ? PushColorManager.PUSH2_COLOR2_GREEN : PushColorManager.PUSH2_COLOR2_WHITE;
+                return colorManager.getDeviceColor(isPinned ? ColorEx.GREEN : ColorEx.BLACK);
             }
             if (index == 7) {
-                return this.displayMidiNotes ? PushColorManager.PUSH2_COLOR_BLACK : PushColorManager.PUSH2_COLOR2_WHITE;
+                return colorManager.getDeviceColor(this.displayMidiNotes ? ColorEx.BLACK : ColorEx.WHITE);
             }
-            return PushColorManager.PUSH2_COLOR_BLACK;
+            return colorManager.getDeviceColor(ColorEx.BLACK);
         }
 
         return super.getButtonColor(buttonID);

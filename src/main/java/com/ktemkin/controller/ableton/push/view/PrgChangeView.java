@@ -4,10 +4,11 @@
 
 package com.ktemkin.controller.ableton.push.view;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.PushColorManager;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIColorManager;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.controller.ButtonID;
+import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.controller.grid.IPadGrid;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.midi.MidiConstants;
@@ -20,7 +21,7 @@ import de.mossgrabers.framework.utils.ButtonEvent;
  *
  * @author Jürgen Moßgraber
  */
-public class PrgChangeView extends AbstractView<PushControlSurface, PushConfiguration>
+public class PrgChangeView extends AbstractView<CommonUIControlSurface<CommonUIConfiguration>, CommonUIConfiguration>
 {
 
     private final int[] greens;
@@ -40,14 +41,16 @@ public class PrgChangeView extends AbstractView<PushControlSurface, PushConfigur
      * @param surface The surface
      * @param model   The model
      */
-    public PrgChangeView(final PushControlSurface surface, final IModel model)
+    public PrgChangeView(final CommonUIControlSurface surface, final IModel model)
     {
         super("PrgChnge", surface, model);
 
-        final int greenHi     = PushColorManager.PUSH2_COLOR2_GREEN_HI;
-        final int green       = PushColorManager.PUSH2_COLOR2_GREEN;
-        final int greenLo     = PushColorManager.PUSH2_COLOR2_GREEN_LO;
-        final int greenSpring = PushColorManager.PUSH2_COLOR2_GREEN_SPRING;
+        final var colorManager = (CommonUIColorManager)this.colorManager;
+
+        final int greenHi     = colorManager.getDeviceColor(ColorEx.brighter(ColorEx.GREEN));
+        final int green       = colorManager.getDeviceColor(ColorEx.GREEN);
+        final int greenLo     = colorManager.getDeviceColor(ColorEx.DARK_GREEN);
+        final int greenSpring = colorManager.getDeviceColor(ColorEx.brighter(ColorEx.DARK_GREEN));
         this.greens = new int[]
                 {
                         greenHi,
@@ -60,10 +63,10 @@ public class PrgChangeView extends AbstractView<PushControlSurface, PushConfigur
                         greenSpring
                 };
 
-        final int yellowHi   = PushColorManager.PUSH2_COLOR2_YELLOW_HI;
-        final int yellow     = PushColorManager.PUSH2_COLOR2_YELLOW;
-        final int yellowLo   = PushColorManager.PUSH2_COLOR2_YELLOW_LO;
-        final int yellowLime = PushColorManager.PUSH2_COLOR2_YELLOW_LIME;
+        final int yellowHi   = colorManager.getDeviceColor(ColorEx.brighter(ColorEx.YELLOW));
+        final int yellow     = colorManager.getDeviceColor(ColorEx.YELLOW);
+        final int yellowLo   = colorManager.getDeviceColor(ColorEx.DARK_YELLOW);
+        final int yellowLime = colorManager.getDeviceColor(ColorEx.brighter(ColorEx.GREEN));
         this.yellows = new int[]
                 {
                         yellowHi,
@@ -106,15 +109,16 @@ public class PrgChangeView extends AbstractView<PushControlSurface, PushConfigur
     @Override
     public int getButtonColor(final ButtonID buttonID)
     {
-        final int black = PushColorManager.PUSH2_COLOR_BLACK;
+        final var colorManager = (CommonUIColorManager)this.colorManager;
+        final int black = colorManager.getDeviceColor(ColorEx.BLACK);
 
         final int scene = buttonID.ordinal() - ButtonID.SCENE1.ordinal();
         if (scene < 0 || scene >= 8 || this.bankNumber != scene) {return black;}
 
         if (this.isToggled) {
-            return PushColorManager.PUSH2_COLOR_SCENE_YELLOW;
+            return colorManager.getDeviceColor(ColorEx.YELLOW);
         }
-        return PushColorManager.PUSH2_COLOR_SCENE_GREEN;
+        return colorManager.getDeviceColor(ColorEx.YELLOW);
     }
 
 
@@ -124,12 +128,14 @@ public class PrgChangeView extends AbstractView<PushControlSurface, PushConfigur
     @Override
     public void drawGrid()
     {
+        final var colorManager = (CommonUIColorManager)this.colorManager;
+
         final int[] colors = this.isToggled ? this.yellows : this.greens;
         final int   selPad;
         if (this.isToggled) {selPad = this.programNumber >= 64 ? this.programNumber - 64 : -1;}
         else {selPad = this.programNumber < 64 ? this.programNumber : -1;}
         final IPadGrid gridPad = this.surface.getPadGrid();
-        final int      red     = PushColorManager.PUSH2_COLOR2_RED;
+        final int      red     = colorManager.getDeviceColor(ColorEx.RED);
         for (int i = 36; i < 100; i++) {
             final int pad = i - 36;
             final int row = pad / 8;

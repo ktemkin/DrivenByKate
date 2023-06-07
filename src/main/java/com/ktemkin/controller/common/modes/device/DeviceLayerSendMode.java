@@ -4,8 +4,8 @@
 
 package com.ktemkin.controller.common.modes.device;
 
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
 import com.ktemkin.controller.ableton.push.parameterprovider.PushSendLayerOrDrumPadParameterProvider;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.controller.ButtonID;
 import com.ktemkin.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.daw.IModel;
@@ -22,7 +22,7 @@ import java.util.Optional;
 
 
 /**
- * Mode for editing a all sends of a device layer.
+ * Mode for editing all sends of a device layer.
  *
  * @author Jürgen Moßgraber
  */
@@ -37,9 +37,9 @@ public class DeviceLayerSendMode extends DeviceLayerMode
      *
      * @param surface   The control surface
      * @param model     The model
-     * @param sendIndex The index of the send
+     * @param sendIndex The index of the Send
      */
-    public DeviceLayerSendMode(final PushControlSurface surface, final IModel model, final int sendIndex)
+    public DeviceLayerSendMode(final CommonUIControlSurface surface, final IModel model, final int sendIndex)
     {
         super(Modes.NAME_LAYER_SENDS, surface, model);
 
@@ -94,7 +94,7 @@ public class DeviceLayerSendMode extends DeviceLayerMode
 
             final Pair<String, Boolean> pair        = this.menu.get(i);
             final String                topMenu     = pair.getKey();
-            final boolean               isTopMenuOn = pair.getValue().booleanValue();
+            final boolean               isTopMenuOn = pair.getValue();
 
             // Channel info
             final SendData[] sendData = new SendData[4];

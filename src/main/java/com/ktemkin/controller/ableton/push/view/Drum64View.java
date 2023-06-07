@@ -4,8 +4,8 @@
 
 package com.ktemkin.controller.ableton.push.view;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.ICursorDevice;
@@ -27,14 +27,14 @@ import de.mossgrabers.framework.view.AbstractSessionView;
  *
  * @author Jürgen Moßgraber
  */
-public class Drum64View extends AbstractDrum64View<PushControlSurface, PushConfiguration> {
+public class Drum64View extends AbstractDrum64View<CommonUIControlSurface<CommonUIConfiguration>, CommonUIConfiguration> {
     /**
      * Constructor.
      *
      * @param surface The surface
      * @param model   The model
      */
-    public Drum64View(final PushControlSurface surface, final IModel model) {
+    public Drum64View(final CommonUIControlSurface surface, final IModel model) {
         super(surface, model);
     }
 

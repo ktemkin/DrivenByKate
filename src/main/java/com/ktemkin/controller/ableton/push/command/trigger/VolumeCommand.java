@@ -6,6 +6,8 @@ package com.ktemkin.controller.ableton.push.command.trigger;
 
 import com.ktemkin.controller.ableton.push.PushConfiguration;
 import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.command.core.AbstractTriggerCommand;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.constants.Capability;
@@ -19,7 +21,7 @@ import de.mossgrabers.framework.utils.ButtonEvent;
  *
  * @author Jürgen Moßgraber
  */
-public class VolumeCommand extends AbstractTriggerCommand<PushControlSurface, PushConfiguration>
+public class VolumeCommand extends AbstractTriggerCommand<CommonUIControlSurface<CommonUIConfiguration>, CommonUIConfiguration>
 {
 
     /**
@@ -28,7 +30,7 @@ public class VolumeCommand extends AbstractTriggerCommand<PushControlSurface, Pu
      * @param model   The model
      * @param surface The surface
      */
-    public VolumeCommand(final IModel model, final PushControlSurface surface)
+    public VolumeCommand(final IModel model, final CommonUIControlSurface surface)
     {
         super(model, surface);
     }

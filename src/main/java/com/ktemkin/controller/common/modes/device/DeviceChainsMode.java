@@ -4,8 +4,7 @@
 
 package com.ktemkin.controller.common.modes.device;
 
-import com.ktemkin.controller.ableton.push.controller.PushColorManager;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.controller.color.ColorEx;
 import com.ktemkin.framework.controller.display.IGraphicDisplay;
@@ -31,7 +30,7 @@ public class DeviceChainsMode extends DeviceParamsMode
      * @param surface The control surface
      * @param model   The model
      */
-    public DeviceChainsMode(final PushControlSurface surface, final IModel model)
+    public DeviceChainsMode(final CommonUIControlSurface surface, final IModel model)
     {
         super(surface, model);
     }
@@ -98,8 +97,8 @@ public class DeviceChainsMode extends DeviceParamsMode
             return super.getButtonColor(buttonID);
         }
 
-        final int      existsColor = PushColorManager.PUSH2_COLOR_YELLOW_LO;
-        final int      offColor    = PushColorManager.PUSH2_COLOR_BLACK;
+        final int      existsColor = this.getColorManager().getDeviceColor(ColorEx.DARK_YELLOW);
+        final int      offColor = this.getColorManager().getDeviceColor(ColorEx.BLACK);
         final String[] slotChains  = this.model.getCursorDevice().getSlotChains();
         return index < slotChains.length ? existsColor : offColor;
     }

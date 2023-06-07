@@ -4,10 +4,8 @@
 
 package com.ktemkin.controller.common.modes.track;
 
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
-import de.mossgrabers.framework.controller.display.Format;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import com.ktemkin.framework.controller.display.IGraphicDisplay;
-import de.mossgrabers.framework.controller.display.ITextDisplay;
 import de.mossgrabers.framework.controller.valuechanger.IValueChanger;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.ISend;
@@ -35,7 +33,7 @@ public class SendMode extends AbstractTrackMode {
      * @param model     The model
      * @param sendIndex The index of the send
      */
-    public SendMode(final PushControlSurface surface, final IModel model, final int sendIndex) {
+    public SendMode(final CommonUIControlSurface surface, final IModel model, final int sendIndex) {
         super("Send", surface, model);
 
         this.sendIndex = sendIndex;

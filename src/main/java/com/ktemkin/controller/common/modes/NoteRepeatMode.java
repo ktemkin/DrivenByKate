@@ -4,15 +4,12 @@
 
 package com.ktemkin.controller.common.modes;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.Push1Display;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.configuration.Configuration;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.controller.color.ColorManager;
-import de.mossgrabers.framework.controller.display.Format;
 import com.ktemkin.framework.controller.display.IGraphicDisplay;
-import de.mossgrabers.framework.controller.display.ITextDisplay;
 import de.mossgrabers.framework.controller.valuechanger.IValueChanger;
 import de.mossgrabers.framework.daw.GrooveParameterID;
 import de.mossgrabers.framework.daw.IGroove;
@@ -28,7 +25,6 @@ import de.mossgrabers.framework.featuregroup.AbstractFeatureGroup;
 import de.mossgrabers.framework.featuregroup.AbstractMode;
 import de.mossgrabers.framework.parameter.IParameter;
 import de.mossgrabers.framework.utils.ButtonEvent;
-import de.mossgrabers.framework.utils.Pair;
 import de.mossgrabers.framework.utils.StringUtils;
 
 import java.util.List;
@@ -53,7 +49,7 @@ public class NoteRepeatMode extends BaseMode<IItem>
      * @param surface The control surface
      * @param model   The model
      */
-    public NoteRepeatMode(final PushControlSurface surface, final IModel model)
+    public NoteRepeatMode(final CommonUIControlSurface surface, final IModel model)
     {
         super("Note Repeat", surface, model);
 
@@ -98,8 +94,8 @@ public class NoteRepeatMode extends BaseMode<IItem>
             return;
         }
 
-        final PushConfiguration configuration = this.surface.getConfiguration();
-        final IValueChanger     valueChanger  = this.model.getValueChanger();
+        final CommonUIConfiguration configuration = this.surface.getConfiguration();
+        final IValueChanger         valueChanger  = this.model.getValueChanger();
         switch (index) {
             case 0, 1:
                 final int sel = Resolution.change(Resolution.getMatch(configuration.getNoteRepeatPeriod().getValue()), valueChanger.isIncrease(value));
@@ -186,7 +182,7 @@ public class NoteRepeatMode extends BaseMode<IItem>
             return;
         }
 
-        final PushConfiguration configuration = this.surface.getConfiguration();
+        final CommonUIConfiguration configuration = this.surface.getConfiguration();
 
         switch (index) {
             case 0, 1:

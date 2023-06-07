@@ -8,6 +8,7 @@ import com.ktemkin.controller.ableton.push.PushConfiguration;
 import com.ktemkin.controller.common.CommonUIConfiguration;
 import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 
+import de.mossgrabers.framework.controller.IControlSurface;
 import de.mossgrabers.framework.controller.color.ColorManager;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.midi.DeviceInquiry;
@@ -23,7 +24,7 @@ import java.util.List;
  *
  * @author Jürgen Moßgraber
  */
-public class PushControlSurface extends CommonUIControlSurface
+public class PushControlSurface extends CommonUIControlSurface<PushConfiguration>
 {
     // @formatter:off
     /** The names for the dynamic curves. */

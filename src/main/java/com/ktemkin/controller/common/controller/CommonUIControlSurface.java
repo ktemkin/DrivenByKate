@@ -22,7 +22,7 @@ import de.mossgrabers.framework.daw.midi.IMidiOutput;
  * @author Kate Temkin
  * @author Jürgen Moßgraber
  */
-public class CommonUIControlSurface extends AbstractControlSurface<CommonUIConfiguration> implements IControlSurface<CommonUIConfiguration>
+public class CommonUIControlSurface<C extends CommonUIConfiguration> extends AbstractControlSurface<C> implements IControlSurface<C>
 {
 
     /**
@@ -37,7 +37,7 @@ public class CommonUIControlSurface extends AbstractControlSurface<CommonUIConfi
     public CommonUIControlSurface(final IHost host, final ColorManager colorManager, final CommonUIConfiguration configuration, final IMidiOutput output, final IMidiInput input, final double width, final double height)
     {
         super(host,
-                configuration,
+                (C)configuration,
                 colorManager,
                 output,
                 input,
@@ -86,5 +86,34 @@ public class CommonUIControlSurface extends AbstractControlSurface<CommonUIConfi
     {
     }
 
+
+    public int getMajorVersion()
+    {
+        return -1;
+    }
+
+
+    public int getBoardRevision()
+    {
+        return -1;
+    }
+
+
+    public int getMinorVersion()
+    {
+        return -1;
+    }
+
+
+    public int getBuildNumber()
+    {
+        return -1;
+    }
+
+
+    public int getSerialNumber()
+    {
+        return -1;
+    }
 
 }

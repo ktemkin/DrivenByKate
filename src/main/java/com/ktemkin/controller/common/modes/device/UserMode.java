@@ -4,14 +4,11 @@
 
 package com.ktemkin.controller.common.modes.device;
 
-import com.ktemkin.controller.ableton.push.controller.Push1Display;
-import com.ktemkin.controller.ableton.push.controller.PushColorManager;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import com.ktemkin.controller.common.modes.BaseMode;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.controller.color.ColorEx;
 import com.ktemkin.framework.controller.display.IGraphicDisplay;
-import de.mossgrabers.framework.controller.display.ITextDisplay;
 import de.mossgrabers.framework.controller.valuechanger.IValueChanger;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.IItem;
@@ -35,7 +32,7 @@ public class UserMode extends BaseMode<IParameter> {
      * @param surface The control surface
      * @param model   The model
      */
-    public UserMode(final PushControlSurface surface, final IModel model) {
+    public UserMode(final CommonUIControlSurface surface, final IModel model) {
         super("User Controls", surface, model, model.getUserParameterBank());
 
         this.setParameterProvider(new BankParameterProvider(this.bank));
@@ -76,8 +73,8 @@ public class UserMode extends BaseMode<IParameter> {
     public int getButtonColor(final ButtonID buttonID) {
         int index = this.isButtonRow(0, buttonID);
         if (index >= 0) {
-            final int selectedColor = PushColorManager.PUSH2_COLOR_ORANGE_HI;
-            final int existsColor = PushColorManager.PUSH2_COLOR_YELLOW_LO;
+            final int selectedColor = this.getColorManager().getDeviceColor(ColorEx.ORANGE);
+            final int existsColor = this.getColorManager().getDeviceColor(ColorEx.DARK_YELLOW);
 
             final int selectedPage = this.bank.getScrollPosition() / this.bank.getPageSize();
             return index == selectedPage ? selectedColor : existsColor;

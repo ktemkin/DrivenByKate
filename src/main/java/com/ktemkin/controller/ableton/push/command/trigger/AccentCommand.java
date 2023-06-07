@@ -17,7 +17,7 @@ import de.mossgrabers.framework.utils.ButtonEvent;
  *
  * @author Jürgen Moßgraber
  */
-public class AccentCommand extends AbstractTriggerCommand<CommonUIControlSurface, CommonUIConfiguration>
+public class AccentCommand extends AbstractTriggerCommand<CommonUIControlSurface<CommonUIConfiguration>, CommonUIConfiguration>
 {
 
     private boolean quitAccentMode;

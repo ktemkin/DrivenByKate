@@ -4,11 +4,9 @@
 
 package com.ktemkin.controller.common.modes;
 
-import com.ktemkin.controller.ableton.push.controller.Push1Display;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.controller.ButtonID;
 import com.ktemkin.framework.controller.display.IGraphicDisplay;
-import de.mossgrabers.framework.controller.display.ITextDisplay;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.IItem;
 import de.mossgrabers.framework.featuregroup.AbstractFeatureGroup;
@@ -16,7 +14,6 @@ import de.mossgrabers.framework.featuregroup.AbstractMode;
 import de.mossgrabers.framework.featuregroup.IView;
 import de.mossgrabers.framework.featuregroup.ViewManager;
 import de.mossgrabers.framework.utils.ButtonEvent;
-import de.mossgrabers.framework.utils.StringUtils;
 import de.mossgrabers.framework.view.Views;
 
 
@@ -63,7 +60,7 @@ public class NoteViewSelectMode extends BaseMode<IItem> {
      * @param surface The control surface
      * @param model   The model
      */
-    public NoteViewSelectMode(final PushControlSurface surface, final IModel model) {
+    public NoteViewSelectMode(final CommonUIControlSurface surface, final IModel model) {
         super("Note View Select", surface, model);
     }
 

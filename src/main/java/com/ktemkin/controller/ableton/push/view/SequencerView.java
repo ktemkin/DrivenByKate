@@ -20,7 +20,7 @@ import de.mossgrabers.framework.view.sequencer.AbstractNoteSequencerView;
  *
  * @author Jürgen Moßgraber
  */
-public class SequencerView extends AbstractNoteSequencerView<CommonUIControlSurface, CommonUIConfiguration>
+public class SequencerView extends AbstractNoteSequencerView<CommonUIControlSurface<CommonUIConfiguration>, CommonUIConfiguration>
 {
 
     /**
@@ -29,7 +29,7 @@ public class SequencerView extends AbstractNoteSequencerView<CommonUIControlSurf
      * @param surface The surface
      * @param model   The model
      */
-    public SequencerView(final PushControlSurface surface, final IModel model)
+    public SequencerView(final CommonUIControlSurface surface, final IModel model)
     {
         super(Views.NAME_SEQUENCER, surface, model, true);
     }

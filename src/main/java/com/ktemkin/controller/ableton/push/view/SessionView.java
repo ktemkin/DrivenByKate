@@ -4,11 +4,12 @@
 
 package com.ktemkin.controller.ableton.push.view;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
 import com.ktemkin.controller.ableton.push.command.trigger.SelectSessionViewCommand;
-import com.ktemkin.controller.ableton.push.controller.PushColorManager;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIColorManager;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.controller.ButtonID;
+import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.controller.grid.LightInfo;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.IScene;
@@ -26,7 +27,7 @@ import de.mossgrabers.framework.view.TransposeView;
  *
  * @author Jürgen Moßgraber
  */
-public class SessionView extends AbstractSessionView<PushControlSurface, PushConfiguration> implements TransposeView
+public class SessionView extends AbstractSessionView<CommonUIControlSurface<CommonUIConfiguration>, CommonUIConfiguration> implements TransposeView
 {
 
     /**
@@ -35,16 +36,19 @@ public class SessionView extends AbstractSessionView<PushControlSurface, PushCon
      * @param surface The surface
      * @param model   The model
      */
-    public SessionView(final PushControlSurface surface, final IModel model)
+    public SessionView(final CommonUIControlSurface surface, final IModel model)
     {
         super("Session", surface, model, 8, 8, true);
 
-        final int       redLo             = PushColorManager.PUSH2_COLOR2_RED_LO;
-        final int       redHi             = PushColorManager.PUSH2_COLOR2_RED_HI;
-        final int       black             = PushColorManager.PUSH2_COLOR2_BLACK;
-        final int       white             = PushColorManager.PUSH2_COLOR2_WHITE;
-        final int       green             = PushColorManager.PUSH2_COLOR2_GREEN;
-        final int       amber             = PushColorManager.PUSH2_COLOR2_AMBER;
+        var colorManager = (CommonUIColorManager)model.getColorManager();
+
+        final int       redLo             = colorManager.getDeviceColor(ColorEx.DARK_RED);
+        final int       redHi             = colorManager.getDeviceColor(ColorEx.RED);
+        final int       black             = colorManager.getDeviceColor(ColorEx.BLACK);
+        final int       white             = colorManager.getDeviceColor(ColorEx.WHITE);
+        final int       green             = colorManager.getDeviceColor(ColorEx.GREEN);
+        final int       amber             = colorManager.getDeviceColor(ColorEx.DARK_YELLOW);
+
         final LightInfo isRecording       = new LightInfo(redHi, redHi, false);
         final LightInfo isRecordingQueued = new LightInfo(redHi, black, true);
         final LightInfo isPlaying         = new LightInfo(green, green, false);

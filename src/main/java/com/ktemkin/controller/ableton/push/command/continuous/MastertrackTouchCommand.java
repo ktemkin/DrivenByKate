@@ -4,8 +4,8 @@
 
 package com.ktemkin.controller.ableton.push.command.continuous;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.command.core.AbstractTriggerCommand;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.daw.IModel;
@@ -20,14 +20,14 @@ import de.mossgrabers.framework.utils.ButtonEvent;
  *
  * @author Jürgen Moßgraber
  */
-public class MastertrackTouchCommand extends AbstractTriggerCommand<PushControlSurface, PushConfiguration> {
+public class MastertrackTouchCommand extends AbstractTriggerCommand<CommonUIControlSurface<CommonUIConfiguration>, CommonUIConfiguration> {
     /**
      * Constructor.
      *
      * @param model   The model
      * @param surface The surface
      */
-    public MastertrackTouchCommand(final IModel model, final PushControlSurface surface) {
+    public MastertrackTouchCommand(final IModel model, final CommonUIControlSurface surface) {
         super(model, surface);
     }
 

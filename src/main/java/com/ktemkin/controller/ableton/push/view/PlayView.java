@@ -4,8 +4,9 @@
 
 package com.ktemkin.controller.ableton.push.view;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIColorManager;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.configuration.AbstractConfiguration;
 import de.mossgrabers.framework.configuration.Configuration;
 import de.mossgrabers.framework.controller.ButtonID;
@@ -24,14 +25,14 @@ import de.mossgrabers.framework.view.Views;
  *
  * @author Jürgen Moßgraber
  */
-public class PlayView extends AbstractPlayView<PushControlSurface, PushConfiguration> {
+public class PlayView extends AbstractPlayView<CommonUIControlSurface<CommonUIConfiguration>, CommonUIConfiguration> {
     /**
      * Constructor.
      *
      * @param surface The surface
      * @param model   The model
      */
-    public PlayView(final PushControlSurface surface, final IModel model) {
+    public PlayView(final CommonUIControlSurface surface, final IModel model) {
         this(Views.NAME_PLAY, surface, model);
     }
 
@@ -43,7 +44,7 @@ public class PlayView extends AbstractPlayView<PushControlSurface, PushConfigura
      * @param surface The surface
      * @param model   The model
      */
-    public PlayView(final String name, final PushControlSurface surface, final IModel model) {
+    public PlayView(final String name, final CommonUIControlSurface surface, final IModel model) {
         super(name, surface, model, true);
 
         final Configuration configuration = this.surface.getConfiguration();

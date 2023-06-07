@@ -4,14 +4,12 @@
 
 package com.ktemkin.controller.common.modes.device;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
 import com.ktemkin.controller.ableton.push.parameterprovider.PushVolumeLayerOrDrumPadParameterProvider;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.controller.display.AbstractGraphicDisplay;
-import de.mossgrabers.framework.controller.display.Format;
 import com.ktemkin.framework.controller.display.IGraphicDisplay;
-import de.mossgrabers.framework.controller.display.ITextDisplay;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.IChannel;
 import de.mossgrabers.framework.daw.data.ILayer;
@@ -34,7 +32,7 @@ public class DeviceLayerVolumeMode extends DeviceLayerMode
      * @param surface The control surface
      * @param model   The model
      */
-    public DeviceLayerVolumeMode(final PushControlSurface surface, final IModel model)
+    public DeviceLayerVolumeMode(final CommonUIControlSurface surface, final IModel model)
     {
         super(Modes.NAME_LAYER_VOLUME, surface, model);
 

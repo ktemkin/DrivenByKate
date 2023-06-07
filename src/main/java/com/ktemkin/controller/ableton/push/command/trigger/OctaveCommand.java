@@ -18,7 +18,7 @@ import de.mossgrabers.framework.view.TransposeView;
  *
  * @author Jürgen Moßgraber
  */
-public class OctaveCommand extends AbstractTriggerCommand<CommonUIControlSurface, CommonUIConfiguration>
+public class OctaveCommand extends AbstractTriggerCommand<CommonUIControlSurface<CommonUIConfiguration>, CommonUIConfiguration>
 {
 
     private final boolean isUp;

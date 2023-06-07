@@ -4,8 +4,8 @@
 
 package com.ktemkin.controller.ableton.push.command.trigger;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import com.ktemkin.controller.common.modes.device.DeviceBrowserMode;
 import de.mossgrabers.framework.command.TempoCommand;
 import de.mossgrabers.framework.daw.IModel;
@@ -19,14 +19,14 @@ import de.mossgrabers.framework.utils.ButtonEvent;
  *
  * @author Jürgen Moßgraber
  */
-public class RasteredKnobCommand extends TempoCommand<PushControlSurface, PushConfiguration> {
+public class RasteredKnobCommand extends TempoCommand<CommonUIControlSurface<CommonUIConfiguration>, CommonUIConfiguration> {
     /**
      * Constructor.
      *
      * @param model   The model
      * @param surface The surface
      */
-    public RasteredKnobCommand(final IModel model, final PushControlSurface surface) {
+    public RasteredKnobCommand(final IModel model, final CommonUIControlSurface surface) {
         super(model, surface);
     }
 

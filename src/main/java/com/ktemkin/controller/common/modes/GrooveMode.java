@@ -4,8 +4,7 @@
 
 package com.ktemkin.controller.common.modes;
 
-import com.ktemkin.controller.ableton.push.controller.Push1Display;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.controller.display.Format;
 import com.ktemkin.framework.controller.display.IGraphicDisplay;
@@ -43,7 +42,7 @@ public class GrooveMode extends BaseMode<IItem>
      * @param surface The control surface
      * @param model   The model
      */
-    public GrooveMode(final PushControlSurface surface, final IModel model)
+    public GrooveMode(final CommonUIControlSurface surface, final IModel model)
     {
         super(TAG_GROOVE, surface, model);
 

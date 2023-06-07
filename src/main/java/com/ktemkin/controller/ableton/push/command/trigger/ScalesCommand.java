@@ -4,8 +4,8 @@
 
 package com.ktemkin.controller.ableton.push.command.trigger;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.command.core.AbstractTriggerCommand;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.featuregroup.ModeManager;
@@ -18,14 +18,14 @@ import de.mossgrabers.framework.utils.ButtonEvent;
  *
  * @author Jürgen Moßgraber
  */
-public class ScalesCommand extends AbstractTriggerCommand<PushControlSurface, PushConfiguration> {
+public class ScalesCommand extends AbstractTriggerCommand<CommonUIControlSurface<CommonUIConfiguration>, CommonUIConfiguration> {
     /**
      * Constructor.
      *
      * @param model   The model
      * @param surface The surface
      */
-    public ScalesCommand(final IModel model, final PushControlSurface surface) {
+    public ScalesCommand(final IModel model, final CommonUIControlSurface surface) {
         super(model, surface);
     }
 

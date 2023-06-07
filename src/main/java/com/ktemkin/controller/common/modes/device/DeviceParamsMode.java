@@ -4,9 +4,7 @@
 
 package com.ktemkin.controller.common.modes.device;
 
-import com.ktemkin.controller.ableton.push.controller.Push1Display;
-import com.ktemkin.controller.ableton.push.controller.PushColorManager;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import com.ktemkin.controller.common.modes.BaseMode;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.controller.color.ColorEx;
@@ -27,7 +25,6 @@ import de.mossgrabers.framework.mode.Modes;
 import de.mossgrabers.framework.parameter.IParameter;
 import de.mossgrabers.framework.parameterprovider.device.BankParameterProvider;
 import de.mossgrabers.framework.utils.ButtonEvent;
-import de.mossgrabers.framework.utils.StringUtils;
 
 import java.util.Optional;
 
@@ -63,7 +60,7 @@ public class DeviceParamsMode extends BaseMode<IParameter>
      * @param surface The control surface
      * @param model   The model
      */
-    public DeviceParamsMode(final PushControlSurface surface, final IModel model)
+    public DeviceParamsMode(final CommonUIControlSurface surface, final IModel model)
     {
         super("Parameters", surface, model, model.getCursorDevice().getParameterBank());
 
@@ -260,9 +257,9 @@ public class DeviceParamsMode extends BaseMode<IParameter>
                 return super.getButtonColor(buttonID);
             }
 
-            final int selectedColor = this.colorManager.getColorIndex(PushColorManager.PUSH_ORANGE_HI);
-            final int existsColor   = this.colorManager.getColorIndex(PushColorManager.PUSH_YELLOW_LO);
-            final int offColor      = this.colorManager.getColorIndex(PushColorManager.PUSH_BLACK);
+            final int selectedColor = this.getColorManager().getDeviceColor(ColorEx.ORANGE);
+            final int existsColor = this.getColorManager().getDeviceColor(ColorEx.DARK_YELLOW);
+            final int offColor = this.getColorManager().getDeviceColor(ColorEx.BLACK);
 
             if (this.showDevices) {
                 final IDeviceBank bank = cd.getDeviceBank();
@@ -281,16 +278,16 @@ public class DeviceParamsMode extends BaseMode<IParameter>
 
         index = this.isButtonRow(1, buttonID);
         if (index >= 0) {
-            final int white = PushColorManager.PUSH2_COLOR2_WHITE;
+            final int white = this.getColorManager().getDeviceColor(ColorEx.WHITE);
             if (!cd.doesExist()) {
                 return index == 7 ? white : super.getButtonColor(buttonID);
             }
 
-            final int green     = PushColorManager.PUSH2_COLOR2_GREEN;
-            final int grey      = PushColorManager.PUSH2_COLOR2_GREY_LO;
-            final int orange    = PushColorManager.PUSH2_COLOR2_ORANGE;
-            final int off       = PushColorManager.PUSH2_COLOR_BLACK;
-            final int turquoise = PushColorManager.PUSH2_COLOR2_TURQUOISE_HI;
+            final int green = this.getColorManager().getDeviceColor(ColorEx.GREEN);
+            final int grey = this.getColorManager().getDeviceColor(ColorEx.GRAY);
+            final int orange = this.getColorManager().getDeviceColor(ColorEx.ORANGE);
+            final int turquoise = this.getColorManager().getDeviceColor(ColorEx.CYAN);
+            final int off = this.getColorManager().getDeviceColor(ColorEx.BLACK);
 
             switch (index) {
                 case 0 -> {

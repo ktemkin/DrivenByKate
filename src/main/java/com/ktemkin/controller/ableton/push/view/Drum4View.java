@@ -21,7 +21,7 @@ import de.mossgrabers.framework.view.sequencer.AbstractDrum4View;
  *
  * @author Jürgen Moßgraber
  */
-public class Drum4View extends AbstractDrum4View<CommonUIControlSurface, CommonUIConfiguration>
+public class Drum4View extends AbstractDrum4View<CommonUIControlSurface<CommonUIConfiguration>, CommonUIConfiguration>
 {
 
     /**

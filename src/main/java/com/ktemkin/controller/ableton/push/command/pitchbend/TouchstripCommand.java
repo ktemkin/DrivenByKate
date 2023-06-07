@@ -24,7 +24,7 @@ import de.mossgrabers.framework.view.Views;
  *
  * @author Jürgen Moßgraber
  */
-public class TouchstripCommand extends AbstractPitchbendCommand<CommonUIControlSurface, CommonUIConfiguration>
+public class TouchstripCommand extends AbstractPitchbendCommand<CommonUIControlSurface<CommonUIConfiguration>, CommonUIConfiguration>
 {
 
     private int pitchValue = 0;

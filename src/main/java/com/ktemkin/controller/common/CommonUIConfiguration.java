@@ -89,7 +89,7 @@ public class CommonUIConfiguration extends AbstractConfiguration implements IGra
     public static final Integer DEBUG_MODE = 61;
 
     /**
-     * Push 2 display debug window.
+     * Display debug window.
      */
     public static final Integer DEBUG_WINDOW = 62;
 

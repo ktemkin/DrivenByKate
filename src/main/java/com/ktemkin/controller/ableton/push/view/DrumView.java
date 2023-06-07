@@ -4,8 +4,6 @@
 
 package com.ktemkin.controller.ableton.push.view;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
 import com.ktemkin.controller.common.CommonUIConfiguration;
 import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.controller.ButtonID;
@@ -28,7 +26,7 @@ import de.mossgrabers.framework.view.sequencer.AbstractDrumView;
  *
  * @author Jürgen Moßgraber
  */
-public class DrumView extends AbstractDrumView<CommonUIControlSurface, CommonUIConfiguration>
+public class DrumView extends AbstractDrumView<CommonUIControlSurface<CommonUIConfiguration>, CommonUIConfiguration>
 {
 
     /**
@@ -37,7 +35,7 @@ public class DrumView extends AbstractDrumView<CommonUIControlSurface, CommonUIC
      * @param surface The surface
      * @param model   The model
      */
-    public DrumView(final PushControlSurface surface, final IModel model)
+    public DrumView(final CommonUIControlSurface surface, final IModel model)
     {
         super(Views.NAME_DRUM, surface, model, 4, 4, true);
     }

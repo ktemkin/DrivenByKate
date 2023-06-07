@@ -4,9 +4,9 @@
 
 package com.ktemkin.controller.ableton.push.command.trigger;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
 import com.ktemkin.controller.common.CommonUIConfiguration.TrackState;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.command.core.AbstractTriggerCommand;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.ICursorDevice;
@@ -22,7 +22,7 @@ import java.util.Optional;
  *
  * @author Jürgen Moßgraber
  */
-public class SoloCommand extends AbstractTriggerCommand<PushControlSurface, PushConfiguration>
+public class SoloCommand extends AbstractTriggerCommand<CommonUIControlSurface<CommonUIConfiguration>, CommonUIConfiguration>
 {
 
     /**
@@ -31,7 +31,7 @@ public class SoloCommand extends AbstractTriggerCommand<PushControlSurface, Push
      * @param model   The model
      * @param surface The surface
      */
-    public SoloCommand(final IModel model, final PushControlSurface surface)
+    public SoloCommand(final IModel model, final CommonUIControlSurface surface)
     {
         super(model, surface);
     }
@@ -51,7 +51,7 @@ public class SoloCommand extends AbstractTriggerCommand<PushControlSurface, Push
             return;
         }
 
-        final PushConfiguration config = this.surface.getConfiguration();
+        final var config = this.surface.getConfiguration();
 
         // Toggle solo lock mode
         if (this.surface.isShiftPressed()) {

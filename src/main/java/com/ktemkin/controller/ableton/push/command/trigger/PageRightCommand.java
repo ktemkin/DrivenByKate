@@ -20,7 +20,7 @@ import de.mossgrabers.framework.view.sequencer.AbstractSequencerView;
  *
  * @author Jürgen Moßgraber
  */
-public class PageRightCommand extends AbstractTriggerCommand<CommonUIControlSurface, CommonUIConfiguration>
+public class PageRightCommand extends AbstractTriggerCommand<CommonUIControlSurface<CommonUIConfiguration>, CommonUIConfiguration>
 {
 
     /**

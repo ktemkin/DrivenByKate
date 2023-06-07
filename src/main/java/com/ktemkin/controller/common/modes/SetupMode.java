@@ -18,7 +18,7 @@ import de.mossgrabers.framework.utils.ButtonEvent;
 
 
 /**
- * Configuration settings for Push 2.
+ * Configuration settings for CommonUI devices.
  *
  * @author Jürgen Moßgraber
  */

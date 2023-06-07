@@ -5,6 +5,7 @@
 package com.ktemkin.controller.ableton.push.parameterprovider;
 
 import com.ktemkin.controller.ableton.push.PushConfiguration;
+import com.ktemkin.controller.common.CommonUIConfiguration;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.IChannel;
 import de.mossgrabers.framework.daw.data.ITrack;
@@ -22,7 +23,7 @@ import de.mossgrabers.framework.parameterprovider.track.SelectedTrackParameterPr
 public class PushTrackParameterProvider extends SelectedTrackParameterProvider implements ISettingObserver
 {
 
-    private final PushConfiguration configuration;
+    private final CommonUIConfiguration configuration;
 
 
     /**
@@ -31,7 +32,7 @@ public class PushTrackParameterProvider extends SelectedTrackParameterProvider i
      * @param model         Uses the current channel bank from this model to get the parameters
      * @param configuration The configuration
      */
-    public PushTrackParameterProvider(final IModel model, final PushConfiguration configuration)
+    public PushTrackParameterProvider(final IModel model, final CommonUIConfiguration configuration)
     {
         super(model);
 

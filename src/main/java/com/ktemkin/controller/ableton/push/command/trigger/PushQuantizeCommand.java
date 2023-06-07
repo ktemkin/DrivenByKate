@@ -19,7 +19,7 @@ import de.mossgrabers.framework.utils.ButtonEvent;
  *
  * @author Jürgen Moßgraber
  */
-public class PushQuantizeCommand extends QuantizeCommand<CommonUIControlSurface, CommonUIConfiguration>
+public class PushQuantizeCommand extends QuantizeCommand<CommonUIControlSurface<CommonUIConfiguration>, CommonUIConfiguration>
 {
 
     /**

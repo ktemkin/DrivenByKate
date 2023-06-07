@@ -4,7 +4,7 @@
 
 package com.ktemkin.controller.common.modes.track;
 
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.controller.display.AbstractGraphicDisplay;
 import com.ktemkin.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.daw.IModel;
@@ -38,7 +38,7 @@ public class CrossfadeMode extends AbstractTrackMode
      * @param surface The control surface
      * @param model   The model
      */
-    public CrossfadeMode(final PushControlSurface surface, final IModel model)
+    public CrossfadeMode(final CommonUIControlSurface surface, final IModel model)
     {
         super(Modes.NAME_CROSSFADE, surface, model);
 

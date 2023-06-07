@@ -4,11 +4,9 @@
 
 package com.ktemkin.controller.common.modes;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
-import de.mossgrabers.framework.controller.display.Format;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import com.ktemkin.framework.controller.display.IGraphicDisplay;
-import de.mossgrabers.framework.controller.display.ITextDisplay;
 import de.mossgrabers.framework.controller.valuechanger.IValueChanger;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.IItem;
@@ -29,7 +27,7 @@ public class AccentMode extends BaseMode<IItem> {
      * @param surface The control surface
      * @param model   The model
      */
-    public AccentMode(final PushControlSurface surface, final IModel model) {
+    public AccentMode(final CommonUIControlSurface surface, final IModel model) {
         super(TAG_ACCENT, surface, model);
     }
 
@@ -40,9 +38,9 @@ public class AccentMode extends BaseMode<IItem> {
     @Override
     public void onKnobValue(final int index, final int value) {
         // Will never need fine increments on accent velocity since they are integers
-        final IValueChanger valueChanger = this.model.getValueChanger();
-        final PushConfiguration config = this.surface.getConfiguration();
-        final int fixedAccentValue = config.getFixedAccentValue();
+        final IValueChanger         valueChanger     = this.model.getValueChanger();
+        final CommonUIConfiguration config           = this.surface.getConfiguration();
+        final int                   fixedAccentValue = config.getFixedAccentValue();
         config.setFixedAccentValue(Math.max(1, valueChanger.changeValue(value, fixedAccentValue, -100, 128)));
     }
 

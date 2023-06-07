@@ -4,10 +4,9 @@
 
 package com.ktemkin.controller.common.modes;
 
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.controller.ButtonID;
 import com.ktemkin.framework.controller.display.IGraphicDisplay;
-import de.mossgrabers.framework.controller.display.ITextDisplay;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.IItem;
 import de.mossgrabers.framework.featuregroup.AbstractFeatureGroup;
@@ -17,7 +16,7 @@ import de.mossgrabers.framework.utils.ButtonEvent;
 
 
 /**
- * Additional configuration settings for Push 2.
+ * Additional configuration settings for CommonUI devices.
  *
  * @author Jürgen Moßgraber
  */
@@ -30,7 +29,7 @@ public class InfoMode extends BaseMode<IItem>
      * @param surface The control surface
      * @param model   The model
      */
-    public InfoMode(final PushControlSurface surface, final IModel model)
+    public InfoMode(final CommonUIControlSurface surface, final IModel model)
     {
         super("Info", surface, model);
     }

@@ -19,7 +19,7 @@ import de.mossgrabers.framework.view.Views;
  *
  * @author Jürgen Moßgraber
  */
-public class PushCursorCommand extends CursorCommand<CommonUIControlSurface, CommonUIConfiguration>
+public class PushCursorCommand extends CursorCommand<CommonUIControlSurface<CommonUIConfiguration>, CommonUIConfiguration>
 {
 
     private final ISceneBank sceneBank64;

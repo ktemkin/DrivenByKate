@@ -475,7 +475,7 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
         }, ColorManager.BUTTON_STATE_OFF, ColorManager.BUTTON_STATE_ON);
 
         this.addButton(ButtonID.LAYOUT, "Layout", new LayoutCommand(this.model, surface), PushControlSurface.PUSH_BUTTON_LAYOUT);
-        this.addButton(ButtonID.SETUP, "Setup", new SetupCommand(true, this.model, surface), PushControlSurface.PUSH_BUTTON_SETUP, () -> modeManager.isActive(Modes.SETUP));
+        this.addButton(ButtonID.SETUP, "Setup", new SetupCommand(this.model, surface), PushControlSurface.PUSH_BUTTON_SETUP, () -> modeManager.isActive(Modes.SETUP));
         this.addButton(ButtonID.CONVERT, "Convert", new ConvertCommand<>(this.model, surface), PushControlSurface.PUSH_BUTTON_CONVERT, () -> {
             if (!this.model.canConvertClip()) {
                 return 0;

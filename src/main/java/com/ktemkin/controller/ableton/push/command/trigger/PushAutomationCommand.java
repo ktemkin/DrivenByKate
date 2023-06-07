@@ -4,8 +4,8 @@
 
 package com.ktemkin.controller.ableton.push.command.trigger;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.command.core.AbstractTriggerCommand;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.daw.IModel;
@@ -18,7 +18,7 @@ import de.mossgrabers.framework.utils.ButtonEvent;
  *
  * @author Jürgen Moßgraber
  */
-public class PushAutomationCommand extends AbstractTriggerCommand<PushControlSurface, PushConfiguration> {
+public class PushAutomationCommand extends AbstractTriggerCommand<CommonUIControlSurface<CommonUIConfiguration>, CommonUIConfiguration> {
     private boolean quitAutomationMode;
 
 
@@ -28,7 +28,7 @@ public class PushAutomationCommand extends AbstractTriggerCommand<PushControlSur
      * @param model   The model
      * @param surface The surface
      */
-    public PushAutomationCommand(final IModel model, final PushControlSurface surface) {
+    public PushAutomationCommand(final IModel model, final CommonUIControlSurface surface) {
         super(model, surface);
     }
 

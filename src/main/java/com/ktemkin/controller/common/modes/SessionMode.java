@@ -4,11 +4,11 @@
 
 package com.ktemkin.controller.common.modes;
 
-import com.ktemkin.controller.ableton.push.controller.PushColorManager;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import com.ktemkin.controller.common.modes.track.AbstractTrackMode;
 import de.mossgrabers.framework.controller.ButtonID;
 import com.ktemkin.framework.controller.display.IGraphicDisplay;
+import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.IScene;
 import de.mossgrabers.framework.daw.data.ISlot;
@@ -44,7 +44,7 @@ public class SessionMode extends AbstractTrackMode
      * @param surface The control surface
      * @param model   The model
      */
-    public SessionMode(final PushControlSurface surface, final IModel model)
+    public SessionMode(final CommonUIControlSurface surface, final IModel model)
     {
         super("Session", surface, model);
 
@@ -125,7 +125,7 @@ public class SessionMode extends AbstractTrackMode
             }
 
             final ITrackBank tb = this.model.getCurrentTrackBank();
-            return tb.hasParent() ? PushColorManager.PUSH2_COLOR2_WHITE : PushColorManager.PUSH2_COLOR_BLACK;
+            return this.getColorManager().getDeviceColor(tb.hasParent() ? ColorEx.WHITE : ColorEx.BLACK);
         }
 
         return super.getButtonColor(buttonID);

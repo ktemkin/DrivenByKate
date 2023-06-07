@@ -4,11 +4,10 @@
 
 package com.ktemkin.controller.common.modes;
 
-import com.ktemkin.controller.ableton.push.PushConfiguration;
-import com.ktemkin.controller.ableton.push.controller.PushColorManager;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.controller.ButtonID;
 import com.ktemkin.framework.controller.display.IGraphicDisplay;
+import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.IItem;
 import de.mossgrabers.framework.featuregroup.AbstractFeatureGroup;
@@ -35,7 +34,7 @@ public class ScalesMode extends BaseMode<IItem>
      * @param surface The control surface
      * @param model   The model
      */
-    public ScalesMode(final PushControlSurface surface, final IModel model)
+    public ScalesMode(final CommonUIControlSurface surface, final IModel model)
     {
         super("Scale", surface, model);
 
@@ -83,13 +82,15 @@ public class ScalesMode extends BaseMode<IItem>
     @Override
     public int getButtonColor(final ButtonID buttonID)
     {
+        var colorManager = this.getColorManager();
+
         int index = this.isButtonRow(0, buttonID);
         if (index >= 0) {
             if (index == 0) {
-                return this.colorManager.getColorIndex(PushColorManager.PUSH_ORANGE_LO);
+                return colorManager.getDeviceColor(ColorEx.DARK_ORANGE);
             }
             if (index == 7) {
-                return this.colorManager.getColorIndex(AbstractFeatureGroup.BUTTON_COLOR_OFF);
+                return colorManager.getDeviceColor(ColorEx.BLACK);
             }
             final int offset = this.scales.getScaleOffsetIndex();
             return this.colorManager.getColorIndex(offset == index - 1 ? AbstractMode.BUTTON_COLOR_HI : AbstractFeatureGroup.BUTTON_COLOR_ON);
@@ -98,7 +99,7 @@ public class ScalesMode extends BaseMode<IItem>
         index = this.isButtonRow(1, buttonID);
         if (index >= 0) {
             if (index == 0 || index == 7) {
-                return PushColorManager.PUSH2_COLOR2_AMBER;
+                return colorManager.getDeviceColor(ColorEx.DARK_YELLOW);
             }
             final int offset = this.scales.getScaleOffsetIndex();
             return this.colorManager.getColorIndex(offset == index - 1 + 6 ? AbstractMode.BUTTON_COLOR2_HI : AbstractMode.BUTTON_COLOR2_ON);
@@ -152,7 +153,7 @@ public class ScalesMode extends BaseMode<IItem>
     private void update()
     {
         this.surface.getViewManager().getActive().updateNoteMapping();
-        final PushConfiguration config = this.surface.getConfiguration();
+        final var config = this.surface.getConfiguration();
         config.setScale(this.scales.getScale().getName());
         config.setScaleBase(Scales.BASES.get(this.scales.getScaleOffsetIndex()));
         config.setScaleInKey(!this.scales.isChromatic());

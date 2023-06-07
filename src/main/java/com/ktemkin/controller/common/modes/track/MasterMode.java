@@ -4,8 +4,7 @@
 
 package com.ktemkin.controller.common.modes.track;
 
-import com.ktemkin.controller.ableton.push.controller.PushColorManager;
-import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import com.ktemkin.controller.common.modes.BaseMode;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.controller.color.ColorEx;
@@ -43,7 +42,7 @@ public class MasterMode extends BaseMode<ITrack>
      * @param model       The model
      * @param isTemporary If true treat this mode only as temporary
      */
-    public MasterMode(final PushControlSurface surface, final IModel model, final boolean isTemporary)
+    public MasterMode(final CommonUIControlSurface surface, final IModel model, final boolean isTemporary)
     {
         super("Master", surface, model);
 
@@ -188,13 +187,13 @@ public class MasterMode extends BaseMode<ITrack>
             if (index < 4 || index == 5) {return colorManager.getColorIndex(AbstractFeatureGroup.BUTTON_COLOR_OFF);}
             if (index > 5) {return colorManager.getColorIndex(AbstractFeatureGroup.BUTTON_COLOR_ON);}
 
-            final int red = PushColorManager.PUSH2_COLOR_RED_HI;
+            final int red = this.getColorManager().getDeviceColor(ColorEx.RED);
             return this.model.getApplication().isEngineActive() ? colorManager.getColorIndex(AbstractFeatureGroup.BUTTON_COLOR_ON) : red;
         }
 
         index = this.isButtonRow(1, buttonID);
         if (index >= 0) {
-            return PushColorManager.PUSH2_COLOR_BLACK;
+            return this.getColorManager().getDeviceColor(ColorEx.BLACK);
         }
 
         return super.getButtonColor(buttonID);
@@ -206,12 +205,12 @@ public class MasterMode extends BaseMode<ITrack>
     {
         final IMasterTrack track = this.model.getMasterTrack();
         if (!track.isActivated()) {
-            return PushColorManager.PUSH2_COLOR_BLACK;
+            return this.getColorManager().getDeviceColor(ColorEx.BLACK);
         }
         if (track.isRecArm()) {
-            return PushColorManager.PUSH2_COLOR_RED_HI;
+            return this.getColorManager().getDeviceColor(ColorEx.RED);
         }
-        return PushColorManager.PUSH2_COLOR_ORANGE_HI;
+        return this.getColorManager().getDeviceColor(ColorEx.ORANGE);
     }
 
 

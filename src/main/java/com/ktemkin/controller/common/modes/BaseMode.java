@@ -26,7 +26,7 @@ import de.mossgrabers.framework.utils.ButtonEvent;
  * @author Kate Temkin
  * @author Jürgen Moßgraber
  */
-public abstract class BaseMode<B extends IItem> extends AbstractParameterMode<CommonUIControlSurface, CommonUIConfiguration, B>
+public abstract class BaseMode<B extends IItem> extends AbstractParameterMode<CommonUIControlSurface<CommonUIConfiguration>, CommonUIConfiguration, B>
 {
 
     protected static final int SCROLL_RATE = 8;
@@ -83,7 +83,7 @@ public abstract class BaseMode<B extends IItem> extends AbstractParameterMode<Co
 
 
     /**
-     * Update the display of Push 2.
+     * Update the graphical display of our device.
      *
      * @param display The display
      */
