@@ -63,83 +63,8 @@ public class PushConfiguration extends CommonUIConfiguration
     @Override
     public void init(final ISettingsUI globalSettings, final ISettingsUI documentSettings)
     {
-        ///////////////////////////
-        // Scale
+        super.init(globalSettings, documentSettings);
 
-        this.activateScaleSetting(documentSettings);
-        this.activateScaleBaseSetting(documentSettings);
-        this.activateScaleInScaleSetting(documentSettings);
-        this.activateScaleLayoutSetting(documentSettings);
-
-        ///////////////////////////
-        // Note Repeat
-
-        this.activateNoteRepeatSetting(documentSettings);
-
-        ///////////////////////////
-        // Session
-
-        this.activateSessionView(globalSettings);
-        this.activateSelectClipOnLaunchSetting(globalSettings);
-        this.activateDrawRecordStripeSetting(globalSettings);
-        this.activateActionForRecArmedPad(globalSettings);
-
-        ///////////////////////////
-        // Transport
-
-        this.activateBehaviourOnPauseSetting(globalSettings);
-        this.activateFlipRecordSetting(globalSettings);
-
-        ///////////////////////////
-        // Play and Sequence
-
-        this.activateAccentActiveSetting(globalSettings);
-        this.activateAccentValueSetting(globalSettings);
-        this.activateQuantizeAmountSetting(globalSettings);
-        this.activatePreferredNoteViewSetting(globalSettings, PREFERRED_NOTE_VIEWS);
-        this.activateStartWithSessionViewSetting(globalSettings);
-        this.activateMidiEditChannelSetting(documentSettings);
-
-        ///////////////////////////
-        // Drum Sequencer
-
-        if (this.host.supports(Capability.HAS_DRUM_DEVICE)) {
-            this.activateAutoSelectDrumSetting(globalSettings);
-            this.activateTurnOffEmptyDrumPadsSetting(globalSettings);
-        }
-
-        ///////////////////////////
-        // Workflow
-
-        this.activateExcludeDeactivatedItemsSetting(globalSettings);
-        this.activateEnableVUMetersSetting(globalSettings);
-        this.activateFootswitchSetting(globalSettings, 0, "Footswitch 2");
-        this.activateStopAutomationOnKnobReleaseSetting(globalSettings);
-        this.activateNewClipLengthSetting(globalSettings);
-        this.activateKnobSpeedSetting(globalSettings);
-        this.activateUserPageNamesSetting(documentSettings);
-
-        ///////////////////////////
-        // Add Track - Device Favorites
-
-        this.activateDeviceFavorites(globalSettings, 7, 3, 3);
-
-        ///////////////////////////
-        // Ribbon
-
-        this.activateRibbonSettings(globalSettings);
-
-        ///////////////////////////
-        // Pad Sensitivity
-
-        this.activatePush2PadSettings(globalSettings);
-
-        this.activateConvertAftertouchSetting(globalSettings);
-
-        ///////////////////////////
-        // Browser
-
-        this.activateBrowserSettings(globalSettings);
 
         ///////////////////////////
         // Push 2 Hardware

@@ -12,9 +12,9 @@ import com.ktemkin.controller.ableton.push.controller.Push2Display;
 import com.ktemkin.controller.ableton.push.controller.PushColorManager;
 import com.ktemkin.controller.ableton.push.controller.PushControlSurface;
 import com.ktemkin.controller.common.view.*;
-import com.ktemkin.controller.common.modes.*;
-import com.ktemkin.controller.common.modes.device.*;
-import com.ktemkin.controller.common.modes.track.*;
+import com.ktemkin.controller.common.mode.*;
+import com.ktemkin.controller.common.mode.device.*;
+import com.ktemkin.controller.common.mode.track.*;
 import de.mossgrabers.framework.command.aftertouch.AftertouchViewCommand;
 import de.mossgrabers.framework.command.continuous.KnobRowModeCommand;
 import de.mossgrabers.framework.command.core.PitchbendCommand;
@@ -119,7 +119,7 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
     protected void createModel() {
         final ModelSetup ms = new ModelSetup();
         ms.enableDrum64Device();
-        ms.setNumFilterColumnEntries(100000); // These are set to a ridiculously large number so we can get all devices at aonce.
+        ms.setNumFilterColumnEntries(100000); // These are set to a ridiculously large number, so we can get all devices at aonce.
         ms.setNumResults(100000);
         ms.setNumSends(4);
         ms.setNumMarkers(8);

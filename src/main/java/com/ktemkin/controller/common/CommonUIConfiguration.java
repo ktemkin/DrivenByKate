@@ -497,7 +497,6 @@ public class CommonUIConfiguration extends AbstractConfiguration implements IGra
     /**
      * Get the ribbon mode.
      *
-     * @return The functionality for the ribbon
      */
     public int getRibbonMode()
     {

@@ -6,7 +6,7 @@ package com.ktemkin.controller.common.command.trigger;
 
 import com.ktemkin.controller.common.CommonUIConfiguration;
 import com.ktemkin.controller.common.controller.CommonUIControlSurface;
-import com.ktemkin.controller.common.modes.device.DeviceBrowserMode;
+import com.ktemkin.controller.common.mode.device.DeviceBrowserMode;
 import de.mossgrabers.framework.command.TempoCommand;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.featuregroup.ModeManager;

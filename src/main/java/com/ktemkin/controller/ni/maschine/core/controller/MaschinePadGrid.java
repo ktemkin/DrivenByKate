@@ -4,7 +4,7 @@
 
 package com.ktemkin.controller.ni.maschine.core.controller;
 
-import com.ktemkin.controller.ni.maschine.mk3.controller.MaschineControlSurface;
+import com.ktemkin.controller.ni.maschine.controller.MaschineControlSurface;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.controller.color.ColorManager;
 import de.mossgrabers.framework.controller.grid.BlinkingPadGrid;
