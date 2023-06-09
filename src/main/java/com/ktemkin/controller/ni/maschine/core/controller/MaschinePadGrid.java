@@ -4,10 +4,10 @@
 
 package com.ktemkin.controller.ni.maschine.core.controller;
 
+import com.ktemkin.controller.common.controller.grid.CommonUIPadGrid;
 import com.ktemkin.controller.ni.maschine.controller.MaschineControlSurface;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.controller.color.ColorManager;
-import de.mossgrabers.framework.controller.grid.BlinkingPadGrid;
 import de.mossgrabers.framework.daw.midi.IMidiOutput;
 
 
@@ -16,7 +16,7 @@ import de.mossgrabers.framework.daw.midi.IMidiOutput;
  *
  * @author Kate Temkin
  */
-public class MaschinePadGrid extends BlinkingPadGrid
+public class MaschinePadGrid extends CommonUIPadGrid
 {
     /**
      * The note at which our pad grid's "midi" starts.

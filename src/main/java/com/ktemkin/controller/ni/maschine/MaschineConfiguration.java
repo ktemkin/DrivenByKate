@@ -10,6 +10,7 @@ import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.controller.valuechanger.IValueChanger;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.midi.ArpeggiatorMode;
+import de.mossgrabers.framework.scale.ScaleLayout;
 
 import java.util.List;
 
@@ -158,6 +159,13 @@ public class MaschineConfiguration extends CommonUIConfiguration {
         this.serialForDisplaySetting = globalSettings.getStringSetting("Serial Number (multi-display)", "Misc", 8, "");
         this.serialForDisplaySetting.addValueObserver(serial -> this.serialForDisplay = serial);
 
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected void activateScaleLayoutSetting(ISettingsUI settingsUI) {
+        // Default to having a scale layout of SEQUENTIAL UP, since we only have four pads.
+        this.activateScaleLayoutSetting(settingsUI, ScaleLayout.SEQUENT_UP.getName());
     }
 
 

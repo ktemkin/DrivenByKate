@@ -151,6 +151,10 @@ public abstract class AbstractNIHostInterop {
      */
     protected final static int NI_NOTIFICATION_BUTTON_STATE_MULTI = 2;
     /**
+     * Argument to the BUTTON notification. We don't yet know what it means.
+     */
+    protected final static int NI_NOTIFICATION_BUTTON_STATE_UNKNOWN = 3;
+    /**
      * Notification received when a subscribed knob is turned.
      */
     protected final static int NI_NOTIFICATION_KNOB = 0x3654e00;
@@ -748,6 +752,9 @@ public abstract class AbstractNIHostInterop {
                 final int button = data.getInt();
                 final int state = data.getInt();
                 this.scheduleImmediateTask(() -> this.eventHandler.handleButtonEvent(button, (state % 2 == 0) ? ButtonEvent.UP : ButtonEvent.DOWN));
+            }
+            case NI_NOTIFICATION_BUTTON_STATE_UNKNOWN -> {
+                this.debugPrint("Unknown button event type (%x) -- %x / %x / %x", type, data.getInt(), data.getInt(), data.getInt());
             }
             default ->
                     this.debugPrint("Unknown button event type (%x) -- %d of remaining data.", type, data.remaining());

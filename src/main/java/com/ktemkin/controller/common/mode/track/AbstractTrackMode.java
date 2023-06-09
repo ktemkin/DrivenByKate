@@ -59,6 +59,10 @@ public abstract class AbstractTrackMode extends BaseMode<ITrack>
         }
     }
 
+    protected Optional<ITrack> getTrack(int index) {
+        ITrackBank tb = this.model.getCurrentTrackBank();
+        return index < 0 ? tb.getSelectedItem() : Optional.of((ITrack)tb.getItem(index));
+    }
 
     /**
      * {@inheritDoc}

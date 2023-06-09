@@ -5,7 +5,9 @@
 
 package com.ktemkin.controller.ni.maschine;
 
-import com.ktemkin.controller.common.command.pitchbend.TouchstripCommand;
+import com.ktemkin.controller.common.command.trigger.MuteCommand;
+import com.ktemkin.controller.common.command.trigger.SelectCommand;
+import com.ktemkin.controller.common.command.trigger.SoloCommand;
 import com.ktemkin.controller.common.mode.device.*;
 import com.ktemkin.controller.common.mode.track.*;
 import com.ktemkin.controller.common.view.*;
@@ -22,7 +24,6 @@ import com.ktemkin.controller.ni.maschine.controller.MaschineControlSurface;
 import com.ktemkin.controller.ni.maschine.controller.StudioEncoderModeManager;
 import com.ktemkin.controller.common.mode.*;
 import com.ktemkin.controller.common.view.*;
-import de.mossgrabers.controller.mackie.mcu.controller.MCUDisplay;
 import de.mossgrabers.framework.command.aftertouch.AftertouchViewCommand;
 import de.mossgrabers.framework.command.continuous.KnobRowModeCommand;
 import de.mossgrabers.framework.command.core.TriggerCommand;
@@ -36,6 +37,8 @@ import de.mossgrabers.framework.command.trigger.mode.ModeSelectCommand;
 import de.mossgrabers.framework.command.trigger.track.AddTrackCommand;
 import de.mossgrabers.framework.command.trigger.transport.*;
 import de.mossgrabers.framework.command.trigger.view.ToggleShiftViewCommand;
+import de.mossgrabers.framework.command.trigger.view.ViewButtonCommand;
+import de.mossgrabers.framework.command.trigger.view.ViewMultiSelectCommand;
 import de.mossgrabers.framework.configuration.ISettingsUI;
 import de.mossgrabers.framework.controller.AbstractControllerSetup;
 import de.mossgrabers.framework.controller.ButtonID;
@@ -51,7 +54,6 @@ import de.mossgrabers.framework.controller.valuechanger.TwosComplementValueChang
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.ITransport;
 import de.mossgrabers.framework.daw.ModelSetup;
-import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.framework.daw.data.bank.ITrackBank;
 import de.mossgrabers.framework.daw.midi.IMidiAccess;
 import de.mossgrabers.framework.daw.midi.IMidiInput;
@@ -61,6 +63,7 @@ import de.mossgrabers.framework.featuregroup.IView;
 import de.mossgrabers.framework.featuregroup.ModeManager;
 import de.mossgrabers.framework.featuregroup.ViewManager;
 import de.mossgrabers.framework.mode.Modes;
+import de.mossgrabers.framework.scale.ScaleLayout;
 import de.mossgrabers.framework.scale.Scales;
 import de.mossgrabers.framework.utils.ButtonEvent;
 import de.mossgrabers.framework.utils.FrameworkException;
@@ -162,6 +165,8 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
     {
         final ModelSetup ms = new ModelSetup();
         ms.setHasFullFlatTrackList(true);
+        ms.setNumFilterColumnEntries(10000);
+        ms.setNumResults(100000);
         ms.setNumTracks(this.maschine.hasGroupButtons() ? 8 : 16);
         ms.setNumDevicesInBank(16);
         ms.setNumScenes(16);
@@ -185,60 +190,48 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
         final MaschineControlSurface surface = new MaschineControlSurface(this.host, this.colorManager, this.maschine, this.configuration, output, input, this.scales);
         this.surfaces.add(surface);
 
-        if (this.maschine.hasMCUDisplay()) {
-            // Create a graphics display, if we can.
-            if (this.maschine.hasNIGraphicDisplay()) {
 
-                try {
-                    // TODO(ktemkin): Currently, if there's more than one of the same device connected, the NIServices
-                    // always just return information about the first one. We _should_ be able to work around that by
-                    // fetching the USB serial number, but this requires us to match to the USB device, even if we don't
-                    // open it. That seems messy, but that may be necessary.
-                    //
-                    // For now, we'll just let the user specify which serial they want to talk to in settings.
-                    // Hopefully that's ripped out before the final version.
-                    //
-                    final int deviceId = this.maschine.getDeviceId();
-                    String serial = this.configuration.getSerialForDisplay();
+            try {
+                // TODO(ktemkin): Currently, if there's more than one of the same device connected, the NIServices
+                // always just return information about the first one. We _should_ be able to work around that by
+                // fetching the USB serial number, but this requires us to match to the USB device, even if we don't
+                // open it. That seems messy, but that may be necessary.
+                //
+                // For now, we'll just let the user specify which serial they want to talk to in settings.
+                // Hopefully that's ripped out before the final version.
+                //
+                final int deviceId = this.maschine.getDeviceId();
+                String serial = this.configuration.getSerialForDisplay();
 
-                    // If we have a single device of this type, just use it.
-                    if ((serial == null) || serial.isEmpty()) {
-                        serial = AbstractNIHostInterop.getSingleDeviceSerial(deviceId);
-                        if (serial != null) {
-                            this.host.println("Auto-detected serial " + serial + ".");
-                        }
+                // If we have a single device of this type, just use it.
+                if ((serial == null) || serial.isEmpty()) {
+                    serial = AbstractNIHostInterop.getSingleDeviceSerial(deviceId);
+                    if (serial != null) {
+                        this.host.println("Auto-detected serial " + serial + ".");
                     }
-
-                    if ((serial != null) && !serial.isEmpty()) {
-                        var nihiaConnection = AbstractNIHostInterop.createInterop(surface.getMaschine().getDeviceId(), serial, surface, host, false);
-
-
-                        // HACK: for some reason,  NIHIA is _way_ more reliable after the second connection.
-                        //
-                        // We should probably figure out why this is and correct, but for now immediately connecting
-                        // again seems to make things a lot more stable.
-                        nihiaConnection = AbstractNIHostInterop.createInterop(surface.getMaschine().getDeviceId(), serial, surface, host, false);
-                        surface.addNiConnection(nihiaConnection);
-
-                        final NIGraphicDisplay display = new NIGraphicDisplay(this.host, this.valueChanger.getUpperBound(), this.configuration, nihiaConnection);
-                        surface.addGraphicsDisplay(display);
-
-                        this.host.println("Graphics display set up on Maschine with serial " + serial + ".");
-                    }
-                } catch (IOException ex) {
-                    this.host.error("Couldn't create NI service connection. Falling back to MCU display.");
-                    this.host.error(ex.toString());
-                    // If we can't create a graphics display, don't panic: we'll fall back to MCU display.
                 }
-            }
 
-            // If we don't have a graphic display, but we can create an MCU text one, do so.
-            if ((surface.getGraphicsDisplay() == null) && this.maschine.hasMCUDisplay()) {
-                final MCUDisplay display = new MCUDisplay(this.host, output, true, false, false);
-                display.setCenterNotification(false);
-                surface.addTextDisplay(display);
+                if ((serial != null) && !serial.isEmpty()) {
+                    var nihiaConnection = AbstractNIHostInterop.createInterop(surface.getMaschine().getDeviceId(), serial, surface, host, false);
+
+
+                    // HACK: for some reason,  NIHIA is _way_ more reliable after the second connection.
+                    //
+                    // We should probably figure out why this is and correct, but for now immediately connecting
+                    // again seems to make things a lot more stable.
+                    nihiaConnection = AbstractNIHostInterop.createInterop(surface.getMaschine().getDeviceId(), serial, surface, host, false);
+                    surface.addNiConnection(nihiaConnection);
+
+                    final NIGraphicDisplay display = new NIGraphicDisplay(this.host, this.valueChanger.getUpperBound(), this.configuration, nihiaConnection);
+                    surface.addGraphicsDisplay(display);
+
+                    this.host.println("Graphics display set up on Maschine with serial " + serial + ".");
+                }
+            } catch (IOException ex) {
+                this.host.error("Couldn't create NI service connection. Falling back to MCU display.");
+                this.host.error(ex.toString());
+                // If we can't create a graphics display, don't panic: we'll fall back to MCU display.
             }
-        }
     }
 
 
@@ -255,6 +248,8 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
 
         modeManager.register(Modes.VOLUME, new VolumeMode(surface, this.model));
         modeManager.register(Modes.PAN, new PanMode(surface, this.model));
+        modeManager.register(Modes.CROSSFADER, new CrossfadeMode(surface, this.model));
+        modeManager.register(Modes.SETUP, new SetupMode(surface, this.model));
         for (int i = 0; i < 8; i++)
             modeManager.register(Modes.get(Modes.SEND1, i), new SendMode(surface, this.model, i));
 
@@ -426,26 +421,51 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
         //
         // Modifier.
         //
-        this.addButton(ButtonID.SHIFT, "SHIFT", new ToggleShiftViewCommand<>(this.model, surface), () -> viewManager.isActive(Views.SHIFT) || surface.isShiftPressed());
+        this.addButton(ButtonID.SHIFT, "Shift", new ToggleShiftViewCommand<>(this.model, surface), () -> viewManager.isActive(Views.SHIFT) || surface.isShiftPressed());
+        this.addButton(ButtonID.SELECT, "Select", new SelectCommand(this.model, surface), () -> viewManager.isActive(Views.SHIFT) || surface.isSelectPressed());
 
         //
         // Transport
         //
-        this.addButton(ButtonID.PLAY, "PLAY", new PlayCommand<>(this.model, surface), t::isPlaying);
+        this.addButton(ButtonID.PLAY, "Play", new PlayCommand<>(this.model, surface), t::isPlaying);
         final ConfiguredRecordCommand<MaschineControlSurface, MaschineConfiguration> recordCommand = new ConfiguredRecordCommand<>(this.model, surface);
-        this.addButton(ButtonID.RECORD, "RECORD", recordCommand, (BooleanSupplier) recordCommand::isLit);
-        this.addButton(ButtonID.STOP, "STOP", new MaschineStopCommand(this.model, surface), () -> !t.isPlaying());
-        this.addButton(ButtonID.LOOP, "LOOP", new ToggleLoopCommand<>(this.model, surface), t::isLoop);
-        this.addButton(ButtonID.DELETE, "ERASE", new DeleteCommand<>(this.model, surface));
+        this.addButton(ButtonID.RECORD, "Record", recordCommand, (BooleanSupplier) recordCommand::isLit);
+        this.addButton(ButtonID.STOP, "Stop", new MaschineStopCommand(this.model, surface), () -> !t.isPlaying());
+        this.addButton(ButtonID.LOOP, "Loop", new ToggleLoopCommand<>(this.model, surface), t::isLoop);
+        this.addButton(ButtonID.DELETE, "Erase", new DeleteCommand<>(this.model, surface));
+
+        this.addButton(ButtonID.SOLO, "Solo", new SoloCommand(this.model, surface), this::currentTrackIsSolo);
+        this.addButton(ButtonID.MUTE, "Mute", new MuteCommand(this.model, surface), this::currentTrackIsMuted);
+        //
+        // Mode/view selection
+        //
+        this.addButton(ButtonID.VOLUME, "Volume", new ModeSelectCommand<>(modeManager, this.model, surface, Modes.VOLUME),() -> modeManager.isActive(Modes.VOLUME));
+        this.addButton(ButtonID.BROWSE, "Browser", new ModeSelectCommand<>(modeManager, this.model, surface, Modes.VOLUME),() -> modeManager.isActive(Modes.BROWSER));
+        this.addButton(ButtonID.SETUP, "Browser", new ModeSelectCommand<>(modeManager, this.model, surface, Modes.VOLUME),() -> modeManager.isActive(Modes.SETUP));
+
+        this.addButton(ButtonID.DRUM, "Pad Mode", new ViewMultiSelectCommand<>(this.model, surface, Views.DRUM),() -> viewManager.isActive(Views.DRUM));
+        this.addButton(ButtonID.SCALES, "Keyboard", new ViewMultiSelectCommand<>(this.model, surface, Views.PLAY),() -> viewManager.isActive(Views.PLAY));
+        this.addButton(ButtonID.LAYOUT, "Chords", new ViewMultiSelectCommand<>(this.model, surface, Views.CHORDS),() -> viewManager.isActive(Views.CHORDS));
+        this.addButton(ButtonID.SEQUENCER, "Step", new ViewMultiSelectCommand<>(this.model, surface, Views.SEQUENCER),() -> viewManager.isActive(Views.SEQUENCER));
 
         //
-        // Modal
+        // Configuration toggles.
+        //
+        this.addButton(ButtonID.ACCENT, "Fixed Vel", (event, velocity) -> {
+            // Toggle our Fixed Velocity mode on press.
+            if (event == ButtonEvent.UP) {
+                surface.setFixedAccent(!surface.isFixedAccent());
+            }
+        }, surface::isFixedAccent);
+
+        //
+        // Used by a mode.
         //
         for (int i = 0; i < 8; ++i) {
             final var num = Integer.toString(i);
             final var button = ButtonID.get(ButtonID.ROW1_1, i);
 
-            this.addButton(button, "Button " + num, new ButtonRowModeCommand<>(0, i, this.model, surface), () -> this.getModeColor(button));
+            this.addButton(button, "Button " + num, new ButtonRowModeCommand<>(1, i, this.model, surface), () -> this.getModeColor(button));
             this.addButton(ButtonID.get(ButtonID.KNOB1_TOUCH, i), "Touch " + num, new KnobRowTouchModeCommand<>(i, this.model, surface));
         }
 
@@ -471,6 +491,32 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
     }
 
 
+    /**
+     * @return true if the cursor track is Solo'd
+     */
+    private boolean currentTrackIsSolo() {
+        var track = this.getModel().getCursorTrack();
+        if (track == null) {
+            return false;
+        }
+
+        return track.isSolo();
+    }
+
+
+    /**
+     * @return true if the cursor track is muted
+     */
+    private boolean currentTrackIsMuted() {
+        var track = this.getModel().getCursorTrack();
+        if (track == null) {
+            return false;
+        }
+
+        return track.isMute();
+    }
+
+
     private void registerCursorKeys(final MaschineControlSurface surface)
     {
         if (!this.maschine.hasCursorKeys())
@@ -492,48 +538,9 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
 
     private void registerDisplayButtons(final MaschineControlSurface surface, final ModeManager modeManager)
     {
-        if (!this.maschine.hasMCUDisplay())
-            return;
-
-        this.addButton(ButtonID.ROW2_1, "Volume", new ModeSelectCommand<>(this.model, surface, Modes.VOLUME), MaschineControlSurface.MODE_BUTTON_1, () -> modeManager.isActive(Modes.VOLUME));
-        this.addButton(ButtonID.ROW2_2, "Pan", new ModeSelectCommand<>(this.model, surface, Modes.PAN), MaschineControlSurface.MODE_BUTTON_2, () -> modeManager.isActive(Modes.PAN));
-
-        final MaschineSendSelectCommand sendSelectCommand = new MaschineSendSelectCommand(this.model, surface);
-        this.addButton(ButtonID.ROW2_3, "Send -", (event, velocity) -> sendSelectCommand.executeShifted(event), MaschineControlSurface.MODE_BUTTON_3, () -> Modes.isSendMode(modeManager.getActiveID()));
-        this.addButton(ButtonID.ROW2_4, "Send +", sendSelectCommand, MaschineControlSurface.MODE_BUTTON_4, () -> Modes.isSendMode(modeManager.getActiveID()));
-
-        this.addButton(ButtonID.ROW2_5, "Pin", (event, velocity) -> {
-            if (event != ButtonEvent.DOWN)
-                return;
-            if (modeManager.isActive(Modes.DEVICE_PARAMS))
-                this.model.getCursorDevice().togglePinned();
-            else
-                this.model.getCursorTrack().togglePinned();
-        }, MaschineControlSurface.MODE_BUTTON_5, () -> {
-            if (modeManager.isActive(Modes.DEVICE_PARAMS))
-                return this.model.getCursorDevice().isPinned();
-            return this.model.getCursorTrack().isPinned();
-        });
-
-        this.addButton(ButtonID.ROW2_6, "Active", (event, velocity) -> {
-            if (event != ButtonEvent.DOWN)
-                return;
-            if (modeManager.isActive(Modes.DEVICE_PARAMS))
-                this.model.getCursorDevice().toggleEnabledState();
-            else
-                this.model.getCursorTrack().toggleIsActivated();
-        }, MaschineControlSurface.MODE_BUTTON_6, () -> {
-            if (modeManager.isActive(Modes.DEVICE_PARAMS))
-                return this.model.getCursorDevice().isEnabled();
-            final ITrack selectedTrack = this.model.getCursorTrack();
-            return selectedTrack.doesExist() && selectedTrack.isActivated();
-        });
-
-        // This button is mapped as Note not CC since it requires at least 1 MCU button to make
-        // the MCU display activate!
-        this.addButton(ButtonID.ROW2_7, "User Params", new ModeSelectCommand<>(this.model, surface, Modes.USER), MaschineControlSurface.MODE_BUTTON_7, () -> modeManager.isActive(Modes.USER));
-
-        this.addButton(ButtonID.ROW2_8, "Parameters", new ModeSelectCommand<>(this.model, surface, Modes.DEVICE_PARAMS), MaschineControlSurface.MODE_BUTTON_8, () -> modeManager.isActive(Modes.DEVICE_PARAMS));
+        for (int i = 0; i < 8; ++i) {
+            this.addButton(ButtonID.get(ButtonID.ROW1_1, i), "Button " + i, new ButtonRowModeCommand<>(0, i, this.model, surface));
+        }
     }
 
 
@@ -632,17 +639,16 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
                 mode.onKnobTouch(8, event == ButtonEvent.DOWN);
         }, surface.getMidiInput(), BindType.CC, 0, MaschineControlSurface.ENCODER_TOUCH);
 
-        if (this.maschine.hasMCUDisplay()) {
-            for (int i = 0; i < 8; i++) {
-                final int index = i;
-                final IHwRelativeKnob modeKnob = this.addRelativeKnob(ContinuousID.get(ContinuousID.KNOB1, i), "Knob " + (i + 1), new KnobRowModeCommand<>(i, this.model, surface), MaschineControlSurface.MODE_KNOB_1 + i);
-                modeKnob.bindTouch((event, velocity) -> {
-                    final IMode mode = modeManager.getActive();
-                    if (mode != null && event != ButtonEvent.LONG)
-                        mode.onKnobTouch(index, event == ButtonEvent.DOWN);
-                }, surface.getMidiInput(), BindType.CC, 0, MaschineControlSurface.MODE_KNOB_TOUCH_1 + i);
-                modeKnob.setIndexInGroup(i);
-            }
+        for (int i = 0; i < 8; i++) {
+            final IHwRelativeKnob modeKnob = this.addRelativeKnob(ContinuousID.get(ContinuousID.KNOB1, i), "Knob " + (i + 1), new KnobRowModeCommand<>(i, this.model, surface), MaschineControlSurface.MODE_KNOB_1 + i);
+            int                   finalI   = i;
+            modeKnob.addOutput(() -> surface.getLastKnobValue(finalI), (value) -> {
+                var mode = surface.getModeManager().getActive();
+                if (mode != null) {
+                    mode.onKnobValue(finalI, value);
+                }
+            });
+            modeKnob.setIndexInGroup(i);
         }
 
         /*
@@ -1093,19 +1099,7 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
             surface.setButtonColor(ButtonID.get(ButtonID.TRACK_SELECT_1, i), track.getColor());
         }
 
-
         surface.flushLights();
 
-
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected BindType getTriggerBindType(final ButtonID buttonID)
-    {
-        return buttonID == ButtonID.ROW2_7 ? BindType.NOTE : BindType.CC;
     }
 }

@@ -24,6 +24,16 @@ import java.util.concurrent.TimeUnit;
  * @author Jürgen Moßgraber and Kate Temkin
  */
 public class NIGraphicDisplay extends AbstractGraphicDisplay {
+
+    /**
+     * NI displays send a lot of redundant frames, so we can choose to skip a few.
+     * This reduces refresh rate, but saves CPU and USB bandwidth. 0 disables frameskip.
+     */
+    private static final int FRAMESKIP = 5;
+
+    /** How many frames we are into the frameskip. */
+    private int currentFrame = 0;
+
     /**
      * The header that precedes data sent to the left display.
      */
@@ -299,6 +309,12 @@ public class NIGraphicDisplay extends AbstractGraphicDisplay {
      */
     public void send(final IBitmap image) {
         if (this.niConnection == null) {
+            return;
+        }
+
+        // Handle our frameskip.
+        this.currentFrame += 1;
+        if ((this.currentFrame % FRAMESKIP) != 0) {
             return;
         }
 

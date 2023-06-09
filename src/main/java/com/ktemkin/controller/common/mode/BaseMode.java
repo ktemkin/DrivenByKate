@@ -68,6 +68,10 @@ public abstract class BaseMode<B extends IItem> extends AbstractParameterMode<Co
     public void updateDisplay()
     {
         final IGraphicDisplay display = (IGraphicDisplay) this.surface.getGraphicsDisplay();
+        if (display == null) {
+            return;
+        }
+
         this.updateGraphicsDisplay(display);
         display.send();
     }

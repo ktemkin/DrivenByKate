@@ -5,9 +5,11 @@
 package com.ktemkin.controller.common.controller;
 
 import com.ktemkin.controller.common.CommonUIConfiguration;
+import com.ktemkin.controller.common.controller.grid.CommonUIPadGrid;
 import de.mossgrabers.framework.controller.AbstractControlSurface;
 import de.mossgrabers.framework.controller.IControlSurface;
 import de.mossgrabers.framework.controller.color.ColorManager;
+import de.mossgrabers.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.controller.grid.PadGridImpl;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.midi.IMidiInput;
@@ -42,6 +44,28 @@ public class CommonUIControlSurface<C extends CommonUIConfiguration> extends Abs
                 output,
                 input,
                 new PadGridImpl(colorManager, output),
+                width,
+                height);
+    }
+
+
+    /**
+     * Constructor.
+     *
+     * @param host          The host
+     * @param colorManager  The color manager
+     * @param configuration The configuration
+     * @param output        The MIDI output
+     * @param input         The MIDI input
+     */
+    public CommonUIControlSurface(final IHost host, final ColorManager colorManager, final CommonUIConfiguration configuration, CommonUIPadGrid padGrid, final IMidiOutput output, final IMidiInput input, final double width, final double height)
+    {
+        super(host,
+                (C)configuration,
+                colorManager,
+                output,
+                input,
+                padGrid,
                 width,
                 height);
     }
@@ -114,6 +138,29 @@ public class CommonUIControlSurface<C extends CommonUIConfiguration> extends Abs
     public int getSerialNumber()
     {
         return -1;
+    }
+
+
+    @Override
+    public IGraphicDisplay getGraphicsDisplay()
+    {
+        try {
+            return super.getGraphicsDisplay();
+        }
+        catch (IndexOutOfBoundsException ignored) {
+            return null;
+        }
+    }
+
+
+    /**
+     * @return how many rows this device would prefer we use for browsers
+     */
+    public int getBrowserRows()
+    {
+        // Provide a reasonable default that works even for smaller
+        // displays like the Push's. Other devices can override this to get more.
+        return 7;
     }
 
 }

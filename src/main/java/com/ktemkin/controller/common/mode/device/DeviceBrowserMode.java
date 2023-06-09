@@ -163,7 +163,7 @@ public class DeviceBrowserMode extends BaseMode<IItem> {
 
     private int getItemsPerScreen() {
         // FIXME: ask the CommonUI class for this
-        return 7;
+        return this.surface.getBrowserRows();
     }
 
 

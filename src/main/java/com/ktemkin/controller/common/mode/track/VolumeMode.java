@@ -8,8 +8,11 @@ import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import de.mossgrabers.framework.controller.display.AbstractGraphicDisplay;
 import com.ktemkin.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.daw.IModel;
+import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.framework.mode.Modes;
 import de.mossgrabers.framework.parameterprovider.track.VolumeParameterProvider;
+
+import java.util.Optional;
 
 
 /**
@@ -41,6 +44,18 @@ public class VolumeMode extends AbstractTrackMode
     public void updateGraphicsDisplay(final IGraphicDisplay display)
     {
         this.updateChannelDisplay(display, AbstractGraphicDisplay.GRID_ELEMENT_CHANNEL_VOLUME, true, false);
+    }
+
+
+    public void onKnobValue(int index, int value) {
+        Optional<ITrack> track = this.getTrack(index);
+        track.ifPresent(iTrack -> iTrack.changeVolume(value));
+    }
+
+
+    public int getKnobValue(int index) {
+        Optional<ITrack> track = this.getTrack(index);
+        return track.map(iTrack -> ((ITrack) iTrack).getVolume()).orElse(-1);
     }
 
 }

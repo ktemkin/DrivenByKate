@@ -5,6 +5,7 @@
 package com.ktemkin.framework.controller.display;
 
 import com.ktemkin.framework.daw.resource.DBKResourceHandler;
+import com.ktemkin.framework.graphics.canvas.component.ChannelComponent;
 import com.ktemkin.framework.graphics.canvas.component.DeviceListComponent;
 import com.ktemkin.framework.graphics.canvas.component.ParameterComponent;
 import de.mossgrabers.framework.controller.color.ColorEx;
@@ -89,6 +90,30 @@ public abstract class AbstractGraphicDisplay extends de.mossgrabers.framework.co
         }
 
         this.addElement(new DeviceListComponent(itemText, itemIcons, itemColors, itemBold, startIndex, items.length));
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void addChannelElement (final int channelType, final String topMenu, final boolean isTopMenuOn, final String bottomMenu, final ChannelType type, final ColorEx bottomMenuColor, final boolean isBottomMenuOn, final int volume, final int modulatedVolume, final String volumeStr, final int pan, final int modulatedPan, final String panStr, final int vuLeft, final int vuRight, final boolean mute, final boolean solo, final boolean recarm, final boolean isActive, final int crossfadeMode, final boolean isPinned)
+    {
+        int editType;
+        switch (channelType)
+        {
+            case GRID_ELEMENT_CHANNEL_VOLUME:
+                editType = ChannelComponent.EDIT_TYPE_VOLUME;
+                break;
+            case GRID_ELEMENT_CHANNEL_PAN:
+                editType = ChannelComponent.EDIT_TYPE_PAN;
+                break;
+            case GRID_ELEMENT_CHANNEL_CROSSFADER:
+                editType = ChannelComponent.EDIT_TYPE_CROSSFADER;
+                break;
+            default:
+                editType = ChannelComponent.EDIT_TYPE_ALL;
+                break;
+        }
+        this.addElement (new ChannelComponent(editType, topMenu, isTopMenuOn, bottomMenu, bottomMenuColor, isBottomMenuOn, type, volume, modulatedVolume, volumeStr, pan, modulatedPan, panStr, vuLeft, vuRight, mute, solo, recarm, isActive, crossfadeMode, isPinned));
     }
 
 }

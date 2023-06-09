@@ -10,17 +10,20 @@ import com.ktemkin.controller.ni.core.INIEventHandler;
 import com.ktemkin.controller.ni.kontrol.mkii.controller.KontrolProtocolColorManager;
 import com.ktemkin.controller.ni.maschine.Maschine;
 import com.ktemkin.controller.ni.maschine.core.MaschineColorManager;
-import com.ktemkin.controller.ni.maschine.core.controller.MaschinePadGrid;
 import com.ktemkin.controller.ni.maschine.MaschineConfiguration;
 import com.ktemkin.controller.ni.maschine.command.trigger.MaschineStopCommand;
+import com.ktemkin.controller.ni.maschine.core.controller.MaschinePadGrid;
 import de.mossgrabers.framework.controller.ButtonID;
+import de.mossgrabers.framework.controller.ContinuousID;
 import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.controller.color.ColorManager;
+import de.mossgrabers.framework.controller.grid.PadGridImpl;
 import de.mossgrabers.framework.controller.hardware.BindType;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.midi.IMidiInput;
 import de.mossgrabers.framework.daw.midi.IMidiOutput;
 import de.mossgrabers.framework.daw.midi.MidiConstants;
+import de.mossgrabers.framework.scale.ScaleLayout;
 import de.mossgrabers.framework.scale.Scales;
 import de.mossgrabers.framework.utils.ButtonEvent;
 
@@ -41,17 +44,6 @@ public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfi
     public static final int TOUCHSTRIP_TOUCH = 2;
     public static final int ENCODER = 7;
     public static final int ENCODER_TOUCH = 9;
-    /**
-     * Mode buttons are from CC 22 to 29.
-     */
-    public static final int MODE_BUTTON_1 = 22;
-    public static final int MODE_BUTTON_2 = 23;
-    public static final int MODE_BUTTON_3 = 24;
-    public static final int MODE_BUTTON_4 = 25;
-    public static final int MODE_BUTTON_5 = 26;
-    public static final int MODE_BUTTON_6 = 27;
-    public static final int MODE_BUTTON_7 = 28;
-    public static final int MODE_BUTTON_8 = 29;
 
     public static final int CURSOR_UP = 30;
     public static final int CURSOR_RIGHT = 31;
@@ -137,6 +129,29 @@ public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfi
     /** The generic "device description" for this model. */
     private final Maschine maschine;
 
+    /** The last observed knob value for each knob. */
+    private final int[] lastKnobValue = new int[8];
+
+
+    /** @return true iff we're in fixed accent mode. */
+    public boolean isFixedAccent()
+    {
+        return isFixedAccent;
+    }
+
+
+    /**
+     * Sets whether we're in Fixed Accent mode.
+     */
+    public void setFixedAccent(boolean fixedAccent)
+    {
+        isFixedAccent = fixedAccent;
+    }
+
+
+    /** True if the Fixed Accent button has been pressed. */
+    protected boolean isFixedAccent;
+
 
     /**
      * Constructor.
@@ -150,13 +165,13 @@ public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfi
      */
     public MaschineControlSurface(final IHost host, final ColorManager colorManager, final Maschine maschine, final MaschineConfiguration configuration, final IMidiOutput output, final IMidiInput input, final Scales scales)
     {
-        super(host, colorManager, configuration, output, input, maschine.getWidth(), maschine.getHeight());
-
-        var padGrid = (MaschinePadGrid) this.getPadGrid();
-        padGrid.setSurface(this);
+        super(host, colorManager, configuration, new MaschinePadGrid(colorManager, output), output, input, maschine.getWidth(), maschine.getHeight());
 
         this.maschine = maschine;
         this.scales = scales;
+
+        var padGrid = (MaschinePadGrid)this.getPadGrid();
+        padGrid.setSurface(this);
     }
 
 
@@ -176,21 +191,6 @@ public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfi
     protected void flushHardware()
     {
         super.flushHardware();
-
-        ((MaschinePadGrid) this.padGrid).flush();
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setTrigger(final BindType bindType, final int channel, final int cc, final int state)
-    {
-        if (cc == MODE_BUTTON_7)
-            this.output.sendNoteEx(channel, cc, state);
-        else
-            this.output.sendCCEx(channel, cc, state);
     }
 
 
@@ -208,12 +208,31 @@ public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfi
     }
 
 
+    /** @return the last knob value for the given knob, decoded */
+    public int getLastKnobValue(int index)
+    {
+        var newValue = this.lastKnobValue[index];
+
+        int delta = newValue >> 28;
+        if (!this.isShiftPressed()) {
+            delta = delta >> 2;
+        } else {
+            delta = (delta < 0) ? delta : (delta >> 1);
+        }
+        if (delta < 0) {
+            delta = delta >> 2;
+        }
+
+        return delta;
+    }
+
+
     /**
      * Translates an NIHIA button index to a local ButtonID.
      */
     public ButtonID translateNIHIAButton(int rawButton)
     {
-        this.host.println(String.format("BUTTON %x%n", rawButton));
+        this.println(String.format("Button: %x", rawButton));
 
         return switch (rawButton) {
             case 0x00 -> ButtonID.ENTER;
@@ -328,7 +347,15 @@ public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfi
     @Override
     public void handleKnobEvent(int rawContinuousId, int newValue)
     {
-        this.host.println(String.format("Knob %d has new value %x", rawContinuousId, newValue));
+        // Get the relevant knob as a CC provider..
+        var knob = this.getContinuous(ContinuousID.get(ContinuousID.KNOB1, rawContinuousId));
+        if (knob == null) {
+            return;
+        }
+
+        // ... and "send" it our update.
+        this.lastKnobValue[rawContinuousId] = newValue;
+        knob.update();
     }
 
 
@@ -386,7 +413,7 @@ public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfi
         final int note = padOffsetMatrix[noteBase] + scales.getStartNote();
 
         final long pressure = newPressure - PAD_PRESSURE_MIN;
-        final int velocity = Math.max(1, this.pressureToVelocity(pressure));
+        final int velocity =  isFixedAccent() ? 127 : Math.max(1, this.pressureToVelocity(pressure));
 
         //
         // The Maschine doesn't generate MIDI events, so we'll have to generate MIDI events for it.
@@ -399,11 +426,12 @@ public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfi
             this.flushLights();
         }
         // If we have a pressure, and the pad is already down, this is an aftertouch event.
-        else if (this.padDown[padNumber]) {
+        // Skip Fixed Accent aftertouch, as that's basically meaningless.
+        else if (this.padDown[padNumber] && !this.isFixedAccent()) {
             this.sendMidiEvent(MidiConstants.CMD_POLY_AFTERTOUCH, note, velocity);
         }
         // Otherwise, this is a note-on event.
-        else {
+        else if (!this.padDown[padNumber]) {
             this.sendMidiEvent(MidiConstants.CMD_NOTE_ON, note, velocity);
             this.padDown[padNumber] = true;
             this.flushLights();
@@ -431,7 +459,7 @@ public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfi
             return KontrolProtocolColorManager.COLOR_BLACK;
         }
 
-        return (byte) manager.getNIColor(color);
+        return (byte) manager.getDeviceColor(color);
     }
 
 
@@ -601,6 +629,13 @@ public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfi
     public Maschine getMaschine()
     {
         return this.maschine;
+    }
+
+
+    @Override
+    public int getBrowserRows()
+    {
+        return 9;
     }
 
 }

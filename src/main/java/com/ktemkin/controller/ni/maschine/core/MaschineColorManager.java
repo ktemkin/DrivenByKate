@@ -4,6 +4,7 @@
 
 package com.ktemkin.controller.ni.maschine.core;
 
+import com.ktemkin.controller.common.controller.CommonUIColorManager;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.controller.color.ColorManager;
@@ -12,6 +13,7 @@ import de.mossgrabers.framework.daw.DAWColor;
 import de.mossgrabers.framework.featuregroup.AbstractFeatureGroup;
 import de.mossgrabers.framework.featuregroup.AbstractMode;
 import de.mossgrabers.framework.scale.Scales;
+import de.mossgrabers.framework.utils.Pair;
 import de.mossgrabers.framework.view.AbstractPlayView;
 import de.mossgrabers.framework.view.BrowserView;
 import de.mossgrabers.framework.view.sequencer.AbstractDrumView;
@@ -26,7 +28,7 @@ import java.util.List;
  * @author Jürgen Moßgraber
  */
 @SuppressWarnings("javadoc")
-public class MaschineColorManager extends ColorManager {
+public class MaschineColorManager extends CommonUIColorManager {
     public static final int COLOR_BLACK = 0;
     public static final int COLOR_DARK_GREY = 76;
     public static final int COLOR_GREY = 77;
@@ -63,83 +65,6 @@ public class MaschineColorManager extends ColorManager {
      * The 8 parameter colors.
      */
     public static final List<Integer> PARAM_COLORS = List.of(Integer.valueOf(MaschineColorManager.COLOR_RED), Integer.valueOf(MaschineColorManager.COLOR_AMBER), Integer.valueOf(MaschineColorManager.COLOR_YELLOW), Integer.valueOf(MaschineColorManager.COLOR_GREEN), Integer.valueOf(MaschineColorManager.COLOR_LIME), Integer.valueOf(MaschineColorManager.COLOR_SKY), Integer.valueOf(MaschineColorManager.COLOR_PURPLE), Integer.valueOf(MaschineColorManager.COLOR_PINK));
-
-    /**
-     * Indexable collection of NI colors, for color conversions.
-     */
-    private final static int[] NI_COLORS = {
-            COLOR_BLACK,
-            COLOR_DARK_GREY,
-            COLOR_GREY,
-            COLOR_WHITE,
-            COLOR_ROSE,
-            COLOR_RED,
-            COLOR_RED_LO,
-            COLOR_AMBER,
-            COLOR_AMBER_LO,
-            COLOR_LIME,
-            COLOR_LIME_LO,
-            COLOR_GREEN,
-            COLOR_GREEN_LO,
-            COLOR_SPRING,
-            COLOR_SPRING_LO,
-            COLOR_TURQUOISE_LO,
-            COLOR_TURQUOISE,
-            COLOR_SKY,
-            COLOR_SKY_LO,
-            COLOR_BLUE,
-            COLOR_BLUE_LO,
-            COLOR_MAGENTA,
-            COLOR_MAGENTA_LO,
-            COLOR_PINK,
-            COLOR_PINK_LO,
-            COLOR_ORANGE,
-            COLOR_ORANGE_LO,
-            COLOR_PURPLE,
-            COLOR_PURPLE_LO,
-            COLOR_PEACH,
-            COLOR_YELLOW_LO,
-            COLOR_YELLOW,
-    };
-
-    /**
-     * Array of Java colors with indices that match the NI_COLORS above.
-     */
-    private final static ColorEx[] JAVA_COLORS = {
-            ColorEx.BLACK,
-            ColorEx.DARK_GRAY,
-            ColorEx.GRAY,
-            ColorEx.WHITE,
-            ColorEx.ROSE,
-            ColorEx.RED,
-            ColorEx.darker(ColorEx.RED),
-            ColorEx.DARK_YELLOW,
-            ColorEx.darker(ColorEx.DARK_YELLOW),
-            ColorEx.brighter(ColorEx.GREEN),
-            ColorEx.DARK_GREEN,
-            ColorEx.GREEN,
-            ColorEx.DARK_GREEN,
-            ColorEx.brighter(ColorEx.GREEN),
-            ColorEx.darker(ColorEx.GREEN),
-            ColorEx.brighter(ColorEx.DARK_BLUE),
-            ColorEx.brighter(ColorEx.BLUE),
-            ColorEx.BLUE,
-            ColorEx.DARK_BLUE,
-            ColorEx.BLUE,
-            ColorEx.DARK_BLUE,
-            ColorEx.PURPLE,
-            ColorEx.DARK_PURPLE,
-            ColorEx.PINK,
-            ColorEx.darker(ColorEx.PINK),
-            ColorEx.ORANGE,
-            ColorEx.DARK_ORANGE,
-            ColorEx.PURPLE,
-            ColorEx.DARK_PURPLE,
-            ColorEx.PINK,
-            ColorEx.DARK_YELLOW,
-            ColorEx.YELLOW,
-    };
-
 
     /**
      * Constructor.
@@ -267,12 +192,46 @@ public class MaschineColorManager extends ColorManager {
     }
 
 
-    /**
-     * Converts a Java color to a Native Instruments color.
-     */
-    public int getNIColor(ColorEx color) {
-        return NI_COLORS[ColorEx.getClosestColorIndex(color, JAVA_COLORS)];
+    @Override
+    protected List<Pair<Integer, ColorEx>> getColorMappings()
+    {
+        // FIXME(ktemkin): set these to more accurately match the maschine
+        return List.of(
+            new Pair<>(COLOR_BLACK, ColorEx.BLACK),
+            new Pair<>(COLOR_DARK_GREY, ColorEx.DARK_GRAY),
+            new Pair<>(COLOR_GREY, ColorEx.GRAY),
+            new Pair<>(COLOR_WHITE, ColorEx.WHITE),
+            new Pair<>(COLOR_ROSE, ColorEx.ROSE),
+            new Pair<>(COLOR_RED, ColorEx.RED),
+            new Pair<>(COLOR_RED_LO, ColorEx.darker(ColorEx.RED)),
+            new Pair<>(COLOR_AMBER, ColorEx.DARK_YELLOW),
+            new Pair<>(COLOR_AMBER_LO, ColorEx.darker(ColorEx.DARK_YELLOW)),
+            new Pair<>(COLOR_LIME, ColorEx.brighter(ColorEx.GREEN)),
+            new Pair<>(COLOR_LIME_LO, ColorEx.DARK_GREEN),
+            new Pair<>(COLOR_GREEN, ColorEx.GREEN),
+            new Pair<>(COLOR_GREEN_LO, ColorEx.DARK_GREEN),
+            new Pair<>(COLOR_SPRING, ColorEx.brighter(ColorEx.GREEN)),
+            new Pair<>(COLOR_SPRING_LO, ColorEx.darker(ColorEx.GREEN)),
+            new Pair<>(COLOR_TURQUOISE_LO, ColorEx.brighter(ColorEx.DARK_BLUE)),
+            new Pair<>(COLOR_TURQUOISE, ColorEx.brighter(ColorEx.BLUE)),
+            new Pair<>(COLOR_SKY, ColorEx.BLUE),
+            new Pair<>(COLOR_SKY_LO, ColorEx.DARK_BLUE),
+            new Pair<>(COLOR_BLUE, ColorEx.BLUE),
+            new Pair<>(COLOR_BLUE_LO, ColorEx.DARK_BLUE),
+            new Pair<>(COLOR_MAGENTA, ColorEx.PURPLE),
+            new Pair<>(COLOR_MAGENTA_LO, ColorEx.DARK_PURPLE),
+            new Pair<>(COLOR_PINK, ColorEx.PINK),
+            new Pair<>(COLOR_PINK_LO, ColorEx.darker(ColorEx.PINK)),
+            new Pair<>(COLOR_ORANGE, ColorEx.ORANGE),
+            new Pair<>(COLOR_ORANGE_LO, ColorEx.DARK_ORANGE),
+            new Pair<>(COLOR_PURPLE, ColorEx.PURPLE),
+            new Pair<>(COLOR_PURPLE_LO, ColorEx.DARK_PURPLE),
+            new Pair<>(COLOR_PEACH, ColorEx.PINK),
+            new Pair<>(COLOR_YELLOW_LO, ColorEx.YELLOW),
+            new Pair<>(COLOR_YELLOW, ColorEx.DARK_YELLOW)
+        );
     }
+
 
     /**
      * Workaround for darker/brighter colors. Returns the index with the lowest brightness in a
