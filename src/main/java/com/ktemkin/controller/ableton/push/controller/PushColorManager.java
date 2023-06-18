@@ -30,8 +30,7 @@ import java.util.List;
  *
  * @author Jürgen Moßgraber
  */
-public class PushColorManager extends CommonUIColorManager
-{
+public class PushColorManager extends CommonUIColorManager {
 
     /**
      * ID for color when button signals a recording state.
@@ -514,10 +513,23 @@ public class PushColorManager extends CommonUIColorManager
 
 
     /**
+     * Array that stores a set of display colors.
+     * Each color should match its corresponding index in ``firstRowdeviceColors``.
+     */
+    protected final ColorEx[] firstRowDisplayColors;
+
+
+    /**
+     * Array that stores a set of device colors.
+     * Each color should match its corresponding index in ``firstRowdisplayColors``.
+     */
+    protected final int[] firstRowDeviceColors;
+
+
+    /**
      * Private due to utility class.
      */
-    public PushColorManager()
-    {
+    public PushColorManager() {
         this.registerColorIndex(PUSH_BLACK, PUSH2_COLOR_BLACK);
         this.registerColorIndex(PUSH_RED, PUSH2_COLOR_RED_HI);
         this.registerColorIndex(PUSH_RED_LO, PUSH2_COLOR_RED_LO);
@@ -640,16 +652,56 @@ public class PushColorManager extends CommonUIColorManager
         for (int i = 0; i < 128; i++) {
             this.registerColor(i, getPaletteColor(i));
         }
+
+        //
+        // Populate our first-row color mappings for lookup.
+        //
+        var colorMappings = this.getFirstRowColorMappings();
+
+        this.firstRowDeviceColors = new int[colorMappings.size()];
+        this.firstRowDisplayColors = new ColorEx[colorMappings.size()];
+
+        // Break our mappings into two arrays, which is what our color utilities like.
+        var index = 0;
+        for (var pair : colorMappings) {
+            this.firstRowDeviceColors[index] = pair.getKey();
+            this.firstRowDisplayColors[index] = pair.getValue();
+            index += 1;
+        }
     }
 
+    /**
+     * Get a color entry of the default Push color palette.
+     *
+     * @param index 0-127
+     * @return The palette color as RGB (0-255)
+     */
+    public static int[] getPaletteColorRGB(final int index) {
+        if (index >= 70 && index <= 96) {
+            return DAWColor.getColorEntry(index - 69).toIntRGB255();
+        }
+        return DEFAULT_PALETTE[index];
+    }
+
+    /**
+     * Get a color of the default Push color palette.
+     *
+     * @param index 0-127
+     * @return The palette color
+     */
+    public static ColorEx getPaletteColor(final int index) {
+        if (index >= 70 && index <= 96) {
+            return DAWColor.getColorEntry(index - 69);
+        }
+        return ColorEx.fromRGB(DEFAULT_PALETTE[index][0], DEFAULT_PALETTE[index][1], DEFAULT_PALETTE[index][2]);
+    }
 
     @Override
-    protected List<Pair<Integer, ColorEx>> getColorMappings()
-    {
+    protected List<Pair<Integer, ColorEx>> getColorMappings() {
         // FIXME(ktemkin): set these to more accurately match the push
         return List.of(
                 new Pair<>(PUSH2_COLOR2_BLACK, ColorEx.BLACK),
-                new Pair<>(PUSH2_COLOR2_GREY_LO, ColorEx.DARK_GRAY),
+                new Pair<>(PUSH2_COLOR2_GREY_LO, lo(ColorEx.DARK_GRAY)),
                 new Pair<>(PUSH2_COLOR2_GREY_MD, ColorEx.GRAY),
                 new Pair<>(PUSH2_COLOR2_GREY_LT, ColorEx.LIGHT_GRAY),
                 new Pair<>(PUSH2_COLOR2_WHITE, ColorEx.WHITE),
@@ -714,60 +766,79 @@ public class PushColorManager extends CommonUIColorManager
     }
 
 
+    // First row colors.
+    public static final int PUSH2_ROW1_RED_LO = PUSH2_COLOR2_RED_LO;
+    public static final int PUSH2_ROW1_RED_HI = PUSH2_COLOR2_RED_HI;
+    public static final int PUSH2_ROW1_ORANGE_LO = PUSH2_COLOR2_AMBER_LO;
+    public static final int PUSH2_ROW1_ORANGE_HI = PUSH2_COLOR2_AMBER_HI;
+    public static final int PUSH2_ROW1_YELLOW_LO = PUSH2_COLOR2_YELLOW_LO;
+    public static final int PUSH2_ROW1_YELLOW_HI = PUSH2_COLOR2_YELLOW_HI;
+    public static final int PUSH2_ROW1_GREEN_LO = PUSH2_COLOR2_GREEN_LO;
+    public static final int PUSH2_ROW1_GREEN_HI = PUSH2_COLOR2_GREEN_HI;
+
+
     /**
-     * Shortcut for ColorEx.brigther.
+     * Variant of getColorMappings that corresponds to the first row of buttons.
      */
-    private ColorEx hi(ColorEx c)
-    {
-        return ColorEx.brighter(c);
+    protected List<Pair<Integer, ColorEx>> getFirstRowColorMappings() {
+        // FIXME(ktemkin): set these to more accurately match the push
+        return List.of(
+                new Pair<>(PUSH2_ROW1_RED_LO, lo(ColorEx.RED)),
+                new Pair<>(PUSH2_ROW1_RED_HI, hi(ColorEx.RED)),
+                new Pair<>(PUSH2_ROW1_ORANGE_LO, lo(ColorEx.ORANGE)),
+                new Pair<>(PUSH2_ROW1_ORANGE_HI, hi(ColorEx.ORANGE)),
+                new Pair<>(PUSH2_ROW1_YELLOW_LO, lo(ColorEx.YELLOW)),
+                new Pair<>(PUSH2_ROW1_YELLOW_HI, hi(ColorEx.YELLOW)),
+                new Pair<>(PUSH2_ROW1_GREEN_LO, lo(ColorEx.GREEN)),
+                new Pair<>(PUSH2_ROW1_GREEN_HI, hi(ColorEx.GREEN))
+        );
     }
 
+
+    /**
+     * Converts a Java color into a per-device color.
+     * <p>
+     * If your device has different color types for e.g. individual ranges of buttons, override this.
+     * The default implementation ignores controlType.
+     *
+     * @param color       The display color to be converted.
+     * @param controlType The type of control we're requesting a color for.
+     * @return A device-specific integer that means this color.
+     */
+    public int getDeviceColor(ColorEx color, ControlType controlType) {
+
+        switch (controlType) {
+
+            // Handle the first row using its own table.
+            case BUTTON_ROW1:
+                return this.colorLookupCache.computeIfAbsent(color, (c) -> this.firstRowDeviceColors[ColorEx.getClosestColorIndex(c, this.firstRowDisplayColors)]);
+
+            // Otherwise, compute the color lookup using the default table, memoizing as we go.
+            default:
+                return super.getDeviceColor(color, controlType);
+        }
+    }
+
+
+    /**
+     * Shortcut for ColorEx.brighter.
+     */
+    private ColorEx hi(ColorEx c) {
+        return ColorEx.brighter(c);
+    }
 
     /**
      * Shortcut for ColorEx.darker.
      */
-    private ColorEx lo(ColorEx c)
-    {
+    private ColorEx lo(ColorEx c) {
         return ColorEx.darker(c);
     }
-
-
-    /**
-     * Get a color entry of the default Push color palette.
-     *
-     * @param index 0-127
-     * @return The palette color as RGB (0-255)
-     */
-    public static int[] getPaletteColorRGB(final int index)
-    {
-        if (index >= 70 && index <= 96) {
-            return DAWColor.getColorEntry(index - 69).toIntRGB255();
-        }
-        return DEFAULT_PALETTE[index];
-    }
-
-
-    /**
-     * Get a color of the default Push color palette.
-     *
-     * @param index 0-127
-     * @return The palette color
-     */
-    public static ColorEx getPaletteColor(final int index)
-    {
-        if (index >= 70 && index <= 96) {
-            return DAWColor.getColorEntry(index - 69);
-        }
-        return ColorEx.fromRGB(DEFAULT_PALETTE[index][0], DEFAULT_PALETTE[index][1], DEFAULT_PALETTE[index][2]);
-    }
-
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public ColorEx getColor(final int colorIndex, final ButtonID buttonID)
-    {
+    public ColorEx getColor(final int colorIndex, final ButtonID buttonID) {
         if (colorIndex < 0) {
             return ColorEx.BLACK;
         }
@@ -777,8 +848,7 @@ public class PushColorManager extends CommonUIColorManager
                 int color = PUSH2_COLOR2_WHITE;
                 if (colorIndex == 0) {
                     color = PUSH2_COLOR2_BLACK;
-                }
-                else if (colorIndex == 8) {
+                } else if (colorIndex == 8) {
                     color = PUSH2_COLOR2_GREY_LO;
                 }
                 return this.colorByIndex.get(color);

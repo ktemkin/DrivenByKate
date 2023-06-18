@@ -10,8 +10,7 @@ import java.util.List;
 /**
  * Generic color manager for CommonUI devices.
  */
-abstract public class CommonUIColorManager extends ColorManager
-{
+abstract public class CommonUIColorManager extends ColorManager {
 
     /**
      * Array that stores a set of display colors.
@@ -33,8 +32,7 @@ abstract public class CommonUIColorManager extends ColorManager
     protected final HashMap<ColorEx, Integer> colorLookupCache = new HashMap<>();
 
 
-    protected CommonUIColorManager()
-    {
+    protected CommonUIColorManager() {
         super();
 
         //
@@ -42,13 +40,13 @@ abstract public class CommonUIColorManager extends ColorManager
         //
         var colorMappings = this.getColorMappings();
 
-        this.deviceColors  = new int[colorMappings.size()];
+        this.deviceColors = new int[colorMappings.size()];
         this.displayColors = new ColorEx[colorMappings.size()];
 
         // Break our mappings into two arrays, which is what our color utilities like.
         var index = 0;
         for (var pair : colorMappings) {
-            this.deviceColors[index]  = pair.getKey();
+            this.deviceColors[index] = pair.getKey();
             this.displayColors[index] = pair.getValue();
             index += 1;
         }
@@ -75,8 +73,7 @@ abstract public class CommonUIColorManager extends ColorManager
      * @param controlType The type of control we're requesting a color for.
      * @return A device-specific integer that means this color.
      */
-    public int getDeviceColor(ColorEx color, ControlType controlType)
-    {
+    public int getDeviceColor(ColorEx color, ControlType controlType) {
         // Compute the color lookup, memoizing as we go.
         return this.colorLookupCache.computeIfAbsent(color, (c) -> this.deviceColors[ColorEx.getClosestColorIndex(c, this.displayColors)]);
     }
@@ -91,8 +88,7 @@ abstract public class CommonUIColorManager extends ColorManager
      * @param color The display color to be converted.
      * @return A device-specific integer that means this color.
      */
-    public int getDeviceColor(ColorEx color)
-    {
+    public int getDeviceColor(ColorEx color) {
         return this.getDeviceColor(color, ControlType.BUTTON);
     }
 
@@ -100,12 +96,23 @@ abstract public class CommonUIColorManager extends ColorManager
     /**
      * Specifies which type of control we're asking for.
      */
-    public enum ControlType
-    {
+    public enum ControlType {
         /**
          * Indicates that the color is being requested for a button.
          */
         BUTTON,
+
+        /**
+         * Indicates that the color is being requested for a button on a "special" ROW1.
+         * Usually the row _below_ the device's screen.
+         */
+        BUTTON_ROW1,
+
+        /**
+         * Indicates that the color is being requested for a button on a "special" ROW2.
+         * Usually the row above the device's screen.
+         */
+        BUTTON_ROW2,
 
     }
 

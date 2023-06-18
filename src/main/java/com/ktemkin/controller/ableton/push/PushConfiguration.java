@@ -23,8 +23,7 @@ import java.util.List;
  *
  * @author Jürgen Moßgraber
  */
-public class PushConfiguration extends CommonUIConfiguration
-{
+public class PushConfiguration extends CommonUIConfiguration {
 
     private int padSensitivity = 5;
 
@@ -47,8 +46,7 @@ public class PushConfiguration extends CommonUIConfiguration
      * @param valueChanger     The value changer
      * @param arpeggiatorModes The available arpeggiator modes
      */
-    public PushConfiguration(final IHost host, final IValueChanger valueChanger, final List<ArpeggiatorMode> arpeggiatorModes)
-    {
+    public PushConfiguration(final IHost host, final IValueChanger valueChanger, final List<ArpeggiatorMode> arpeggiatorModes) {
         super(host, valueChanger, arpeggiatorModes);
 
         this.preferredAudioView = Views.CLIP_LENGTH;
@@ -61,21 +59,14 @@ public class PushConfiguration extends CommonUIConfiguration
      * {@inheritDoc}
      */
     @Override
-    public void init(final ISettingsUI globalSettings, final ISettingsUI documentSettings)
-    {
+    public void init(final ISettingsUI globalSettings, final ISettingsUI documentSettings) {
         super.init(globalSettings, documentSettings);
-
 
         ///////////////////////////
         // Push 2 Hardware
 
         this.activatePush2HardwareSettings(globalSettings);
         this.activatePush2DisplayColorsSettings(globalSettings);
-
-        ///////////////////////////
-        // Debugging
-
-        this.activateDebugSettings(globalSettings);
     }
 
 
@@ -84,8 +75,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @return The functionality for the ribbon
      */
-    public int getRibbonMode()
-    {
+    public int getRibbonMode() {
         return this.ribbonMode;
     }
 
@@ -95,8 +85,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @param mode The functionality for the ribbon
      */
-    public void setRibbonMode(final int mode)
-    {
+    public void setRibbonMode(final int mode) {
         this.ribbonModeSetting.set(RIBBON_MODE_VALUES[mode]);
     }
 
@@ -106,8 +95,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @param value The MIDI CC value
      */
-    public void setRibbonModeCC(final int value)
-    {
+    public void setRibbonModeCC(final int value) {
         this.ribbonModeCCSetting.set(value);
     }
 
@@ -117,8 +105,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @return The MIDI CC value
      */
-    public int getRibbonModeCCVal()
-    {
+    public int getRibbonModeCCVal() {
         return this.ribbonModeCCVal;
     }
 
@@ -128,8 +115,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @return The functionality for the ribbon in note repeat mode
      */
-    public int getRibbonNoteRepeat()
-    {
+    public int getRibbonNoteRepeat() {
         return this.ribbonModeNoteRepeat;
     }
 
@@ -139,8 +125,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @param mode The functionality for the ribbon in note repeat mode
      */
-    public void setRibbonNoteRepeat(final int mode)
-    {
+    public void setRibbonNoteRepeat(final int mode) {
         this.ribbonModeNoteRepeatSetting.set(RIBBON_NOTE_REPEAT_VALUES[mode]);
     }
 
@@ -150,8 +135,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @param control The control value
      */
-    public void changeDisplayBrightness(final int control)
-    {
+    public void changeDisplayBrightness(final int control) {
         this.displayBrightnessSetting.set(this.valueChanger.changeValue(control, this.displayBrightness, -100, 101));
     }
 
@@ -161,8 +145,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @param control The control value
      */
-    public void changeLEDBrightness(final int control)
-    {
+    public void changeLEDBrightness(final int control) {
         this.ledBrightnessSetting.set(this.valueChanger.changeValue(control, this.ledBrightness, -100, 101));
     }
 
@@ -172,8 +155,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @param control The control value
      */
-    public void changePadSensitivity(final int control)
-    {
+    public void changePadSensitivity(final int control) {
         this.padSensitivitySetting.set(this.valueChanger.changeValue(control, this.padSensitivity, -100, 11));
     }
 
@@ -183,8 +165,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @param control The control value
      */
-    public void changePadGain(final int control)
-    {
+    public void changePadGain(final int control) {
         this.padGainSetting.set(this.valueChanger.changeValue(control, this.padGain, -100, 11));
     }
 
@@ -194,8 +175,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @param control The control value
      */
-    public void changePadDynamics(final int control)
-    {
+    public void changePadDynamics(final int control) {
         this.padDynamicsSetting.set(this.valueChanger.changeValue(control, this.padDynamics, -100, 11));
     }
 
@@ -205,8 +185,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @return The display brightness.
      */
-    public int getDisplayBrightness()
-    {
+    public int getDisplayBrightness() {
         return this.displayBrightness;
     }
 
@@ -216,8 +195,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @param displayBrightness The display brightness.
      */
-    public void setDisplayBrightness(final int displayBrightness)
-    {
+    public void setDisplayBrightness(final int displayBrightness) {
         this.displayBrightnessSetting.set(displayBrightness);
     }
 
@@ -227,8 +205,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @return The LED brightness
      */
-    public int getLedBrightness()
-    {
+    public int getLedBrightness() {
         return this.ledBrightness;
     }
 
@@ -238,8 +215,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @param ledBrightness The LED brightness
      */
-    public void setLEDBrightness(final int ledBrightness)
-    {
+    public void setLEDBrightness(final int ledBrightness) {
         this.ledBrightnessSetting.set(ledBrightness);
     }
 
@@ -249,8 +225,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @return True if should be stopped
      */
-    public boolean isStopAutomationOnKnobRelease()
-    {
+    public boolean isStopAutomationOnKnobRelease() {
         return this.stopAutomationOnKnobRelease;
     }
 
@@ -260,8 +235,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @return True if mute is long pressed
      */
-    public boolean isMuteLongPressed()
-    {
+    public boolean isMuteLongPressed() {
         return this.isMuteLongPressed;
     }
 
@@ -271,8 +245,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @param isMuteLongPressed True if mute is long pressed
      */
-    public void setIsMuteLongPressed(final boolean isMuteLongPressed)
-    {
+    public void setIsMuteLongPressed(final boolean isMuteLongPressed) {
         this.isMuteLongPressed = isMuteLongPressed;
     }
 
@@ -282,8 +255,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @return True if solo is long pressed
      */
-    public boolean isSoloLongPressed()
-    {
+    public boolean isSoloLongPressed() {
         return this.isSoloLongPressed;
     }
 
@@ -293,8 +265,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @param isSoloLongPressed True if solo is long pressed
      */
-    public void setIsSoloLongPressed(final boolean isSoloLongPressed)
-    {
+    public void setIsSoloLongPressed(final boolean isSoloLongPressed) {
         this.isSoloLongPressed = isSoloLongPressed;
     }
 
@@ -304,8 +275,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @return True if locked
      */
-    public boolean isMuteSoloLocked()
-    {
+    public boolean isMuteSoloLocked() {
         return this.isMuteSoloLocked;
     }
 
@@ -315,8 +285,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @param isMuteSoloLocked True if locked
      */
-    public void setMuteSoloLocked(final boolean isMuteSoloLocked)
-    {
+    public void setMuteSoloLocked(final boolean isMuteSoloLocked) {
         this.isMuteSoloLocked = isMuteSoloLocked;
     }
 
@@ -326,8 +295,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @return The pad sensitivity
      */
-    public int getPadSensitivity()
-    {
+    public int getPadSensitivity() {
         return this.padSensitivity;
     }
 
@@ -337,8 +305,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @param padSensitivity The pad sensitivity
      */
-    public void setPadSensitivity(final int padSensitivity)
-    {
+    public void setPadSensitivity(final int padSensitivity) {
         this.padSensitivitySetting.set(padSensitivity);
     }
 
@@ -348,8 +315,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @return The pad gain
      */
-    public int getPadGain()
-    {
+    public int getPadGain() {
         return this.padGain;
     }
 
@@ -359,8 +325,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @param padGain The pad gain
      */
-    public void setPadGain(final int padGain)
-    {
+    public void setPadGain(final int padGain) {
         this.padGainSetting.set(padGain);
     }
 
@@ -370,8 +335,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @return The pad dynamics.
      */
-    public int getPadDynamics()
-    {
+    public int getPadDynamics() {
         return this.padDynamics;
     }
 
@@ -381,8 +345,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @param padDynamics The pad dynamics.
      */
-    public void setPadDynamics(final int padDynamics)
-    {
+    public void setPadDynamics(final int padDynamics) {
         this.padDynamicsSetting.set(padDynamics);
     }
 
@@ -392,8 +355,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @return True if used for mute
      */
-    public boolean isMuteState()
-    {
+    public boolean isMuteState() {
         return this.trackState == TrackState.MUTE;
     }
 
@@ -403,8 +365,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @return True if used for solo
      */
-    public boolean isSoloState()
-    {
+    public boolean isSoloState() {
         return this.trackState == TrackState.SOLO;
     }
 
@@ -414,8 +375,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @param state The new track state
      */
-    public void setTrackState(final TrackState state)
-    {
+    public void setTrackState(final TrackState state) {
         this.trackState = state;
     }
 
@@ -425,8 +385,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @return The ID of the current mode which is selected for mixing.
      */
-    public Modes getCurrentMixMode()
-    {
+    public Modes getCurrentMixMode() {
         return Modes.isTrackMode(this.debugMode) ? this.debugMode : null;
     }
 
@@ -436,8 +395,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @param layerMode The ID of a layer mode
      */
-    public void setLayerMixMode(final Modes layerMode)
-    {
+    public void setLayerMixMode(final Modes layerMode) {
         this.layerMode = layerMode;
     }
 
@@ -447,13 +405,15 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @return The ID of the current mode which is selected for layer mixing.
      */
-    public Modes getCurrentLayerMixMode()
-    {
-        if (this.layerMode != null) {return this.layerMode;}
+    public Modes getCurrentLayerMixMode() {
+        if (this.layerMode != null) {
+            return this.layerMode;
+        }
 
         final Modes currentMixMode = this.getCurrentMixMode();
-        if (currentMixMode == null) {this.layerMode = Modes.DEVICE_LAYER;}
-        else {
+        if (currentMixMode == null) {
+            this.layerMode = Modes.DEVICE_LAYER;
+        } else {
             switch (currentMixMode) {
                 case VOLUME:
                     this.layerMode = Modes.DEVICE_LAYER_VOLUME;
@@ -502,8 +462,7 @@ public class PushConfiguration extends CommonUIConfiguration
      * {@inheritDoc}
      */
     @Override
-    public ColorEx getColorBackground()
-    {
+    public ColorEx getColorBackground() {
         return this.colorBackground;
     }
 
@@ -512,8 +471,7 @@ public class PushConfiguration extends CommonUIConfiguration
      * {@inheritDoc}
      */
     @Override
-    public ColorEx getColorBackgroundDarker()
-    {
+    public ColorEx getColorBackgroundDarker() {
         return this.colorBackgroundDarker;
     }
 
@@ -522,8 +480,7 @@ public class PushConfiguration extends CommonUIConfiguration
      * {@inheritDoc}
      */
     @Override
-    public ColorEx getColorBackgroundLighter()
-    {
+    public ColorEx getColorBackgroundLighter() {
         return this.colorBackgroundLighter;
     }
 
@@ -532,8 +489,7 @@ public class PushConfiguration extends CommonUIConfiguration
      * {@inheritDoc}
      */
     @Override
-    public ColorEx getColorBorder()
-    {
+    public ColorEx getColorBorder() {
         return this.colorBorder;
     }
 
@@ -542,8 +498,7 @@ public class PushConfiguration extends CommonUIConfiguration
      * {@inheritDoc}
      */
     @Override
-    public ColorEx getColorText()
-    {
+    public ColorEx getColorText() {
         return this.colorText;
     }
 
@@ -552,8 +507,7 @@ public class PushConfiguration extends CommonUIConfiguration
      * {@inheritDoc}
      */
     @Override
-    public ColorEx getColorEdit()
-    {
+    public ColorEx getColorEdit() {
         return this.colorEdit;
     }
 
@@ -562,8 +516,7 @@ public class PushConfiguration extends CommonUIConfiguration
      * {@inheritDoc}
      */
     @Override
-    public ColorEx getColorFader()
-    {
+    public ColorEx getColorFader() {
         return this.colorFader;
     }
 
@@ -572,8 +525,7 @@ public class PushConfiguration extends CommonUIConfiguration
      * {@inheritDoc}
      */
     @Override
-    public ColorEx getColorVu()
-    {
+    public ColorEx getColorVu() {
         return this.colorVU;
     }
 
@@ -582,8 +534,7 @@ public class PushConfiguration extends CommonUIConfiguration
      * {@inheritDoc}
      */
     @Override
-    public ColorEx getColorRecord()
-    {
+    public ColorEx getColorRecord() {
         return this.colorRecord;
     }
 
@@ -592,8 +543,7 @@ public class PushConfiguration extends CommonUIConfiguration
      * {@inheritDoc}
      */
     @Override
-    public ColorEx getColorSolo()
-    {
+    public ColorEx getColorSolo() {
         return this.colorSolo;
     }
 
@@ -602,8 +552,7 @@ public class PushConfiguration extends CommonUIConfiguration
      * {@inheritDoc}
      */
     @Override
-    public ColorEx getColorMute()
-    {
+    public ColorEx getColorMute() {
         return this.colorMute;
     }
 
@@ -612,8 +561,7 @@ public class PushConfiguration extends CommonUIConfiguration
      * {@inheritDoc}
      */
     @Override
-    public boolean isAntialiasEnabled()
-    {
+    public boolean isAntialiasEnabled() {
         return true;
     }
 
@@ -623,8 +571,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @return The ID of a mode
      */
-    public Modes getDebugMode()
-    {
+    public Modes getDebugMode() {
         return this.debugMode;
     }
 
@@ -634,8 +581,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @param debugMode The ID of a mode
      */
-    public void setDebugMode(final Modes debugMode)
-    {
+    public void setDebugMode(final Modes debugMode) {
         this.debugModeSetting.set(debugMode.toString());
     }
 
@@ -644,8 +590,7 @@ public class PushConfiguration extends CommonUIConfiguration
      * {@inheritDoc}
      */
     @Override
-    public void setFlipSession(final boolean enabled)
-    {
+    public void setFlipSession(final boolean enabled) {
         this.sessionViewSetting.set(enabled ? SESSION_VIEW_OPTIONS[1] : SESSION_VIEW_OPTIONS[0]);
     }
 
@@ -653,8 +598,7 @@ public class PushConfiguration extends CommonUIConfiguration
     /**
      * Set the scene view.
      */
-    public void setSceneView()
-    {
+    public void setSceneView() {
         this.sessionViewSetting.set(SESSION_VIEW_OPTIONS[2]);
     }
 
@@ -664,8 +608,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @return True if the session view should also switch to the scene/clip mode.
      */
-    public boolean shouldDisplayScenesOrClips()
-    {
+    public boolean shouldDisplayScenesOrClips() {
         return this.displayScenesClips;
     }
 
@@ -675,8 +618,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @return True if the scene/clip view is enabled
      */
-    public boolean isScenesClipViewSelected()
-    {
+    public boolean isScenesClipViewSelected() {
         return this.isScenesClipView;
     }
 
@@ -684,8 +626,7 @@ public class PushConfiguration extends CommonUIConfiguration
     /**
      * Toggles the mode display for scenes/clips in session view.
      */
-    public void toggleScenesClipMode()
-    {
+    public void toggleScenesClipMode() {
         this.displayScenesClipsSetting.set(this.displayScenesClips ? ON_OFF_OPTIONS[0] : ON_OFF_OPTIONS[1]);
     }
 
@@ -695,8 +636,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @param settingsUI The settings
      */
-    private void activatePush2HardwareSettings(final ISettingsUI settingsUI)
-    {
+    private void activatePush2HardwareSettings(final ISettingsUI settingsUI) {
         this.displayBrightnessSetting = settingsUI.getRangeSetting("Display Brightness", CATEGORY_HARDWARE_SETUP, 0, 100, 1, "%", 100);
         this.displayBrightnessSetting.addValueObserver(value -> {
             this.displayBrightness = value.intValue();
@@ -716,8 +656,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @param settingsUI The settings
      */
-    private void activatePush2PadSettings(final ISettingsUI settingsUI)
-    {
+    private void activatePush2PadSettings(final ISettingsUI settingsUI) {
         this.padSensitivitySetting = settingsUI.getRangeSetting("Sensitivity", CATEGORY_PADS, 0, 10, 1, "", 5);
         this.padSensitivitySetting.addValueObserver(value -> {
             this.padSensitivity = value.intValue();
@@ -743,8 +682,7 @@ public class PushConfiguration extends CommonUIConfiguration
      *
      * @param settingsUI The settings
      */
-    private void activatePush2DisplayColorsSettings(final ISettingsUI settingsUI)
-    {
+    private void activatePush2DisplayColorsSettings(final ISettingsUI settingsUI) {
         settingsUI.getSignalSetting("Reset colors to default", CATEGORY_COLORS, "Reset").addSignalObserver(value -> {
             this.colorBackgroundSetting.set(DEFAULT_COLOR_BACKGROUND);
             this.colorBackgroundDarkerSetting.set(DEFAULT_COLOR_BACKGROUND_DARKER);

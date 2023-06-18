@@ -7,8 +7,6 @@ package com.ktemkin.controller.ableton.push.controller;
 import com.ktemkin.controller.ableton.push.PushConfiguration;
 import com.ktemkin.controller.common.CommonUIConfiguration;
 import com.ktemkin.controller.common.controller.CommonUIControlSurface;
-
-import de.mossgrabers.framework.controller.IControlSurface;
 import de.mossgrabers.framework.controller.color.ColorManager;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.midi.DeviceInquiry;
@@ -24,8 +22,7 @@ import java.util.List;
  *
  * @author Jürgen Moßgraber
  */
-public class PushControlSurface extends CommonUIControlSurface<PushConfiguration>
-{
+public class PushControlSurface extends CommonUIControlSurface<PushConfiguration> {
     // @formatter:off
     /** The names for the dynamic curves. */
     public static final List<String>  PUSH_PAD_CURVES_NAME     = List.of (
@@ -629,7 +626,7 @@ public class PushControlSurface extends CommonUIControlSurface<PushConfiguration
         // See section 2.10.1 in Push 2 programmer manual for status codes
         int status = 0;
         switch (mode)
-        {case PUSH_RIBBON_PITCHBEND->status = 122;
+        {case PUSH_RIBBON_PITCHBEND -> status = 122;
 case PUSH_RIBBON_VOLUME->status = 1;
 case PUSH_RIBBON_PAN->status = 17;
 case PUSH_RIBBON_DISCRETE->status = 9;
