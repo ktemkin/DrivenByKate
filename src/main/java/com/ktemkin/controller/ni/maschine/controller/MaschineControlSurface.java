@@ -7,23 +7,20 @@ package com.ktemkin.controller.ni.maschine.controller;
 import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import com.ktemkin.controller.ni.core.AbstractNIHostInterop;
 import com.ktemkin.controller.ni.core.INIEventHandler;
-import com.ktemkin.controller.ni.kontrol.mkii.controller.KontrolProtocolColorManager;
+import com.ktemkin.controller.ni.kontrol.controller.KontrolColorManager;
 import com.ktemkin.controller.ni.maschine.Maschine;
-import com.ktemkin.controller.ni.maschine.core.MaschineColorManager;
 import com.ktemkin.controller.ni.maschine.MaschineConfiguration;
 import com.ktemkin.controller.ni.maschine.command.trigger.MaschineStopCommand;
+import com.ktemkin.controller.ni.maschine.core.MaschineColorManager;
 import com.ktemkin.controller.ni.maschine.core.controller.MaschinePadGrid;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.controller.ContinuousID;
 import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.controller.color.ColorManager;
-import de.mossgrabers.framework.controller.grid.PadGridImpl;
-import de.mossgrabers.framework.controller.hardware.BindType;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.midi.IMidiInput;
 import de.mossgrabers.framework.daw.midi.IMidiOutput;
 import de.mossgrabers.framework.daw.midi.MidiConstants;
-import de.mossgrabers.framework.scale.ScaleLayout;
 import de.mossgrabers.framework.scale.Scales;
 import de.mossgrabers.framework.utils.ButtonEvent;
 
@@ -36,8 +33,7 @@ import java.nio.ByteBuffer;
  * @author Kate Temkin
  * @author Jürgen Moßgraber
  */
-public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfiguration> implements INIEventHandler
-{
+public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfiguration> implements INIEventHandler {
     // MIDI CCs
     // These should be erased and replaced with just NI use.
     public static final int TOUCHSTRIP = 1;
@@ -122,35 +118,21 @@ public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfi
      * A reference to our current Scales translator.
      */
     private final Scales scales;
+    /**
+     * The generic "device description" for this model.
+     */
+    private final Maschine maschine;
+    /**
+     * The last observed knob value for each knob.
+     */
+    private final int[] lastKnobValue = new int[8];
+    /**
+     * True if the Fixed Accent button has been pressed.
+     */
+    protected boolean isFixedAccent;
     private int ribbonValue = -1;
     // @formatter:on
     private AbstractNIHostInterop niConnection;
-
-    /** The generic "device description" for this model. */
-    private final Maschine maschine;
-
-    /** The last observed knob value for each knob. */
-    private final int[] lastKnobValue = new int[8];
-
-
-    /** @return true iff we're in fixed accent mode. */
-    public boolean isFixedAccent()
-    {
-        return isFixedAccent;
-    }
-
-
-    /**
-     * Sets whether we're in Fixed Accent mode.
-     */
-    public void setFixedAccent(boolean fixedAccent)
-    {
-        isFixedAccent = fixedAccent;
-    }
-
-
-    /** True if the Fixed Accent button has been pressed. */
-    protected boolean isFixedAccent;
 
 
     /**
@@ -163,23 +145,34 @@ public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfi
      * @param output        The MIDI output
      * @param input         The MIDI input
      */
-    public MaschineControlSurface(final IHost host, final ColorManager colorManager, final Maschine maschine, final MaschineConfiguration configuration, final IMidiOutput output, final IMidiInput input, final Scales scales)
-    {
+    public MaschineControlSurface(final IHost host, final ColorManager colorManager, final Maschine maschine, final MaschineConfiguration configuration, final IMidiOutput output, final IMidiInput input, final Scales scales) {
         super(host, colorManager, configuration, new MaschinePadGrid(colorManager, output), output, input, maschine.getWidth(), maschine.getHeight());
 
         this.maschine = maschine;
         this.scales = scales;
 
-        var padGrid = (MaschinePadGrid)this.getPadGrid();
+        var padGrid = (MaschinePadGrid) this.getPadGrid();
         padGrid.setSurface(this);
     }
 
+    /**
+     * @return true iff we're in fixed accent mode.
+     */
+    public boolean isFixedAccent() {
+        return isFixedAccent;
+    }
+
+    /**
+     * Sets whether we're in Fixed Accent mode.
+     */
+    public void setFixedAccent(boolean fixedAccent) {
+        isFixedAccent = fixedAccent;
+    }
 
     /**
      * Signal that the stop function should not be called on button release.
      */
-    public void setStopConsumed()
-    {
+    public void setStopConsumed() {
         ((MaschineStopCommand) this.getButton(ButtonID.STOP).getCommand()).setConsumed();
     }
 
@@ -188,8 +181,7 @@ public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfi
      * {@inheritDoc}
      */
     @Override
-    protected void flushHardware()
-    {
+    protected void flushHardware() {
         super.flushHardware();
     }
 
@@ -199,8 +191,7 @@ public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfi
      *
      * @param value The value to set
      */
-    public void setRibbonValue(final int value)
-    {
+    public void setRibbonValue(final int value) {
         if (this.ribbonValue == value)
             return;
         this.ribbonValue = value;
@@ -208,9 +199,10 @@ public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfi
     }
 
 
-    /** @return the last knob value for the given knob, decoded */
-    public int getLastKnobValue(int index)
-    {
+    /**
+     * @return the last knob value for the given knob, decoded
+     */
+    public int getLastKnobValue(int index) {
         var newValue = this.lastKnobValue[index];
 
         int delta = newValue >> 28;
@@ -230,8 +222,7 @@ public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfi
     /**
      * Translates an NIHIA button index to a local ButtonID.
      */
-    public ButtonID translateNIHIAButton(int rawButton)
-    {
+    public ButtonID translateNIHIAButton(int rawButton) {
         this.println(String.format("Button: %x", rawButton));
 
         return switch (rawButton) {
@@ -323,8 +314,7 @@ public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfi
      * {@inheritDoc}
      */
     @Override
-    public void handleButtonEvent(int rawButtonId, ButtonEvent event)
-    {
+    public void handleButtonEvent(int rawButtonId, ButtonEvent event) {
 
         // Convert our button from a NIHIA message number to a concrete ButtonID.
         var buttonId = this.translateNIHIAButton(rawButtonId);
@@ -345,8 +335,7 @@ public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfi
      * {@inheritDoc}
      */
     @Override
-    public void handleKnobEvent(int rawContinuousId, int newValue)
-    {
+    public void handleKnobEvent(int rawContinuousId, int newValue) {
         // Get the relevant knob as a CC provider..
         var knob = this.getContinuous(ContinuousID.get(ContinuousID.KNOB1, rawContinuousId));
         if (knob == null) {
@@ -363,8 +352,7 @@ public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfi
      * {@inheritDoc}
      */
     @Override
-    public void handleMainEncoderEvent(long newValue)
-    {
+    public void handleMainEncoderEvent(long newValue) {
         this.host.println(String.format("MAIN ENCODER has new value %x", newValue));
     }
 
@@ -374,8 +362,7 @@ public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfi
      *
      * @param pressure The pressure from a pad.
      */
-    protected int pressureToVelocity(final long pressure)
-    {
+    protected int pressureToVelocity(final long pressure) {
         final double maxPressure = PAD_PRESSURE_MAX - PAD_PRESSURE_MIN;
 
         final double maxMidiValue = 127;
@@ -402,8 +389,7 @@ public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfi
 
 
     @Override
-    public void handlePadEvent(int padNumber, long newPressure)
-    {
+    public void handlePadEvent(int padNumber, long newPressure) {
         final int[] padOffsetMatrix = this.scales.getActiveMatrix();
 
         // Our notion of grid numbering is flipped and rotated from the hardware's.
@@ -413,7 +399,7 @@ public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfi
         final int note = padOffsetMatrix[noteBase] + scales.getStartNote();
 
         final long pressure = newPressure - PAD_PRESSURE_MIN;
-        final int velocity =  isFixedAccent() ? 127 : Math.max(1, this.pressureToVelocity(pressure));
+        final int velocity = isFixedAccent() ? 127 : Math.max(1, this.pressureToVelocity(pressure));
 
         //
         // The Maschine doesn't generate MIDI events, so we'll have to generate MIDI events for it.
@@ -439,8 +425,7 @@ public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfi
     }
 
 
-    public void addNiConnection(AbstractNIHostInterop nihiaConnection)
-    {
+    public void addNiConnection(AbstractNIHostInterop nihiaConnection) {
         this.niConnection = nihiaConnection;
     }
 
@@ -448,15 +433,14 @@ public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfi
     /**
      * Returns the (nearest NI) color index for a given button.
      */
-    public byte getColorForButton(ButtonID button)
-    {
+    public byte getColorForButton(ButtonID button) {
 
         var manager = (MaschineColorManager) this.colorManager;
         var color = this.colorForButton[button.ordinal()];
 
         // If we don't have a color set, default to OFF.
         if (color == null) {
-            return KontrolProtocolColorManager.COLOR_BLACK;
+            return KontrolColorManager.COLOR_BLACK;
         }
 
         return (byte) manager.getDeviceColor(color);
@@ -469,8 +453,7 @@ public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfi
      * @param button The button whose color is to be set.
      * @param color  The color to make that button.
      */
-    public void setButtonColor(ButtonID button, ColorEx color)
-    {
+    public void setButtonColor(ButtonID button, ColorEx color) {
         this.colorForButton[button.ordinal()] = color;
     }
 
@@ -478,8 +461,7 @@ public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfi
     /**
      * Flushes the state of the Maschine's lights.
      */
-    public void flushLights()
-    {
+    public void flushLights() {
         if (this.niConnection == null) {
             return;
         }
@@ -626,15 +608,13 @@ public class MaschineControlSurface extends CommonUIControlSurface<MaschineConfi
     }
 
 
-    public Maschine getMaschine()
-    {
+    public Maschine getMaschine() {
         return this.maschine;
     }
 
 
     @Override
-    public int getBrowserRows()
-    {
+    public int getBrowserRows() {
         return 9;
     }
 

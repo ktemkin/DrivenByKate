@@ -2,7 +2,7 @@
 // (c) 2017-2023
 // Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
 
-package com.ktemkin.controller.ni.kontrol.mkii.controller;
+package com.ktemkin.controller.ni.kontrol.controller;
 
 import de.mossgrabers.framework.utils.OperatingSystem;
 
@@ -14,7 +14,7 @@ import java.util.UUID;
  *
  * @author Jürgen Moßgraber
  */
-public class KontrolProtocolDeviceDescriptorV1 implements IKontrolProtocolDeviceDescriptor {
+public class KontrolDeviceDescriptorV1 implements IKontrolProtocolDeviceDescriptor {
     private static final String KOMPLETE_KONTROL_A_DAW = "Komplete Kontrol A DAW";
 
     private static final UUID EXTENSION_ID = UUID.fromString("4EA6215E-C7EB-4184-AEA4-67D03D8EF7A8");

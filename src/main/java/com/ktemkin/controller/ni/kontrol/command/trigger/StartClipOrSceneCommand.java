@@ -2,10 +2,10 @@
 // (c) 2017-2023
 // Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
 
-package com.ktemkin.controller.ni.kontrol.mkii.command.trigger;
+package com.ktemkin.controller.ni.kontrol.command.trigger;
 
-import com.ktemkin.controller.ni.kontrol.mkii.KontrolProtocolConfiguration;
-import com.ktemkin.controller.ni.kontrol.mkii.controller.KontrolProtocolControlSurface;
+import com.ktemkin.controller.ni.kontrol.KontrolConfiguration;
+import com.ktemkin.controller.ni.kontrol.controller.KontrolControlSurface;
 import de.mossgrabers.framework.command.core.AbstractTriggerCommand;
 import de.mossgrabers.framework.command.trigger.clip.StartClipCommand;
 import de.mossgrabers.framework.command.trigger.clip.StartSceneCommand;
@@ -19,9 +19,9 @@ import de.mossgrabers.framework.utils.ButtonEvent;
  *
  * @author Jürgen Moßgraber
  */
-public class StartClipOrSceneCommand extends AbstractTriggerCommand<KontrolProtocolControlSurface, KontrolProtocolConfiguration> {
-    private final StartClipCommand<KontrolProtocolControlSurface, KontrolProtocolConfiguration> clipCommand;
-    private final StartSceneCommand<KontrolProtocolControlSurface, KontrolProtocolConfiguration> sceneCommand;
+public class StartClipOrSceneCommand extends AbstractTriggerCommand<KontrolControlSurface, KontrolConfiguration> {
+    private final StartClipCommand<KontrolControlSurface, KontrolConfiguration> clipCommand;
+    private final StartSceneCommand<KontrolControlSurface, KontrolConfiguration> sceneCommand;
 
 
     /**
@@ -30,7 +30,7 @@ public class StartClipOrSceneCommand extends AbstractTriggerCommand<KontrolProto
      * @param model   The model
      * @param surface The surface
      */
-    public StartClipOrSceneCommand(final IModel model, final KontrolProtocolControlSurface surface) {
+    public StartClipOrSceneCommand(final IModel model, final KontrolControlSurface surface) {
         super(model, surface);
 
         this.clipCommand = new StartClipCommand<>(model, surface);

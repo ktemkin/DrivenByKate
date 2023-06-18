@@ -2,14 +2,16 @@
 // (c) 2017-2023
 // Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
 
-package com.ktemkin.controller.ni.kontrol.mkii;
+package com.ktemkin.controller.ni.kontrol;
 
-import de.mossgrabers.framework.configuration.*;
+import com.ktemkin.controller.common.CommonUIConfiguration;
+import de.mossgrabers.framework.configuration.IColorSetting;
+import de.mossgrabers.framework.configuration.ISettingsUI;
+import de.mossgrabers.framework.configuration.IStringSetting;
 import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.controller.valuechanger.IValueChanger;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.midi.ArpeggiatorMode;
-import de.mossgrabers.framework.graphics.IGraphicsConfiguration;
 
 import java.util.List;
 
@@ -19,7 +21,7 @@ import java.util.List;
  *
  * @author Jürgen Moßgraber
  */
-public class KontrolProtocolConfiguration extends AbstractConfiguration implements IGraphicsConfiguration {
+public class KontrolConfiguration extends CommonUIConfiguration {
     //
     // Constants.
     //
@@ -115,7 +117,7 @@ public class KontrolProtocolConfiguration extends AbstractConfiguration implemen
      * @param valueChanger     The value changer
      * @param arpeggiatorModes The available arpeggiator modes
      */
-    public KontrolProtocolConfiguration(final IHost host, final IValueChanger valueChanger, final List<ArpeggiatorMode> arpeggiatorModes) {
+    public KontrolConfiguration(final IHost host, final IValueChanger valueChanger, final List<ArpeggiatorMode> arpeggiatorModes) {
         super(host, valueChanger, arpeggiatorModes);
     }
 
@@ -125,37 +127,7 @@ public class KontrolProtocolConfiguration extends AbstractConfiguration implemen
      */
     @Override
     public void init(final ISettingsUI globalSettings, final ISettingsUI documentSettings) {
-        ///////////////////////////
-        // Transport
-
-        this.activateBehaviourOnStopSetting(globalSettings);
-        this.activateBehaviourOnPauseSetting(globalSettings);
-        this.activateRecordButtonSetting(globalSettings);
-        this.activateShiftedRecordButtonSetting(globalSettings);
-
-        ///////////////////////////
-        // Navigation
-
-        final IEnumSetting flipTrackClipNavigationSetting = globalSettings.getEnumSetting("Flip track/clip navigation", CATEGORY_NAVIGATION, ON_OFF_OPTIONS, ON_OFF_OPTIONS[0]);
-        flipTrackClipNavigationSetting.addValueObserver(value -> {
-            this.flipTrackClipNavigation = ON_OFF_OPTIONS[1].equals(value);
-            this.notifyObservers(FLIP_TRACK_CLIP_NAVIGATION);
-        });
-        this.isSettingActive.add(FLIP_TRACK_CLIP_NAVIGATION);
-
-        final IEnumSetting flipClipSceneNavigationSetting = globalSettings.getEnumSetting("Flip clip/scene navigation", CATEGORY_NAVIGATION, ON_OFF_OPTIONS, ON_OFF_OPTIONS[0]);
-        flipClipSceneNavigationSetting.addValueObserver(value -> {
-            this.flipClipSceneNavigation = ON_OFF_OPTIONS[1].equals(value);
-            this.notifyObservers(FLIP_CLIP_SCENE_NAVIGATION);
-        });
-        this.isSettingActive.add(FLIP_CLIP_SCENE_NAVIGATION);
-
-        ///////////////////////////
-        // Workflow
-
-        this.activateExcludeDeactivatedItemsSetting(globalSettings);
-        this.activateNewClipLengthSetting(globalSettings);
-        this.activateKnobSpeedSetting(globalSettings);
+        super.init(globalSettings, documentSettings);
 
         ///////////////////////////
         // Display colors
@@ -163,7 +135,7 @@ public class KontrolProtocolConfiguration extends AbstractConfiguration implemen
 
         ///////////////////////////
         // Display.
-        this.serialForDisplaySetting = globalSettings.getStringSetting("Serial Number (for display)", "Misc", 8, "");
+        this.serialForDisplaySetting = globalSettings.getStringSetting("Serial Number (disambiguation)", "Misc", 8, "");
         this.serialForDisplaySetting.addValueObserver(serial -> {
             this.serialForDisplay = serial;
         });

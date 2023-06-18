@@ -69,11 +69,17 @@ abstract public class CommonUIColorManager extends ColorManager {
      * If your device has different color types for e.g. individual ranges of buttons, override this.
      * The default implementation ignores controlType.
      *
-     * @param color       The display color to be converted.
+     * @param color       The display color to be converted, or NULL as an easy shorthand for black.
      * @param controlType The type of control we're requesting a color for.
      * @return A device-specific integer that means this color.
      */
     public int getDeviceColor(ColorEx color, ControlType controlType) {
+
+        // If no color is set, default to black.
+        if (color == null) {
+            color = ColorEx.BLACK;
+        }
+
         // Compute the color lookup, memoizing as we go.
         return this.colorLookupCache.computeIfAbsent(color, (c) -> this.deviceColors[ColorEx.getClosestColorIndex(c, this.displayColors)]);
     }

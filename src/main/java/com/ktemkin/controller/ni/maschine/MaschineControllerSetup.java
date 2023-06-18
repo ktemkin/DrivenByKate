@@ -8,36 +8,52 @@ package com.ktemkin.controller.ni.maschine;
 import com.ktemkin.controller.common.command.trigger.MuteCommand;
 import com.ktemkin.controller.common.command.trigger.SelectCommand;
 import com.ktemkin.controller.common.command.trigger.SoloCommand;
-import com.ktemkin.controller.common.mode.device.*;
-import com.ktemkin.controller.common.mode.track.*;
-import com.ktemkin.controller.common.view.*;
+import com.ktemkin.controller.common.mode.NoteMode;
+import com.ktemkin.controller.common.mode.NoteRepeatMode;
+import com.ktemkin.controller.common.mode.ScalesMode;
+import com.ktemkin.controller.common.mode.SetupMode;
+import com.ktemkin.controller.common.mode.device.DeviceBrowserMode;
+import com.ktemkin.controller.common.mode.device.DeviceParamsMode;
+import com.ktemkin.controller.common.mode.device.UserMode;
+import com.ktemkin.controller.common.mode.track.CrossfadeMode;
+import com.ktemkin.controller.common.mode.track.PanMode;
+import com.ktemkin.controller.common.mode.track.SendMode;
+import com.ktemkin.controller.common.mode.track.VolumeMode;
+import com.ktemkin.controller.common.view.DrumView;
+import com.ktemkin.controller.common.view.PlayView;
+import com.ktemkin.controller.common.view.SessionView;
+import com.ktemkin.controller.common.view.ShiftView;
 import com.ktemkin.controller.ni.core.AbstractNIHostInterop;
 import com.ktemkin.controller.ni.core.NIGraphicDisplay;
-import com.ktemkin.controller.ni.kontrol.mkii.controller.KontrolProtocolColorManager;
+import com.ktemkin.controller.ni.kontrol.controller.KontrolColorManager;
+import com.ktemkin.controller.ni.maschine.command.continuous.MainKnobRowModeCommand;
+import com.ktemkin.controller.ni.maschine.command.trigger.MaschineCursorCommand;
+import com.ktemkin.controller.ni.maschine.command.trigger.MaschineStopCommand;
+import com.ktemkin.controller.ni.maschine.command.trigger.PageCommand;
+import com.ktemkin.controller.ni.maschine.controller.MaschineControlSurface;
+import com.ktemkin.controller.ni.maschine.controller.StudioEncoderModeManager;
 import com.ktemkin.controller.ni.maschine.core.MaschineColorManager;
 import com.ktemkin.controller.ni.maschine.core.command.trigger.EncoderMode;
 import com.ktemkin.controller.ni.maschine.core.command.trigger.GroupButtonCommand;
 import com.ktemkin.controller.ni.maschine.core.command.trigger.MaschineMonitorEncoderCommand;
-import com.ktemkin.controller.ni.maschine.command.continuous.MainKnobRowModeCommand;
-import com.ktemkin.controller.ni.maschine.command.trigger.*;
-import com.ktemkin.controller.ni.maschine.controller.MaschineControlSurface;
-import com.ktemkin.controller.ni.maschine.controller.StudioEncoderModeManager;
-import com.ktemkin.controller.common.mode.*;
-import com.ktemkin.controller.common.view.*;
 import de.mossgrabers.framework.command.aftertouch.AftertouchViewCommand;
 import de.mossgrabers.framework.command.continuous.KnobRowModeCommand;
 import de.mossgrabers.framework.command.core.TriggerCommand;
 import de.mossgrabers.framework.command.trigger.Direction;
-import de.mossgrabers.framework.command.trigger.application.*;
+import de.mossgrabers.framework.command.trigger.application.DeleteCommand;
+import de.mossgrabers.framework.command.trigger.application.LayoutCommand;
+import de.mossgrabers.framework.command.trigger.application.PaneCommand;
 import de.mossgrabers.framework.command.trigger.application.PaneCommand.Panels;
 import de.mossgrabers.framework.command.trigger.mode.ButtonRowModeCommand;
 import de.mossgrabers.framework.command.trigger.mode.KnobRowTouchModeCommand;
 import de.mossgrabers.framework.command.trigger.mode.ModeCursorCommand;
 import de.mossgrabers.framework.command.trigger.mode.ModeSelectCommand;
 import de.mossgrabers.framework.command.trigger.track.AddTrackCommand;
-import de.mossgrabers.framework.command.trigger.transport.*;
+import de.mossgrabers.framework.command.trigger.transport.ConfiguredRecordCommand;
+import de.mossgrabers.framework.command.trigger.transport.MetronomeCommand;
+import de.mossgrabers.framework.command.trigger.transport.PlayCommand;
+import de.mossgrabers.framework.command.trigger.transport.ToggleLoopCommand;
 import de.mossgrabers.framework.command.trigger.view.ToggleShiftViewCommand;
-import de.mossgrabers.framework.command.trigger.view.ViewButtonCommand;
 import de.mossgrabers.framework.command.trigger.view.ViewMultiSelectCommand;
 import de.mossgrabers.framework.configuration.ISettingsUI;
 import de.mossgrabers.framework.controller.AbstractControllerSetup;
@@ -63,7 +79,6 @@ import de.mossgrabers.framework.featuregroup.IView;
 import de.mossgrabers.framework.featuregroup.ModeManager;
 import de.mossgrabers.framework.featuregroup.ViewManager;
 import de.mossgrabers.framework.mode.Modes;
-import de.mossgrabers.framework.scale.ScaleLayout;
 import de.mossgrabers.framework.scale.Scales;
 import de.mossgrabers.framework.utils.ButtonEvent;
 import de.mossgrabers.framework.utils.FrameworkException;
@@ -72,8 +87,6 @@ import de.mossgrabers.framework.view.ScenePlayView;
 import de.mossgrabers.framework.view.Views;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.IntSupplier;
 
@@ -84,8 +97,7 @@ import java.util.function.IntSupplier;
  * @author Kate Temkin
  * @author Jürgen Moßgraber
  */
-public class MaschineControllerSetup extends AbstractControllerSetup<MaschineControlSurface, MaschineConfiguration>
-{
+public class MaschineControllerSetup extends AbstractControllerSetup<MaschineControlSurface, MaschineConfiguration> {
     // @formatter:off
     /** The drum grid matrix. */
     private static final int [] DRUM_MATRIX =
@@ -115,8 +127,7 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * @param documentSettings The document (project) specific settings
      * @param maschine         The specific maschine model
      */
-    public MaschineControllerSetup(final IHost host, final ISetupFactory factory, final ISettingsUI globalSettings, final ISettingsUI documentSettings, final Maschine maschine)
-    {
+    public MaschineControllerSetup(final IHost host, final ISetupFactory factory, final ISettingsUI globalSettings, final ISettingsUI documentSettings, final Maschine maschine) {
         super(factory, host, globalSettings, documentSettings);
 
         this.maschine = maschine;
@@ -137,8 +148,7 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * {@inheritDoc}
      */
     @Override
-    public void init()
-    {
+    public void init() {
         if (OperatingSystem.get() == OperatingSystem.LINUX)
             throw new FrameworkException("Maschine is not supported on Linux since there is no Native Instruments DAW Integration Host.");
 
@@ -150,8 +160,7 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * {@inheritDoc}
      */
     @Override
-    protected void createScales()
-    {
+    protected void createScales() {
         this.scales = new Scales(this.valueChanger, 36, 52, 4, 4);
         this.scales.setDrumMatrix(DRUM_MATRIX);
     }
@@ -161,8 +170,7 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * {@inheritDoc}
      */
     @Override
-    protected void createModel()
-    {
+    protected void createModel() {
         final ModelSetup ms = new ModelSetup();
         ms.setHasFullFlatTrackList(true);
         ms.setNumFilterColumnEntries(10000);
@@ -182,8 +190,7 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * {@inheritDoc}
      */
     @Override
-    protected void createSurface()
-    {
+    protected void createSurface() {
         final IMidiAccess midiAccess = this.factory.createMidiAccess();
         final IMidiOutput output = midiAccess.createOutput();
         final IMidiInput input = midiAccess.createInput(this.maschine.getName(), "80????", "90????");
@@ -191,47 +198,45 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
         this.surfaces.add(surface);
 
 
-            try {
-                // TODO(ktemkin): Currently, if there's more than one of the same device connected, the NIServices
-                // always just return information about the first one. We _should_ be able to work around that by
-                // fetching the USB serial number, but this requires us to match to the USB device, even if we don't
-                // open it. That seems messy, but that may be necessary.
-                //
-                // For now, we'll just let the user specify which serial they want to talk to in settings.
-                // Hopefully that's ripped out before the final version.
-                //
-                final int deviceId = this.maschine.getDeviceId();
-                String serial = this.configuration.getSerialForDisplay();
+        try {
+            // TODO(ktemkin): Currently, if there's more than one of the same device connected, the NIServices
+            // always just return information about the first one. We _should_ be able to work around that by
+            // fetching the USB serial number, but this requires us to match to the USB device, even if we don't
+            // open it. That seems messy, but that may be necessary.
+            //
+            // For now, we'll just let the user specify which serial they want to talk to in settings.
+            // Hopefully that's ripped out before the final version.
+            //
+            final int deviceId = this.maschine.getDeviceId();
+            String serial = this.configuration.getSerialForDisplay();
 
-                // If we have a single device of this type, just use it.
-                if ((serial == null) || serial.isEmpty()) {
-                    serial = AbstractNIHostInterop.getSingleDeviceSerial(deviceId);
-                    if (serial != null) {
-                        this.host.println("Auto-detected serial " + serial + ".");
-                    }
+            // If we have a single device of this type, just use it.
+            if ((serial == null) || serial.isEmpty()) {
+                serial = AbstractNIHostInterop.getSingleDeviceSerial(deviceId);
+                if (serial != null) {
+                    this.host.println("Auto-detected serial " + serial + ".");
                 }
-
-                if ((serial != null) && !serial.isEmpty()) {
-                    var nihiaConnection = AbstractNIHostInterop.createInterop(surface.getMaschine().getDeviceId(), serial, surface, host, false);
-
-
-                    // HACK: for some reason,  NIHIA is _way_ more reliable after the second connection.
-                    //
-                    // We should probably figure out why this is and correct, but for now immediately connecting
-                    // again seems to make things a lot more stable.
-                    nihiaConnection = AbstractNIHostInterop.createInterop(surface.getMaschine().getDeviceId(), serial, surface, host, false);
-                    surface.addNiConnection(nihiaConnection);
-
-                    final NIGraphicDisplay display = new NIGraphicDisplay(this.host, this.valueChanger.getUpperBound(), this.configuration, nihiaConnection);
-                    surface.addGraphicsDisplay(display);
-
-                    this.host.println("Graphics display set up on Maschine with serial " + serial + ".");
-                }
-            } catch (IOException ex) {
-                this.host.error("Couldn't create NI service connection. Falling back to MCU display.");
-                this.host.error(ex.toString());
-                // If we can't create a graphics display, don't panic: we'll fall back to MCU display.
             }
+
+            if ((serial != null) && !serial.isEmpty()) {
+                var nihiaConnection = AbstractNIHostInterop.createInterop(surface.getMaschine().getDeviceId(), serial, surface, host, false);
+
+
+                // HACK: for some reason,  NIHIA is _way_ more reliable after the second connection.
+                //
+                // We should probably figure out why this is and correct, but for now immediately connecting
+                // again seems to make things a lot more stable.
+                nihiaConnection = AbstractNIHostInterop.createInterop(surface.getMaschine().getDeviceId(), serial, surface, host, false);
+                surface.addNiConnection(nihiaConnection);
+
+                final NIGraphicDisplay display = new NIGraphicDisplay(this.host, this.valueChanger.getUpperBound(), this.configuration, nihiaConnection);
+                surface.addGraphicsDisplay(display);
+
+                this.host.println("Graphics display set up on Maschine with serial " + serial + ".");
+            }
+        } catch (IOException ex) {
+            throw new FrameworkException("Couldn't create NI service connection!", ex);
+        }
     }
 
 
@@ -239,8 +244,7 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * {@inheritDoc}
      */
     @Override
-    protected void createModes()
-    {
+    protected void createModes() {
         final MaschineControlSurface surface = this.getSurface();
         final ModeManager modeManager = surface.getModeManager();
 
@@ -278,8 +282,7 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * {@inheritDoc}
      */
     @Override
-    protected void createViews()
-    {
+    protected void createViews() {
         final MaschineControlSurface surface = this.getSurface();
         final ViewManager viewManager = surface.getViewManager();
 
@@ -311,8 +314,7 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * {@inheritDoc}
      */
     @Override
-    protected void createObservers()
-    {
+    protected void createObservers() {
         super.createObservers();
 
         final MaschineControlSurface surface = this.getSurface();
@@ -329,8 +331,7 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * Adds a non-MIDI button with a simple trigger handler.
      * FIXME: move to a NI base class
      */
-    protected void addButton(MaschineControlSurface surface, ButtonID buttonId, String label, TriggerCommand action)
-    {
+    protected void addButton(MaschineControlSurface surface, ButtonID buttonId, String label, TriggerCommand action) {
         final IHwButton button = surface.createButton(buttonId, label);
         button.bind(action);
 
@@ -342,8 +343,7 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * Adds a non-MIDI button with a simple trigger handler.
      * FIXME: move to a NI base class
      */
-    protected void addButton(ButtonID buttonId, String label, TriggerCommand action)
-    {
+    protected void addButton(ButtonID buttonId, String label, TriggerCommand action) {
         this.addButton(this.getSurface(), buttonId, label, action);
     }
 
@@ -352,8 +352,7 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * Adds a non-MIDI button with a simple trigger handler.
      * FIXME: move to a NI base class
      */
-    protected void addButton(ButtonID buttonId, String label, TriggerCommand action, BooleanSupplier supplier)
-    {
+    protected void addButton(ButtonID buttonId, String label, TriggerCommand action, BooleanSupplier supplier) {
         final MaschineControlSurface surface = this.getSurface();
         final IHwButton button = surface.createButton(buttonId, label);
         button.bind(action);
@@ -367,8 +366,7 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * Adds a non-MIDI button with a simple trigger handler.
      * FIXME: move to a NI base class
      */
-    protected void addButton(ButtonID buttonId, String label, TriggerCommand action, IntSupplier supplier)
-    {
+    protected void addButton(ButtonID buttonId, String label, TriggerCommand action, IntSupplier supplier) {
         final MaschineControlSurface surface = this.getSurface();
         final IHwButton button = surface.createButton(buttonId, label);
         button.bind(action);
@@ -383,11 +381,10 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * FIXME: move to a NI base class
      */
     @Override
-    protected void addButton(final ButtonID buttonId, final String label, final TriggerCommand command, final int midiChannel, final int midiControl, final BooleanSupplier supplier)
-    {
+    protected void addButton(final ButtonID buttonId, final String label, final TriggerCommand command, final int midiChannel, final int midiControl, final BooleanSupplier supplier) {
         MaschineControlSurface surface = this.getSurface();
 
-        super.addButton(buttonId, label, command, midiChannel, midiControl, () -> supplier.getAsBoolean() ? KontrolProtocolColorManager.COLOR_WHITE : KontrolProtocolColorManager.COLOR_DARK_GREY);
+        super.addButton(buttonId, label, command, midiChannel, midiControl, () -> supplier.getAsBoolean() ? KontrolColorManager.COLOR_WHITE : KontrolColorManager.COLOR_DARK_GREY);
         surface.createLight(null, () -> this.colorManager.getColor(this.getButtonColor(surface, buttonId), buttonId), color -> surface.setButtonColor(buttonId, color));
     }
 
@@ -396,8 +393,7 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * Create a hardware knob proxy on a controller, which sends relative values, and bind a continuous command to it.
      * FIXME: move to a NI base class
      */
-    protected IHwRelativeKnob addRelativeKnob(final MaschineControlSurface surface, final ContinuousID continuousID, final String label, final de.mossgrabers.framework.command.core.ContinuousCommand command)
-    {
+    protected IHwRelativeKnob addRelativeKnob(final MaschineControlSurface surface, final ContinuousID continuousID, final String label, final de.mossgrabers.framework.command.core.ContinuousCommand command) {
         final IHwRelativeKnob knob = surface.createRelativeKnob(continuousID, label, RelativeEncoding.TWOS_COMPLEMENT);
         knob.bind(command);
         return knob;
@@ -408,8 +404,7 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * {@inheritDoc}
      */
     @Override
-    protected void registerTriggerCommands()
-    {
+    protected void registerTriggerCommands() {
         final MaschineControlSurface surface = this.getSurface();
         final ModeManager modeManager = surface.getModeManager();
         final ViewManager viewManager = surface.getViewManager();
@@ -439,14 +434,14 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
         //
         // Mode/view selection
         //
-        this.addButton(ButtonID.VOLUME, "Volume", new ModeSelectCommand<>(modeManager, this.model, surface, Modes.VOLUME),() -> modeManager.isActive(Modes.VOLUME));
-        this.addButton(ButtonID.BROWSE, "Browser", new ModeSelectCommand<>(modeManager, this.model, surface, Modes.VOLUME),() -> modeManager.isActive(Modes.BROWSER));
-        this.addButton(ButtonID.SETUP, "Browser", new ModeSelectCommand<>(modeManager, this.model, surface, Modes.VOLUME),() -> modeManager.isActive(Modes.SETUP));
+        this.addButton(ButtonID.VOLUME, "Volume", new ModeSelectCommand<>(modeManager, this.model, surface, Modes.VOLUME), () -> modeManager.isActive(Modes.VOLUME));
+        this.addButton(ButtonID.BROWSE, "Browser", new ModeSelectCommand<>(modeManager, this.model, surface, Modes.VOLUME), () -> modeManager.isActive(Modes.BROWSER));
+        this.addButton(ButtonID.SETUP, "Browser", new ModeSelectCommand<>(modeManager, this.model, surface, Modes.VOLUME), () -> modeManager.isActive(Modes.SETUP));
 
-        this.addButton(ButtonID.DRUM, "Pad Mode", new ViewMultiSelectCommand<>(this.model, surface, Views.DRUM),() -> viewManager.isActive(Views.DRUM));
-        this.addButton(ButtonID.SCALES, "Keyboard", new ViewMultiSelectCommand<>(this.model, surface, Views.PLAY),() -> viewManager.isActive(Views.PLAY));
-        this.addButton(ButtonID.LAYOUT, "Chords", new ViewMultiSelectCommand<>(this.model, surface, Views.CHORDS),() -> viewManager.isActive(Views.CHORDS));
-        this.addButton(ButtonID.SEQUENCER, "Step", new ViewMultiSelectCommand<>(this.model, surface, Views.SEQUENCER),() -> viewManager.isActive(Views.SEQUENCER));
+        this.addButton(ButtonID.DRUM, "Pad Mode", new ViewMultiSelectCommand<>(this.model, surface, Views.DRUM), () -> viewManager.isActive(Views.DRUM));
+        this.addButton(ButtonID.SCALES, "Keyboard", new ViewMultiSelectCommand<>(this.model, surface, Views.PLAY), () -> viewManager.isActive(Views.PLAY));
+        this.addButton(ButtonID.LAYOUT, "Chords", new ViewMultiSelectCommand<>(this.model, surface, Views.CHORDS), () -> viewManager.isActive(Views.CHORDS));
+        this.addButton(ButtonID.SEQUENCER, "Step", new ViewMultiSelectCommand<>(this.model, surface, Views.SEQUENCER), () -> viewManager.isActive(Views.SEQUENCER));
 
         //
         // Configuration toggles.
@@ -517,8 +512,7 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
     }
 
 
-    private void registerCursorKeys(final MaschineControlSurface surface)
-    {
+    private void registerCursorKeys(final MaschineControlSurface surface) {
         if (!this.maschine.hasCursorKeys())
             return;
 
@@ -536,16 +530,14 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
     }
 
 
-    private void registerDisplayButtons(final MaschineControlSurface surface, final ModeManager modeManager)
-    {
+    private void registerDisplayButtons(final MaschineControlSurface surface, final ModeManager modeManager) {
         for (int i = 0; i < 8; ++i) {
             this.addButton(ButtonID.get(ButtonID.ROW1_1, i), "Button " + i, new ButtonRowModeCommand<>(0, i, this.model, surface));
         }
     }
 
 
-    private void registerGroupButtons(final MaschineControlSurface surface)
-    {
+    private void registerGroupButtons(final MaschineControlSurface surface) {
         if (!this.maschine.hasGroupButtons())
             return;
 
@@ -556,8 +548,7 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
     }
 
 
-    private void registerMaschineStudioButtons(final MaschineControlSurface surface)
-    {
+    private void registerMaschineStudioButtons(final MaschineControlSurface surface) {
         this.addButton(ButtonID.METRONOME, "METRO", new MetronomeCommand<>(this.model, surface, false), MaschineControlSurface.METRO, () -> this.model.getTransport().isMetronomeOn());
 
         this.addButton(ButtonID.UNDO, "UNDO", this.createShiftViewFunction(surface, 0, 2), MaschineControlSurface.EDIT_UNDO);
@@ -572,14 +563,12 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
     }
 
 
-    private TriggerCommand createShiftViewFunction(final MaschineControlSurface surface, final int padIndex, final int shiftPadIndex)
-    {
+    private TriggerCommand createShiftViewFunction(final MaschineControlSurface surface, final int padIndex, final int shiftPadIndex) {
         return (event, velocity) -> this.shiftView.executeFunction(surface.isShiftPressed() ? shiftPadIndex : padIndex, event);
     }
 
 
-    private int getEncoderColor(final ButtonID arrowButton)
-    {
+    private int getEncoderColor(final ButtonID arrowButton) {
         final MaschineControlSurface surface = this.getSurface();
         final ModeManager modeManager = surface.getModeManager();
         final Modes modeID = modeManager.getActiveID();
@@ -626,8 +615,7 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * {@inheritDoc}
      */
     @Override
-    protected void registerContinuousCommands()
-    {
+    protected void registerContinuousCommands() {
         final MaschineControlSurface surface = this.getSurface();
         final ModeManager modeManager = surface.getModeManager();
         final ViewManager viewManager = surface.getViewManager();
@@ -641,7 +629,7 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
 
         for (int i = 0; i < 8; i++) {
             final IHwRelativeKnob modeKnob = this.addRelativeKnob(ContinuousID.get(ContinuousID.KNOB1, i), "Knob " + (i + 1), new KnobRowModeCommand<>(i, this.model, surface), MaschineControlSurface.MODE_KNOB_1 + i);
-            int                   finalI   = i;
+            int finalI = i;
             modeKnob.addOutput(() -> surface.getLastKnobValue(finalI), (value) -> {
                 var mode = surface.getModeManager().getActive();
                 if (mode != null) {
@@ -705,8 +693,7 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * {@inheritDoc}
      */
     @Override
-    protected void layoutControls()
-    {
+    protected void layoutControls() {
         switch (this.maschine) {
             case MK2 -> this.layoutMk2();
             case MK3, PLUS -> this.layoutMk3();
@@ -719,8 +706,7 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
     }
 
 
-    private void layoutMk2()
-    {
+    private void layoutMk2() {
         final MaschineControlSurface surface = this.getSurface();
 
         surface.getButton(ButtonID.PAD1).setBounds(425.5, 604.5, 76.25, 79.0);
@@ -801,8 +787,7 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
     }
 
 
-    private void layoutStudio()
-    {
+    private void layoutStudio() {
         final MaschineControlSurface surface = this.getSurface();
 
         surface.getButton(ButtonID.PAD1).setBounds(425.5, 590.0, 76.25, 79.0);
@@ -903,8 +888,7 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
     }
 
 
-    private void layoutMk3()
-    {
+    private void layoutMk3() {
         final MaschineControlSurface surface = this.getSurface();
 
         /*
@@ -1005,8 +989,7 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
     }
 
 
-    private void layoutMikroMk3()
-    {
+    private void layoutMikroMk3() {
         final MaschineControlSurface surface = this.getSurface();
 
         surface.getButton(ButtonID.PAD1).setBounds(427.0, 336.0, 76.25, 79.0);
@@ -1072,8 +1055,7 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * {@inheritDoc}
      */
     @Override
-    public void startup()
-    {
+    public void startup() {
         final MaschineControlSurface surface = this.getSurface();
         surface.getModeManager().setActive(Modes.VOLUME);
         surface.getViewManager().setActive(Views.PLAY);
@@ -1084,8 +1066,7 @@ public class MaschineControllerSetup extends AbstractControllerSetup<MaschineCon
      * {@inheritDoc}
      */
     @Override
-    public void flush()
-    {
+    public void flush() {
         super.flush();
 
         final MaschineControlSurface surface = this.getSurface();

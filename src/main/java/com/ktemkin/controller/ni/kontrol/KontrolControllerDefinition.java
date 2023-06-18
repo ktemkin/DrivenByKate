@@ -2,9 +2,9 @@
 // (c) 2017-2023
 // Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
 
-package com.ktemkin.controller.ni.kontrol.mkii;
+package com.ktemkin.controller.ni.kontrol;
 
-import com.ktemkin.controller.ni.kontrol.mkii.controller.IKontrolProtocolDeviceDescriptor;
+import com.ktemkin.controller.ni.kontrol.controller.IKontrolProtocolDeviceDescriptor;
 import com.ktemkin.framework.controller.DefaultControllerDefinition;
 import de.mossgrabers.framework.utils.OperatingSystem;
 import de.mossgrabers.framework.utils.Pair;
@@ -17,7 +17,7 @@ import java.util.List;
  *
  * @author Jürgen Moßgraber
  */
-public class KontrolProtocolControllerDefinition extends DefaultControllerDefinition
+public class KontrolControllerDefinition extends DefaultControllerDefinition
 {
 
     private static final String[] WINDOWS_STARTS =
@@ -36,7 +36,7 @@ public class KontrolProtocolControllerDefinition extends DefaultControllerDefini
      *
      * @param deviceDescriptor The NIHIA protocol version descriptor
      */
-    public KontrolProtocolControllerDefinition(final IKontrolProtocolDeviceDescriptor deviceDescriptor)
+    public KontrolControllerDefinition(final IKontrolProtocolDeviceDescriptor deviceDescriptor)
     {
         super(deviceDescriptor.getID(), deviceDescriptor.getName(), "Native Instruments", 2, 2);
 

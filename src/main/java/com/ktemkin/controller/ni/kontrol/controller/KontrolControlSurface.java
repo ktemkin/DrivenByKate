@@ -2,12 +2,12 @@
 // (c) 2017-2023
 // Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
 
-package com.ktemkin.controller.ni.kontrol.mkii.controller;
+package com.ktemkin.controller.ni.kontrol.controller;
 
+import com.ktemkin.controller.common.controller.CommonUIControlSurface;
 import com.ktemkin.controller.ni.core.AbstractNIHostInterop;
 import com.ktemkin.controller.ni.core.INIEventHandler;
-import com.ktemkin.controller.ni.kontrol.mkii.KontrolProtocolConfiguration;
-import de.mossgrabers.framework.controller.AbstractControlSurface;
+import com.ktemkin.controller.ni.kontrol.KontrolConfiguration;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.controller.color.ColorManager;
@@ -15,8 +15,8 @@ import de.mossgrabers.framework.controller.hardware.BindType;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.midi.IMidiInput;
 import de.mossgrabers.framework.daw.midi.IMidiOutput;
+import de.mossgrabers.framework.scale.Scales;
 import de.mossgrabers.framework.utils.ButtonEvent;
-import de.mossgrabers.framework.utils.StringUtils;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ import java.util.List;
  * @author Kate Temkin
  * @author Jürgen Moßgraber
  */
-public class KontrolProtocolControlSurface extends AbstractControlSurface<KontrolProtocolConfiguration> implements INIEventHandler {
+public class KontrolControlSurface extends CommonUIControlSurface<KontrolConfiguration> implements INIEventHandler {
     /**
      * Command to initialize the protocol handshake (and acknowledge).
      */
@@ -216,15 +216,22 @@ public class KontrolProtocolControlSurface extends AbstractControlSurface<Kontro
     private final ValueCache valueCache = new ValueCache();
     private final Object cacheLock = new Object();
     private final Object handshakeLock = new Object();
+    /**
+     * The color for each button.
+     */
+    // FIXME(ktemkin): find an elegant way to get this bound
+    private final ColorEx[] colorForButton = new ColorEx[256];
+    /**
+     * The color for each of the keystrip keys, as raw Kontrol colors.
+     */
+    private final int[] colorForKey = new int[88];
+    /**
+     * The scale manager for this controller.
+     */
+    private final Scales scales;
     private int protocolVersion = KontrolProtocol.MAX_VERSION;
     private boolean isConnectedToNIHIA = false;
     private AbstractNIHostInterop niConnection = null;
-
-    /**
-     * The color index for each button.
-     */
-    // FIXME(ktemkin): find an elegant way to get this bound
-    private ColorEx[] colorForButton = new ColorEx[256];
 
 
     /**
@@ -237,11 +244,16 @@ public class KontrolProtocolControlSurface extends AbstractControlSurface<Kontro
      * @param input         The MIDI input
      * @param version       The version number of the NIHIA protocol to request
      */
-    public KontrolProtocolControlSurface(final IHost host, final ColorManager colorManager, final KontrolProtocolConfiguration configuration, final IMidiOutput output, final IMidiInput input, final int version) {
-        super(host, configuration, colorManager, output, input, null, 800, 300);
+    public KontrolControlSurface(final IHost host, final ColorManager colorManager, final KontrolConfiguration configuration, final IMidiOutput output, final IMidiInput input, final int version, final Scales scales) {
+        super(host, colorManager, configuration, new KontrolPseudoPadGrid(colorManager, output, scales), output, input, 800, 300);
 
         this.requiredVersion = version;
         this.defaultMidiChannel = 15;
+        this.scales = scales;
+
+
+        var padGrid = (KontrolPseudoPadGrid) this.getPadGrid();
+        padGrid.setSurface(this);
     }
 
 
@@ -258,7 +270,7 @@ public class KontrolProtocolControlSurface extends AbstractControlSurface<Kontro
 
             this.niConnection.shutdown();
 
-            this.sendCommand(KontrolProtocolControlSurface.CMD_GOODBYE, 0);
+            this.sendCommand(KontrolControlSurface.CMD_GOODBYE, 0);
         }
     }
 
@@ -282,7 +294,6 @@ public class KontrolProtocolControlSurface extends AbstractControlSurface<Kontro
     public void initHandshake() {
         this.sendCommand(CMD_HELLO, this.requiredVersion);
     }
-
 
     /**
      * Call if the handshake response was successfully received from the NIHIA.
@@ -322,31 +333,6 @@ public class KontrolProtocolControlSurface extends AbstractControlSurface<Kontro
 
 
     /**
-     * Send SysEx to the Kontrol.
-     *
-     * @param stateID The state ID (command)
-     * @param value   The value to send
-     * @param track   The track index (0-7)
-     */
-    public void sendKontrolTrackSysEx(final int stateID, final int value, final int track) {
-        this.sendKontrolTrackSysEx(stateID, value, track, "");
-    }
-
-
-    /**
-     * Send SysEx to the Kontrol.
-     *
-     * @param stateID The state ID (command)
-     * @param value   The value to send
-     * @param track   The track index (0-7)
-     * @param info    An info string
-     */
-    public void sendKontrolTrackSysEx(final int stateID, final int value, final int track, final String info) {
-        this.sendKontrolTrackSysEx(stateID, value, track, StringUtils.fixASCII(info).chars().toArray());
-    }
-
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -357,32 +343,6 @@ public class KontrolProtocolControlSurface extends AbstractControlSurface<Kontro
 
         super.clearCache();
     }
-
-
-    /**
-     * Send SysEx to the Kontrol.
-     *
-     * @param stateID The state ID (command)
-     * @param value   The value to send
-     * @param track   The track index (0-7)
-     * @param info    Further info data
-     */
-    public void sendKontrolTrackSysEx(final int stateID, final int value, final int track, final int[] info) {
-        synchronized (this.cacheLock) {
-            if (this.valueCache.store(track, stateID, value, info))
-                return;
-        }
-
-        final int[] data = new int[3 + info.length];
-        data[0] = stateID;
-        data[1] = value;
-        data[2] = track;
-        for (int i = 0; i < info.length; i++)
-            data[3 + i] = info[i];
-
-        this.output.sendSysex("F0 00 21 09 00 00 44 43 01 00 " + StringUtils.toHexStr(data) + "F7");
-    }
-
 
     /**
      * Get the protocol number of the currently connected Komplete Kontrol.
@@ -410,6 +370,8 @@ public class KontrolProtocolControlSurface extends AbstractControlSurface<Kontro
     @Override
     public void handleButtonEvent(int rawButtonId, ButtonEvent event) {
 
+        this.println(String.format("BUTTON: %d", rawButtonId));
+
         // Convert our button from a NIHIA message number to a concrete ButtonID.
         var buttonId = this.translateNIHIAButton(rawButtonId);
         var button = this.getButton(buttonId);
@@ -432,7 +394,7 @@ public class KontrolProtocolControlSurface extends AbstractControlSurface<Kontro
 
         this.host.println(String.format("knob event (%d is %d).", index, newValue));
 
-        // ... and if there's a hardware continious control, trigger it to update.
+        // ... and if there's a hardware continuous control, trigger it to update.
         final var mode = this.getModeManager().getActive();
         if (mode != null) {
             int delta = newValue >> 27;
@@ -463,7 +425,14 @@ public class KontrolProtocolControlSurface extends AbstractControlSurface<Kontro
      */
     @Override
     public void handleOctaveChanged(int newBaseNote) {
-        // TODO(ktemkin): do something with this information?
+        // The Kontrol reports the base note as "middle C", which it counts for the S49
+        // as the second key on the keyboard. Adjust to get the key in the right position.
+        // We'll also add 9 to account for the start of the 88, which isn't centered.
+        // (I think this is what's going on, here.)
+        //
+        // FIXME(ktemkin): if I can get my hands on other hardware, I'll make this work
+        // on the other devices, too.
+        this.scales.setStartNote(newBaseNote - 36 + 9);
     }
 
 
@@ -477,8 +446,41 @@ public class KontrolProtocolControlSurface extends AbstractControlSurface<Kontro
     }
 
 
+    /**
+     * Sets the color for the provided button.
+     *
+     * @param button The button to set the color for.
+     * @param color  The color to set the button to; the closest equivalent will be used.
+     */
     public void setButtonColor(ButtonID button, ColorEx color) {
         this.colorForButton[button.ordinal()] = color;
+    }
+
+
+    /**
+     * Sets the color for the provided key.
+     *
+     * @param index The key index -- indexed as if on an 88 key keyboard.
+     * @param color The color to
+     */
+    public void setKeyColor(int index, ColorEx color) {
+        var colorManager = (KontrolColorManager) this.colorManager;
+        this.colorForKey[index] = colorManager.getDeviceColor(color);
+    }
+
+
+    /**
+     * Sets the color for the provided key.
+     *
+     * @param index The key index -- indexed as if on an 88 key keyboard.
+     * @param color The color to
+     */
+    public void setKeyColor(int index, int rawColor) {
+        if ((index < 0) || (index > this.colorForKey.length)) {
+            return;
+        }
+
+        this.colorForKey[index] = rawColor;
     }
 
 
@@ -486,25 +488,16 @@ public class KontrolProtocolControlSurface extends AbstractControlSurface<Kontro
      * Returns the (nearest NI) color index for a given button.
      */
     public byte getColorForButton(ButtonID button) {
-        var manager = (KontrolProtocolColorManager) this.colorManager;
+
+        var manager = (KontrolColorManager) this.colorManager;
         var color = this.colorForButton[button.ordinal()];
 
         // If we don't have a color set, default to OFF.
         if (color == null) {
-            return KontrolProtocolColorManager.COLOR_BLACK;
+            return KontrolColorManager.COLOR_BLACK;
         }
 
-        return (byte) manager.getNIColor(color);
-    }
-
-
-    /**
-     * Updates the device's keyzones to match our configuration.
-     */
-    public void updateKeyzones() {
-        if (this.niConnection != null) {
-            this.niConnection.configureKeyzones(KontrolProtocolColorManager.COLOR_BLUE);
-        }
+        return (byte) manager.getDeviceColor(color);
     }
 
 
@@ -512,26 +505,29 @@ public class KontrolProtocolControlSurface extends AbstractControlSurface<Kontro
      * Sends the LED colors associated set for each button with `setButtonColor`.
      * Does not affect the keybed colors, which are programmed via Keyzones.
      */
-    public void updateButtonLights() {
+    public void flushLights() {
+        var colorManager = (KontrolColorManager) this.colorManager;
+
         if (this.niConnection == null) {
             return;
         }
 
         // Build a packet of each button color.
-        byte[] ledIndices = new byte[37];
-        ByteBuffer ledBuffer = ByteBuffer.wrap(ledIndices);
+        // Note: this can be up to 130; we're truncating it to what we actually use.
+        byte[] colors = new byte[42 + this.colorForKey.length];
+        ByteBuffer ledBuffer = ByteBuffer.wrap(colors);
 
         ledBuffer.put(this.getColorForButton(ButtonID.MUTE));
         ledBuffer.put(this.getColorForButton(ButtonID.SOLO));
 
-        ledBuffer.put(this.getColorForButton(ButtonID.ROW2_1));
-        ledBuffer.put(this.getColorForButton(ButtonID.ROW2_2));
-        ledBuffer.put(this.getColorForButton(ButtonID.ROW2_3));
-        ledBuffer.put(this.getColorForButton(ButtonID.ROW2_4));
-        ledBuffer.put(this.getColorForButton(ButtonID.ROW2_5));
-        ledBuffer.put(this.getColorForButton(ButtonID.ROW2_6));
-        ledBuffer.put(this.getColorForButton(ButtonID.ROW2_7));
-        ledBuffer.put(this.getColorForButton(ButtonID.ROW2_8));
+        ledBuffer.put(this.getColorForButton(ButtonID.ROW1_1));
+        ledBuffer.put(this.getColorForButton(ButtonID.ROW1_2));
+        ledBuffer.put(this.getColorForButton(ButtonID.ROW1_3));
+        ledBuffer.put(this.getColorForButton(ButtonID.ROW1_4));
+        ledBuffer.put(this.getColorForButton(ButtonID.ROW1_5));
+        ledBuffer.put(this.getColorForButton(ButtonID.ROW1_6));
+        ledBuffer.put(this.getColorForButton(ButtonID.ROW1_7));
+        ledBuffer.put(this.getColorForButton(ButtonID.ROW1_8));
 
         ledBuffer.put(this.getColorForButton(ButtonID.LEFT));
         ledBuffer.put(this.getColorForButton(ButtonID.UP));
@@ -564,9 +560,17 @@ public class KontrolProtocolControlSurface extends AbstractControlSurface<Kontro
         ledBuffer.put(this.getColorForButton(ButtonID.BROWSE));
         ledBuffer.put(this.getColorForButton(ButtonID.DEVICE));
 
-        assert (!ledBuffer.hasRemaining());
+        // These bytes seem to be for alignment; or perhaps have meaning
+        // we don't yet know. I'm going to fill them with lime green,
+        // so we can see them if they do wind up doing something.
+        ledBuffer.put(new byte[]{33, 33, 33, 33, 33});
 
-        this.niConnection.setLedColors(ledIndices);
+        // Scan out the colors for each of our key-strip keys.
+        for (var color : this.colorForKey) {
+            ledBuffer.put((byte) color);
+        }
+
+        this.niConnection.setLedColors(colors);
     }
 
 
@@ -576,28 +580,28 @@ public class KontrolProtocolControlSurface extends AbstractControlSurface<Kontro
     public ButtonID translateNIHIAButton(int rawButton) {
         switch (rawButton) {
             case 0x00 -> {
-                return ButtonID.ROW2_5;              // Above the screen.
+                return ButtonID.ROW1_5;              // Above the screen.
             }
             case 0x01 -> {
-                return ButtonID.ROW2_6;
+                return ButtonID.ROW1_6;
             }
             case 0x02 -> {
-                return ButtonID.ROW2_7;
+                return ButtonID.ROW1_7;
             }
             case 0x03 -> {
-                return ButtonID.ROW2_8;
+                return ButtonID.ROW1_8;
             }
             case 0x04 -> {
-                return ButtonID.ROW2_1;
+                return ButtonID.ROW1_1;
             }
             case 0x05 -> {
-                return ButtonID.ROW2_2;
+                return ButtonID.ROW1_2;
             }
             case 0x06 -> {
-                return ButtonID.ROW2_3;
+                return ButtonID.ROW1_3;
             }
             case 0x07 -> {
-                return ButtonID.ROW2_4;
+                return ButtonID.ROW1_4;
             }
             case 0x0b -> {
                 return ButtonID.SCALES;              // Scales

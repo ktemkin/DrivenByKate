@@ -241,7 +241,10 @@ public class MacOSNIHostInterop extends AbstractNIHostInterop {
 
         // Delegate the raw notification back to the platform-independent code.
         final byte[] notification = this.convertCFData(data, false);
-        this.notificationExecutor.submit(() -> this.handleNotification(notification));
+
+        if (this.notificationExecutor != null) {
+            this.notificationExecutor.submit(() -> this.handleNotification(notification));
+        }
 
         return null;
     }

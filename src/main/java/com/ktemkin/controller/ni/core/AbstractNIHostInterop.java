@@ -233,7 +233,7 @@ public abstract class AbstractNIHostInterop {
     /**
      * Thread executor for running our asynchronous notification thread.
      */
-    protected ExecutorService notificationExecutor = Executors.newSingleThreadExecutor();
+    protected ExecutorService notificationExecutor;
     /**
      * General comms lock; in case we need to panic-restart.
      */
@@ -256,6 +256,7 @@ public abstract class AbstractNIHostInterop {
         this.isShutdown = new AtomicBoolean(false);
         this.eventHandler = eventHandler;
         this.commsLock = new Object();
+        this.notificationExecutor = Executors.newSingleThreadExecutor();
 
         deviceSerial = (deviceSerial == null) ? "" : deviceSerial;
         this.isGlobalConnection = deviceSerial.isEmpty();
@@ -602,10 +603,19 @@ public abstract class AbstractNIHostInterop {
 
         // If this is a Maschine device, we'll send a few additional request messages.
         // On a Kontrol device, these aren't actually necessary.
-        if (this.isKontrol) {
-            return;
+        if (!this.isKontrol) {
+            this.maschineExtraInitialization();
         }
+    }
 
+
+    /**
+     * Perform any necessary initialization steps we don't yet understand,
+     * but which the Maschine software performs.
+     *
+     * TODO(ktemkin): document these or remove them!
+     */
+    private void maschineExtraInitialization() {
         this.pushRequest(new byte[]{0x54, 0x73, 0x49, 0x03, 0x00, 0x00, 0x00, 0x00});
         this.pushRequest(new byte[]{0x46, 0x67, 0x43, 0x03});
     }

@@ -2,7 +2,7 @@
 // (c) 2017-2023
 // Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
 
-package com.ktemkin.controller.ni.kontrol.mkii.controller;
+package com.ktemkin.controller.ni.kontrol.controller;
 
 /**
  * Information about the Komplete Kontrol MIDI protocol.
